@@ -19,7 +19,7 @@ firebase-debug.*.log*
 # Firebase cache
 .firebase/
 # Ignore Firebase service account key
-src/main/resources/52switch_firebase_key.json
+src/main/resources/firebase/52switch_firebase_key.json
 
 
 # Runtime data
