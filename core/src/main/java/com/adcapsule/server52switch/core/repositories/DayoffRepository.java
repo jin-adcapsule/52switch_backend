@@ -7,6 +7,8 @@ import org.springframework.data.mongodb.repository.Query;
 
 import com.adcapsule.server52switch.core.models.Dayoff;
 import com.adcapsule.server52switch.core.repositories.projection.Projection.DayoffTypeProjection;
+import org.springframework.stereotype.Repository;
+@Repository
 public interface DayoffRepository extends MongoRepository<Dayoff, String> {
     List<Dayoff> findByEmployeeId(int  employeeId);
     Optional<Dayoff> findByEmployeeIdAndDayoffDate(int employeeId, String dayoffDate);

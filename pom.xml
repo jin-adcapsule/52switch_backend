@@ -23,6 +23,7 @@
 	</properties>
 	<!-- Modules -->
     <modules>
+		<module>shared</module>
         <module>core</module>
         <module>backoffice</module> 
 		<module>runner</module> 

@@ -7,7 +7,8 @@ import org.springframework.data.mongodb.repository.Query;
 
 import com.adcapsule.server52switch.core.models.Group;
 import com.adcapsule.server52switch.core.repositories.projection.Projection.IdProjection;
-
+import org.springframework.stereotype.Repository;
+@Repository
 public interface GroupRepository extends MongoRepository<Group, String> {
     List<Group> findByGroupSupervisorOid(String supervisorOid);
     // Check if an employee is a supervisor of any group

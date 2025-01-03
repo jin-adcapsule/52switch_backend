@@ -4,10 +4,11 @@ import java.util.Optional;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import com.adcapsule.server52switch.core.dtos.AttendanceStatusDTO;
 import com.adcapsule.server52switch.core.models.Attendance;
-
+@Repository
 public interface AttendanceRepository extends MongoRepository<Attendance, String> {
     List<Attendance> findByEmployeeId(int  employeeId);
     Optional<Attendance> findByEmployeeIdAndDate(int employeeId, String formattedDate);

@@ -2,7 +2,6 @@
 target/
 .idea/
 .env
-application.properties
 
 # Logs
 *.log
@@ -19,7 +18,7 @@ firebase-debug.*.log*
 # Firebase cache
 .firebase/
 # Ignore Firebase service account key
-runner/src/main/resources/firebase/52switch_firebase_key.json
+52switch_firebase_key.json
 
 
 # Runtime data
@@ -94,6 +93,5 @@ node_modules/
 
 # Environment Files
 .env
-runner/.env
 .env.local
 .env.*.local

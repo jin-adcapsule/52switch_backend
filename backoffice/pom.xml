@@ -20,6 +20,11 @@
         <!-- BackOffice Module Dependencies -->
         <dependency>
             <groupId>com.adcapsule</groupId>
+            <artifactId>shared</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.adcapsule</groupId>
             <artifactId>core</artifactId>
             <version>${project.version}</version>
         </dependency>

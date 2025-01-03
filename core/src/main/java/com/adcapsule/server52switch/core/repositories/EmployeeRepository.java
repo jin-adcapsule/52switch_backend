@@ -13,7 +13,8 @@ import com.adcapsule.server52switch.core.repositories.projection.Projection.Grou
 import com.adcapsule.server52switch.core.repositories.projection.Projection.IdProjection;
 import com.adcapsule.server52switch.core.repositories.projection.Projection.LocationIdProjection;
 import com.adcapsule.server52switch.core.repositories.projection.Projection.NameProjection;
-
+import org.springframework.stereotype.Repository;
+@Repository
 public interface EmployeeRepository extends MongoRepository<Employee, String> {
     Optional<Employee> findByEmployeeId(int employeeId);
     //Optional<Employee> findById(String _id);

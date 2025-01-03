@@ -12,27 +12,11 @@
     </parent>
 
     <groupId>com.adcapsule</groupId>
-    <artifactId>runner</artifactId>
+    <artifactId>shared</artifactId>
     <version>0.0.1</version>
     <packaging>jar</packaging>
     
     <dependencies>
-        <!-- Main Module Dependencies -->
-        <dependency>
-            <groupId>com.adcapsule</groupId>
-            <artifactId>shared</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.adcapsule</groupId>
-            <artifactId>core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.adcapsule</groupId>
-            <artifactId>backoffice</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <!-- Basic Spring Boot starter -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -82,15 +66,5 @@
 
 			
     </dependencies>
-		<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<mainClass>com.adcapsule.server52switch.runner.Application</mainClass>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+	
 </project>
