@@ -1,0 +1,157 @@
+type Employee {
+    _id: ID
+    employeeId: Int
+    name: String
+    email: String
+    position: String
+    phone: String
+    joindate: String
+
+    department: ID # groupId for parent department
+    teamId: ID # groupId for group allocated as members
+    supervisorName: String
+    supervisorId: Int
+    isSupervisor: Boolean
+
+    locationId: ID
+    workplace: String
+    workhour: String
+    workhourOn: String
+    workhourOff: String
+    workhourHalf: String
+
+    dayoffRemaining: Int
+}
+
+type Group {
+    groupName: String
+    groupSupervisorRole: String
+    groupSupervisorEid: Int
+    subgroup: [ID] 
+    parentGroup: ID 
+}
+
+type Attendance {
+    employeeId: Int
+    date: String
+    checkInTime: String
+    checkOutTime: String
+    location: String
+    status: Boolean
+    remarks: String
+    checkInStatus: String
+    checkOutStatus: String
+    workduration: String
+    workTypeList: [String!]
+}
+
+type AttendanceHistory {
+    employeeId: Int
+    date: String
+    checkInTime: String
+    checkOutTime: String
+    status: Boolean
+    checkInStatus: String
+    checkOutStatus: String
+    workTypeList: [String!]
+}
+type Location {
+    workplace: String
+    workhourOn: String
+    workhourOff: String
+}
+type Dayoff {
+
+    dayoffType: String!
+    requestComment: String
+    dayoffDate: String!
+    requestStatus: String
+    requestDate: String
+    supervisorId: Int
+    supervisorName: String
+    requestKey: String
+    
+
+}
+type DayoffHistory {
+
+    dayoffType: String!
+    requestComment: String!
+    dayoffDateText: String!
+    requestStatus: String
+    requestDate: String
+    supervisorId: Int
+    supervisorName: String
+    requestKey: String
+
+}
+type EmployeeValidationResult {
+    objectId: String!
+    employeeName: String!
+    isSupervisor: Boolean!
+    currently_marked: Boolean!
+
+}
+type AttendanceStatusDTO {
+    status: Boolean!
+}
+type RequestDTO {
+    employeeId: Int!
+    employeeName: String!
+    requestType: String!
+    requestStatus: String!
+    supervisorId: Int!
+    requestKey: String!
+
+    requestDate: String!
+    requestComment: String!
+    
+    dayoffDateText: String
+    dayoffType: String
+    
+}
+type Answer {
+    objectId: String!
+    requestStatus: String!
+    answerComment: String!
+    requestKey: String!
+}
+type LocationInfoDTO {
+    workplace: String!
+    workhourOn: String!
+    workhourOff: String!
+    workhourHalf: String!
+}
+type DayoffInfoDTO {
+    supervisorName: String!
+    supervisorOid: String!
+    dayoffRemaining: Int!
+}
+type Query {
+    validateUidAndPhone(uid: String!, phone: String!): EmployeeValidationResult
+    getObjectIdByPhone(phone: String!): Employee
+    
+    getAttendanceStatus(objectId: String!): AttendanceStatusDTO
+    getEmployeeDayoff(objectId: String!,startDate: String!, endDate: String!,requestStatusList: [String!]): [DayoffHistory]
+    
+
+    getPendingRequests(objectId:String!): [RequestDTO]
+    getRequestHistory(objectId: String!, startDate: String!, endDate: String!, requestStatusList: [String!]): [RequestDTO]
+    
+    getEmployeeInfo(objectId: String!): Employee
+    getLocationInfo(employeeOid: String!): LocationInfoDTO
+    getDayoffInfo(employeeOid: String!): DayoffInfoDTO
+    getEmployeeAttendance(objectId: String!,startDate: String!, endDate: String!, workTypeList:[String!]): [AttendanceHistory]
+    
+
+}
+type Mutation {
+    markAttendance(objectId: String!, status: Boolean!): AttendanceStatusDTO
+    requestDayoff(objectId: String!, dateList: [String!], dayoffType: String!, requestComment: String!,beforeDateRemaining:Int!):[String!]
+    answerRequest(objectId: String!, requestStatus: String!, answerComment: String!, requestKey: String!):Boolean
+    saveFCMToken(objectId: String!, fcmToken: String!):Boolean
+
+    sendNotification(token: String!, title: String!, message:String!): String
+    sendNotificationToSupervisor( objectId: String!, title: String!, message:String!): String
+    sendNotificationToEmployeeId(employeeId: Int!,  title: String!,  message: String!): String
+}
