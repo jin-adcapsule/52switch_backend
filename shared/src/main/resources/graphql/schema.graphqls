@@ -127,6 +127,10 @@ type DayoffInfoDTO {
     supervisorOid: String!
     dayoffRemaining: Int!
 }
+type GroupMembersDTO {
+  groupName: String!
+  members: [Employee!]!
+}
 type Query {
     validateUidAndPhone(uid: String!, phone: String!): EmployeeValidationResult
     getObjectIdByPhone(phone: String!): Employee
@@ -143,7 +147,7 @@ type Query {
     getDayoffInfo(employeeOid: String!): DayoffInfoDTO
     getEmployeeAttendance(objectId: String!,startDate: String!, endDate: String!, workTypeList:[String!]): [AttendanceHistory]
     
-
+    getMyAllGroupsMembers(employeeOid: String!): [Employee]
 }
 type Mutation {
     markAttendance(objectId: String!, status: Boolean!): AttendanceStatusDTO

@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.adcapsule.server52switch.backoffice.dtos.GroupMembersDTO;
 import com.adcapsule.server52switch.core.models.Employee; // Calling shared service
 import com.adcapsule.server52switch.core.models.Group;
 import com.adcapsule.server52switch.core.services.EmployeeService;
@@ -29,27 +30,23 @@ public class BackOfficeService {
         return allGroups;
     }
 
-    public Map<String,List<Employee>> getMyAllGroupsMembers(String employeeOid){
+    public List<Employee> getMyAllGroupsMembers(String employeeOid){
         // Retrieve all groups supervised by the employee
-        List<Group> allGroups=groupService.getAllSubGroupsBySupervisorOid(employeeOid); // Calling shared service method
-        // Map to store supervisorOid as key and member OIDs as value
-        Map<String,List<Employee>> memberMapBySupervisorOid = new HashMap<>();
-        for (Group group : allGroups){
-            String supervisorOid = group.getGroupSupervisorOid();
-            // Fetch the list of member OIDs for the current group
+        List<Group> allGroups = groupService.getAllSubGroupsBySupervisorOid(employeeOid);
+        System.err.println(allGroups);
+        List<Employee> groupMembers = new ArrayList<>();
+
+        for (Group group : allGroups) {
             List<String> groupMemberOids = employeeService.findEmployeeOidListbyGroupId(group.getId());
-            // Add the groupMemberOids to the corresponding supervisorOid in the map
-            memberMapBySupervisorOid.computeIfAbsent(supervisorOid, k -> new ArrayList<>());
-            // Avoid adding duplicate OIDs
             for (String memberOid : groupMemberOids) {
                 Employee member = employeeService.getEmployeeById(memberOid);
-                if (!memberMapBySupervisorOid.get(supervisorOid).contains(member)) {
-                    memberMapBySupervisorOid.get(supervisorOid).add(member);
+                if (!groupMembers.contains(member)) {
+                    groupMembers.add(member);
                 }
             }
         }
-
-        return memberMapBySupervisorOid;
+        System.err.println(groupMembers);
+        return groupMembers;
     }
     
 }
