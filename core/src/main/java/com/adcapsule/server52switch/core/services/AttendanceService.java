@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.adcapsule.server52switch.core.configs.Config;
 import com.adcapsule.server52switch.core.dtos.AttendanceHistory;
 import com.adcapsule.server52switch.core.dtos.AttendanceStatusDTO;
+import com.adcapsule.server52switch.core.dtos.LocationInfoDTO;
 import com.adcapsule.server52switch.core.models.Attendance;
 import com.adcapsule.server52switch.core.repositories.AttendanceRepository;
 
@@ -57,7 +58,8 @@ public class AttendanceService {
         Date parsedCheckTime =  parsedcheckTime;
         
         String currentDateInKST = Config.getCurrentDate_String();
-        int employeeId = employeeService.getEmployeeIdById(objectId);
+        //int employeeId = employeeService.getEmployeeIdById(objectId);
+        String employeeOid = objectId;
         //String workhourOn = (String) employeeService.getLocationAndWorkDetailsByEmployeeId(employeeId).get("workhourOn");
         
         // Parse workhourOn into a Date object for comparison
@@ -73,7 +75,7 @@ public class AttendanceService {
         
         String startTime = null;
         String endTime = null;        
-        List<Map<String,String>> requestWorkhourKeyMapList=requestService.getRequestByTodayAndApprovedStatus(employeeId);
+        List<Map<String,String>> requestWorkhourKeyMapList=requestService.getRequestByTodayAndApprovedStatus(employeeOid);
         if (requestWorkhourKeyMapList == null || requestWorkhourKeyMapList.isEmpty()) {
             throw new RuntimeException("No approved requests for today");
         }
@@ -81,7 +83,7 @@ public class AttendanceService {
 
         List<String> workTypeListToday= new ArrayList<>();
 
-        Map<String,Object> locationDetail = employeeService.getLocationAndWorkDetailsByEmployeeId(employeeId);
+        LocationInfoDTO locationDetail = employeeService.getLocationAndWorkDetailsByEmployeeOid(employeeOid);
 
         for (Map<String,String> requestWorkhourKeyMap : requestWorkhourKeyMapList) {
             //this would be 'null' for cases of 휴가 경조휴가 휴직
@@ -89,8 +91,8 @@ public class AttendanceService {
             String _endTimeLocationKey=requestWorkhourKeyMap.get("workhourEnd");
 
             //if querying key is 'null' then those would be null
-            String _startTime = (String) locationDetail.get(_startTimeLocationKey);
-            String _endTime = (String) locationDetail.get(_endTimeLocationKey);
+            String _startTime = locationDetail.getTimebyKey(_startTimeLocationKey);//should start time by todays dayoff state
+            String _endTime = locationDetail.getTimebyKey(_endTimeLocationKey);//should end time by todays dayoff state
             List<String> _startTimeSortedList=Config.compareAndSortTimes(startTime, _startTime,true);
             List<String> _endTimeSortedList=Config.compareAndSortTimes(endTime, _endTime,false);
             startTime = (_startTimeSortedList != null)
@@ -104,7 +106,7 @@ public class AttendanceService {
  
          
         // Check if an attendance record exists for the given date and employeeId
-        Optional<Attendance> existingAttendance = attendanceRepository.findByEmployeeIdAndDate(employeeId, currentDateInKST);
+        Optional<Attendance> existingAttendance = attendanceRepository.findByEmployeeOidAndDate(employeeOid, currentDateInKST);
         System.out.println(workTypeListToday);
         Attendance attendance;
         if (existingAttendance.isPresent()) {
@@ -146,8 +148,8 @@ public class AttendanceService {
             // Create new record
             
             attendance = new Attendance();
-            attendance.setEmployeeOid(objectId);
-            attendance.setEmployeeId(employeeId);
+            attendance.setEmployeeOid(employeeOid);
+            //attendance.setEmployeeId(employeeId);
             attendance.setDate(currentDateInKST);
 
             if (status) {//when checkintime will be initiated
@@ -188,17 +190,18 @@ public class AttendanceService {
         ) {
         try {
 
-            int employeeId = employeeService.getEmployeeIdById(_id);
-
+            //int employeeId = employeeService.getEmployeeIdById(_id);
+            String employeeOid = _id;
             // Fetch attendance records based on filters
-            List<Attendance> attendances = attendanceRepository.findByEmployeeIdInAndWorkTypeAndDateBetweenInclusive(employeeId, workTypeList,startDate,endDate);
-            
+            List<Attendance> attendances = attendanceRepository.findByEmployeeOidInAndWorkTypeAndDateBetweenInclusive(employeeOid, workTypeList,startDate,endDate);
+            System.out.println(attendances);
             
             // Map Attendance to AttendanceHistory DTO
             return attendances.stream()
                 .sorted(Comparator.comparing(Attendance::getDate).reversed()) // Sort by date descending
                 .map(attendance -> new AttendanceHistory(
-                    attendance.getEmployeeId(),
+                    //attendance.getEmployeeId(),
+                    attendance.getEmployeeOid(),
                     attendance.getDate(),
                     attendance.getCheckInTime(),
                     attendance.getCheckOutTime(),
@@ -209,7 +212,7 @@ public class AttendanceService {
                 ))
                 .collect(Collectors.toList());
         } catch (Exception e) {
-            throw new RuntimeException("Invalid date format. Use 'yyyy-MM-dd' for startDate and endDate.");
+            throw new RuntimeException("Error while Service getEmployeeAttendance.");
         }
 
         

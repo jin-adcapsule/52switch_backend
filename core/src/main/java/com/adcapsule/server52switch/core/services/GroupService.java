@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,23 +25,20 @@ public class GroupService {
         }
 
    
-
+    public Group findById(String objectId) {
+        return groupRepository.findById(objectId)
+        .orElse(null);  // or return a default object if needed;
+    }
     /**
      * Check if an employee is a supervisor of any group.
      *
      * @param employeeId the ID of the employee to check.
      * @return true if the employee is a supervisor, false otherwise.
      */
-    public boolean existsByGroupSupervisorEid(int employeeId) {
-        return groupRepository.existsByGroupSupervisorEid(employeeId);
+    public boolean existsByGroupSupervisorOid(String employeeOid) {
+        return groupRepository.existsByGroupSupervisorOid(employeeOid);
     }
 
-    public List<String> findGroupIdListBySupervisorId(int supervisorId) {
-        return groupRepository.findGroupIdListBySupervisorId(supervisorId)
-            .stream()
-            .map(IdProjection::getId) // Access the `_id` field through the projection
-            .collect(Collectors.toList());
-    }
     public List<String> findGroupIdListBySupervisorOid(String supervisorOid) {
         return groupRepository.findGroupIdListBySupervisorOid(supervisorOid)
             .stream()
@@ -59,13 +55,13 @@ public class GroupService {
     public List<Group> getAllSubGroupsBySupervisorOid(String supervisorOid) {
         // Step 1: Fetch root groups supervised by the given ID
         List<Group> rootGroups = groupRepository.findByGroupSupervisorOid(supervisorOid);
-
         // Step 2: Initialize a Set to store all subgroups (avoids duplicates)
         Set<Group> allSubGroups = new HashSet<>();
         Set<String> visited = new HashSet<>(); // Tracks already-visited group IDs to prevent infinite recursion
 
         // Step 3: Recursively find all subgroups of root groups
         for (Group rootGroup : rootGroups) {
+            allSubGroups.add(rootGroup); // Add the root group to the result
             findSubGroupsRecursive(rootGroup.getSubGroup(), allSubGroups, visited);
         }
 
@@ -112,12 +108,6 @@ public class GroupService {
      * @return The Group object.
      */
     public Group getGroupById(String objectId) {
-        ObjectId _id;
-        try {
-            _id = new ObjectId(objectId); // Convert String to ObjectId
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Invalid ObjectId format: " + objectId);
-        }
         return groupRepository.findById(objectId)
             .orElseThrow(() -> new RuntimeException("Group not found with Id: " + objectId));
     }

@@ -31,18 +31,18 @@ public class DayoffResolver {
     // Query to fetch employee dayoff
     @QueryMapping
     public List<DayoffHistory> getEmployeeDayoff(
-        @Argument String objectId,
+        @Argument String employeeOid,
         @Argument String startDate,
         @Argument String endDate,
         @Argument List<String> requestStatusList
     ) {
 
         // Delegate the logic to the service
-        return dayoffService.getEmployeeDayoff(objectId, startDate, endDate, requestStatusList);
+        return dayoffService.getEmployeeDayoff(employeeOid, startDate, endDate, requestStatusList);
     }
     @MutationMapping
     public List<String> requestDayoff(
-        @Argument String objectId,
+        @Argument String employeeOid,
         @Argument List<String> dateList,
         @Argument String dayoffType,
         @Argument String requestComment,
@@ -58,7 +58,7 @@ public class DayoffResolver {
             throw new IllegalArgumentException("dateString cannot be null or empty.");
         }
         for (String date : dateList) {
-            Optional<Dayoff> existingDayoff = dayoffService.findByIdAndDayoffDate(objectId, date);
+            Optional<Dayoff> existingDayoff = dayoffService.findByIdAndDayoffDate(employeeOid, date);
             if(existingDayoff.isPresent()){
                 responseMessages.add("Failed: already applied on date: " + date);
             }
@@ -70,7 +70,7 @@ public class DayoffResolver {
                 try {
 
                     // Call the service method for each date
-                    Dayoff dayoff = dayoffService.createOrUpdateDayoff(objectId, requestKey,date, dayoffType, requestComment,beforeDateRemaining,serverReceivedDate);
+                    Dayoff dayoff = dayoffService.createOrUpdateDayoff(employeeOid, requestKey,date, dayoffType, requestComment,beforeDateRemaining,serverReceivedDate);
     
                     // Add the created/updated Dayoff to the list
                     dayoffList.add(dayoff);

@@ -30,6 +30,6 @@ public class Projection {
         }
         public interface DayoffInfoProjection {
                 String getGroupId(); 
-                Integer getDayoffRemaining();
+                Integer getDayoffPerYear();
         }
 }

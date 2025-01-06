@@ -7,7 +7,7 @@ public class Dayoff {
     private String _id;
 
     private String employeeOid;
-    private int employeeId;
+    //private int employeeId;
     private String dayoffType;
     private String requestComment;
     private String dayoffDate;
@@ -15,23 +15,21 @@ public class Dayoff {
     private String requestDate;
     private String requestKey;
     private String answerComment;
-    private int supervisorId;
+    //private int supervisorId;
+    private String supervisorOid;
     private int beforeDateRemaining;
     // Getters and Setters
-    public String getEmployeeOId() {
+    public String getId() {
+        return _id;
+    }
+
+    public String getEmployeeOid() {
         return employeeOid;
     }
-    public void setEmployeeOId(String employeeOid) {
+    public void setEmployeeOid(String employeeOid) {
         this.employeeOid = employeeOid;
     }
-    public int getEmployeeId() {
-        return employeeId;
-    }
-
-    public void setEmployeeId(int employeeId) {
-        this.employeeId = employeeId;
-    }
-
+   
     public String getDayoffType() {
         return dayoffType;
     }
@@ -81,11 +79,19 @@ public class Dayoff {
     public void setAnswerComment(String answerComment) {
         this.answerComment = answerComment;
     }
+    /*
     public void setSupervisorId(int supervisorId) {
         this.supervisorId = supervisorId;
     }
     public int getSupervisorId() {
         return supervisorId;
+    }
+         */
+    public void setSupervisorOid(String supervisorOid) {
+        this.supervisorOid = supervisorOid;
+    }
+    public String getSupervisorOid() {
+        return supervisorOid;
     }
     public void setBeforeDateRemaining(int beforeDateRemaining) {
         this.beforeDateRemaining = beforeDateRemaining;

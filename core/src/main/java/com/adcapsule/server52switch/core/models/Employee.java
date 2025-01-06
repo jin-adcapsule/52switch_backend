@@ -11,7 +11,7 @@ public class Employee {
     @Id
     private String _id; // EmployeeOid
 
-    private int employeeId;  
+    private Integer employeeId;  
     private String name;
     private String email;
     private String position;
@@ -20,7 +20,8 @@ public class Employee {
 
     private String groupId;
     private String department;
-    private int supervisorId= -1; // Default to -1 to represent "null"
+    //private int supervisorId= -1; // Default to -1 to represent "null"
+    private String supervisorOid;
     private String supervisorName; 
     private Boolean isSupervisor;
 
@@ -29,8 +30,7 @@ public class Employee {
     private String workhourOff;
     private String workhourHalf;
     private String workplace;
-    private String workhour;
-    private int dayoffRemaining=0;
+    private Integer dayoffPerYear;
 
     // Getters and Setters
     // Getters and Setters
@@ -38,11 +38,11 @@ public class Employee {
     public String getId() {
         return _id;
     }
-    public int getEmployeeId() {
+    public Integer getEmployeeId() {
         return employeeId;
     }
 
-    public void setEmployeeId(int employeeId) {
+    public void setEmployeeId(Integer employeeId) {
         this.employeeId = employeeId;
     }
 
@@ -96,6 +96,7 @@ public class Employee {
     public void setPhone(String phone) {
         this.phone = phone;
     }
+    /* 
     public int getSupervisorId() {
         return supervisorId;
     }
@@ -103,6 +104,15 @@ public class Employee {
     public void setSupervisorId(int supervisorId) {
         this.supervisorId = supervisorId;
     }
+        */
+    public String getSupervisorOid() {
+        return supervisorOid;
+    }
+
+    public void setSupervisorOid(String supervisorOid) {
+        this.supervisorOid = supervisorOid;
+    }
+        
     public String getSupervisorName() {
         return supervisorName;
     }
@@ -175,12 +185,12 @@ public class Employee {
         this.workplace = workplace;
     }
 
-    public int getDayoffRemaining() {
-        return dayoffRemaining;
+    public Integer getDayoffPerYear() {
+        return dayoffPerYear;
     }
 
-    public void setDayoffRemaining(int dayoffRemaining) {
-        this.dayoffRemaining = dayoffRemaining;
+    public void setDayoffPerYear(Integer dayoffPerYear) {
+        this.dayoffPerYear = dayoffPerYear;
     }
 
 }

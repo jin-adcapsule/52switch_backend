@@ -2,7 +2,6 @@ package com.adcapsule.server52switch.core.services;
 
 import java.util.Optional;
 
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -62,12 +61,6 @@ public class LocationService {
      * @return The location object.
      */
     public Location getLocationById(String objectId) {
-        ObjectId _id;
-        try {
-            _id = new ObjectId(objectId); // Convert String to ObjectId
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Invalid ObjectId format: " + objectId);
-        }
         return locationRepository.findById(objectId)
             .orElseThrow(() -> new RuntimeException("Group not found with Id: " + objectId));
     }

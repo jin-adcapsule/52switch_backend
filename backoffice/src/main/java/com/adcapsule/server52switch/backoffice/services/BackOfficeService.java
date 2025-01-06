@@ -1,14 +1,11 @@
 package com.adcapsule.server52switch.backoffice.services;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.adcapsule.server52switch.backoffice.dtos.GroupMembersDTO;
 import com.adcapsule.server52switch.core.models.Employee; // Calling shared service
 import com.adcapsule.server52switch.core.models.Group;
 import com.adcapsule.server52switch.core.services.EmployeeService;

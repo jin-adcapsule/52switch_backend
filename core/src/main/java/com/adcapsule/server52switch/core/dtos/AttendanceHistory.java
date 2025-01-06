@@ -11,22 +11,23 @@ import com.adcapsule.server52switch.core.configs.Config;
 
 
 public class AttendanceHistory {
-    private int employeeId;
-    private String date;
-    private String checkInTime;
-    private String checkOutTime;
-    private boolean status;
-    private String checkInStatus; 
-    private String checkOutStatus;
-    private List<String> workTypeList;   
-    private String workduration;
-    public AttendanceHistory(int employeeId,String date, Date checkInTime, Date checkOutTime, boolean status, String checkInStatus,String checkOutStatus,List<String> workTypeList) {
-        this.employeeId = employeeId;
+    private final String employeeOid;
+    private final String date;
+    private final String checkInTime;
+    private final String checkOutTime;
+    private final boolean status;
+    private final String checkInStatus; 
+    private final String checkOutStatus;
+    private final List<String> workTypeList;   
+    private final String workduration;
+    public AttendanceHistory(String employeeOid,String date, Date checkInTime, Date checkOutTime, boolean status, String checkInStatus,String checkOutStatus,List<String> workTypeList) {
+        //this.employeeId = employeeId;
+        this.employeeOid = employeeOid;
         this.date = formatDate(date);
         this.checkInTime = formatTime(checkInTime);
         //this.checkOutTime = formatTime(checkOutTime);
         this.status = status;
-        this.workduration = getWorkDuration(checkInTime,checkOutTime);
+        this.workduration = calculateWorkduration(checkInTime,checkOutTime);
         this.checkInStatus = checkInStatus;//getCheckInStatus();
         this.checkOutStatus = checkOutStatus;//getCheckOutStatus();
         this.workTypeList = workTypeList;//getWorkTypeList();
@@ -61,13 +62,45 @@ public class AttendanceHistory {
         LocalDate inputDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yy.MM.dd(E)", java.util.Locale.KOREAN));
         return inputDate.isEqual(LocalDate.now());
     } catch (Exception e) {
-        e.printStackTrace();
         return false; // Return false if parsing fails
     }
 }
+    // Calculate Work Duration
+    private String calculateWorkduration(Date checkInTime, Date checkOutTime) {
+        if (isToday(date) && status) {
+            return "근무중"; // Currently working
+        }
+        
+        try {
+            // Ensure both dates are not null
+            if (checkInTime == null || checkOutTime == null) {
+                System.out.println("Error: One or both Date objects are null");
+                return null;  // Return null or handle the error appropriately
+            }
+            
+            // Calculate the duration in milliseconds
+            long durationMillis = checkOutTime.getTime() - checkInTime.getTime();
+                    
+            // Convert milliseconds to hours and minutes
+            long hours = durationMillis / (1000 * 60 * 60); // Convert milliseconds to hours
+            long minutes = (durationMillis % (1000 * 60 * 60)) / (1000 * 60); // Convert remaining milliseconds to minutes
+
+            // Format the duration in hh:mm format
+            String durationFormatted = String.format("%02d시간%02d분", hours, minutes);
+
+
+            return durationFormatted;
+                
+            
+        }catch (Exception e) {
+
+            return null; // Return null if parsing fails
+        }
+    }
     // Getters and Setters
-    public int getEmployeeId() {
-        return employeeId;
+    
+    public String getEmployeeOid() {
+        return employeeOid;
     }
 
     public String getDate() {
@@ -85,72 +118,15 @@ public class AttendanceHistory {
     public boolean isStatus() {
         return status;
     }
-    // Calculate Work Duration
-    public String getWorkDuration(Date checkInTime, Date checkOutTime) {
-        /*if (isToday(date) && status) {
-            return "근무중"; // Currently working
-        }
-            */
-        try {
-            // Ensure both dates are not null
-            if (checkInTime == null || checkOutTime == null) {
-                System.out.println("Error: One or both Date objects are null");
-                return null;  // Return null or handle the error appropriately
-            }
-            
-            // Check if date is today and status is true
-
-    
-            /* 
-            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-            LocalTime checkIn = LocalTime.parse(checkInTime, timeFormatter);
-            LocalTime checkOut = LocalTime.parse(checkOutTime, timeFormatter);
-            long durationMinutes = java.time.Duration.between(checkIn, checkOut).toMinutes();
-
-            long hours = TimeUnit.MINUTES.toHours(durationMinutes);
-            long minutes = durationMinutes % 60;
-            */
-            // Calculate the duration in milliseconds
-            long durationMillis = checkOutTime.getTime() - checkInTime.getTime();
-                    
-            // Convert milliseconds to hours and minutes
-            long hours = durationMillis / (1000 * 60 * 60); // Convert milliseconds to hours
-            long minutes = (durationMillis % (1000 * 60 * 60)) / (1000 * 60); // Convert remaining milliseconds to minutes
-
-            // Format the duration in hh:mm format
-            String durationFormatted = String.format("%02d시간%02d분", hours, minutes);
-
-
-            return durationFormatted;
-                
-            
-        }catch (Exception e) {
-            e.printStackTrace();
-            return null; // Return null if parsing fails
-        }
+    public String getWorkduration(){
+        return workduration;
     }
     public String getCheckInStatus() {
-        /* 
-        if ("lateArrival".equalsIgnoreCase(checkInStatus)) {
-            return "지각"; // Late
-        } else if ("onTimeArrival".equalsIgnoreCase(checkInStatus)) {
-            return "정상출근"; // On time
-        }
-        return checkInStatus; // Default to the original value if no match
-        */
+
         return Config.workTypeToTextMap.get(checkInStatus);
     }
     public String getCheckOutStatus() {
-        /* 
-        if ("earlyLeft".equalsIgnoreCase(checkOutStatus)) {
-            return "조기퇴근"; // Late
-        } else if ("onTimeLeft".equalsIgnoreCase(checkOutStatus)) {
-            return "정상퇴근"; // On time
-        } else if ("working".equalsIgnoreCase(checkOutStatus)) {
-            return "근무중"; // toggled on 
-        }
-        return checkInStatus; // Default to the original value if no match
-        */
+
         return Config.workTypeToTextMap.get(checkOutStatus);
     }
     public List<String> getWorkTypeList() {

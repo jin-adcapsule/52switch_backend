@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import com.adcapsule.server52switch.core.models.Employee;
 import com.adcapsule.server52switch.core.repositories.projection.Projection.DayoffInfoProjection;
@@ -13,7 +14,6 @@ import com.adcapsule.server52switch.core.repositories.projection.Projection.Grou
 import com.adcapsule.server52switch.core.repositories.projection.Projection.IdProjection;
 import com.adcapsule.server52switch.core.repositories.projection.Projection.LocationIdProjection;
 import com.adcapsule.server52switch.core.repositories.projection.Projection.NameProjection;
-import org.springframework.stereotype.Repository;
 @Repository
 public interface EmployeeRepository extends MongoRepository<Employee, String> {
     Optional<Employee> findByEmployeeId(int employeeId);
@@ -22,11 +22,11 @@ public interface EmployeeRepository extends MongoRepository<Employee, String> {
         // Finds only the employeeId by _id
     @Query(value = "{ '_id': ?0 }", fields = "{ 'employeeId': 1, '_id': 0 }")
     Optional<Employee> findEmployeeIdById(String objectId);
-    @Query(value = "{ 'employeeId': ?0 }", fields = "{'groupId': 1, '_id': 0 }")
-    GroupIdProjection findGroupIdByEmployeeId(int employeeId);
+    @Query(value = "{ '_id': ?0 }", fields = "{'groupId': 1, '_id': 0 }")
+    GroupIdProjection findGroupIdByEmployeeOid(String employeeOid);
     @Query(value = "{ '_id': ?0 }", fields = "{'groupId': 1, '_id': 0 }")
     GroupIdProjection findGroupIdById(String employeeOid);
-    @Query(value = "{ '_id': ?0 }", fields = "{'groupId': 1,'dayoffRemaining':1, '_id': 0 }")
+    @Query(value = "{ '_id': ?0 }", fields = "{'groupId': 1,'dayoffPerYear':1, '_id': 0 }")
     Optional<DayoffInfoProjection> findDayoffInfoById(String employeeOid);
     @Query(value = "{ '_id': ?0 }", fields = "{'locationId': 1, '_id': 0 }")
     LocationIdProjection findLocationIdById(String employeeOid);

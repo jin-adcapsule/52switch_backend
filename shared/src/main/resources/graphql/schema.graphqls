@@ -1,5 +1,5 @@
 type Employee {
-    _id: ID
+    #_id: ID
     employeeId: Int
     name: String
     email: String
@@ -7,10 +7,10 @@ type Employee {
     phone: String
     joindate: String
 
-    department: ID # groupId for parent department
-    teamId: ID # groupId for group allocated as members
+    #groupId: ID # groupId
+    department: String
     supervisorName: String
-    supervisorId: Int
+    supervisorOid: String
     isSupervisor: Boolean
 
     locationId: ID
@@ -20,33 +20,47 @@ type Employee {
     workhourOff: String
     workhourHalf: String
 
-    dayoffRemaining: Int
+    dayoffPerYear: Int
 }
 
 type Group {
     groupName: String
-    groupSupervisorRole: String
-    groupSupervisorEid: Int
+    groupSupervisorOid: String
     subgroup: [ID] 
     parentGroup: ID 
 }
 
 type Attendance {
-    employeeId: Int
+    employeeOid: String
     date: String
     checkInTime: String
     checkOutTime: String
     location: String
     status: Boolean
-    remarks: String
     checkInStatus: String
     checkOutStatus: String
-    workduration: String
     workTypeList: [String!]
 }
 
+type Location {
+    workplace: String
+    workhourOn: String
+    workhourOff: String
+    workhourHalf: String
+}
+type Dayoff {
+    dayoffType: String!
+    requestComment: String
+    dayoffDate: String!
+    requestStatus: String
+    requestDate: String
+    supervisorOid: String
+    requestKey: String
+}
+
+
 type AttendanceHistory {
-    employeeId: Int
+    employeeOid: String
     date: String
     checkInTime: String
     checkOutTime: String
@@ -54,24 +68,7 @@ type AttendanceHistory {
     checkInStatus: String
     checkOutStatus: String
     workTypeList: [String!]
-}
-type Location {
-    workplace: String
-    workhourOn: String
-    workhourOff: String
-}
-type Dayoff {
-
-    dayoffType: String!
-    requestComment: String
-    dayoffDate: String!
-    requestStatus: String
-    requestDate: String
-    supervisorId: Int
-    supervisorName: String
-    requestKey: String
-    
-
+    workduration: String
 }
 type DayoffHistory {
 
@@ -80,27 +77,26 @@ type DayoffHistory {
     dayoffDateText: String!
     requestStatus: String
     requestDate: String
-    supervisorId: Int
-    supervisorName: String
+    supervisorOid: String
     requestKey: String
 
 }
-type EmployeeValidationResult {
-    objectId: String!
+type EmployeeValDTO {
+    employeeOid: String!
     employeeName: String!
     isSupervisor: Boolean!
-    currently_marked: Boolean!
+    currentlyMarked: Boolean!
 
 }
 type AttendanceStatusDTO {
     status: Boolean!
 }
 type RequestDTO {
-    employeeId: Int!
+    employeeOid: String
     employeeName: String!
     requestType: String!
     requestStatus: String!
-    supervisorId: Int!
+    supervisorOid: String!
     requestKey: String!
 
     requestDate: String!
@@ -110,12 +106,7 @@ type RequestDTO {
     dayoffType: String
     
 }
-type Answer {
-    objectId: String!
-    requestStatus: String!
-    answerComment: String!
-    requestKey: String!
-}
+
 type LocationInfoDTO {
     workplace: String!
     workhourOn: String!
@@ -125,37 +116,37 @@ type LocationInfoDTO {
 type DayoffInfoDTO {
     supervisorName: String!
     supervisorOid: String!
-    dayoffRemaining: Int!
+    dayoffPerYear: Int!
 }
 type GroupMembersDTO {
   groupName: String!
   members: [Employee!]!
 }
 type Query {
-    validateUidAndPhone(uid: String!, phone: String!): EmployeeValidationResult
+    validateUidAndPhone(uid: String!, phone: String!): EmployeeValDTO
     getObjectIdByPhone(phone: String!): Employee
     
-    getAttendanceStatus(objectId: String!): AttendanceStatusDTO
-    getEmployeeDayoff(objectId: String!,startDate: String!, endDate: String!,requestStatusList: [String!]): [DayoffHistory]
+    getAttendanceStatus(employeeOid: String!): AttendanceStatusDTO
+    getEmployeeDayoff(employeeOid: String!,startDate: String!, endDate: String!,requestStatusList: [String!]): [DayoffHistory]
     
 
-    getPendingRequests(objectId:String!): [RequestDTO]
-    getRequestHistory(objectId: String!, startDate: String!, endDate: String!, requestStatusList: [String!]): [RequestDTO]
+    getPendingRequests(employeeOid:String!): [RequestDTO]
+    getRequestHistory(employeeOid: String!, startDate: String!, endDate: String!, requestStatusList: [String!]): [RequestDTO]
     
-    getEmployeeInfo(objectId: String!): Employee
+    getEmployeeInfo(employeeOid: String!): Employee
     getLocationInfo(employeeOid: String!): LocationInfoDTO
     getDayoffInfo(employeeOid: String!): DayoffInfoDTO
-    getEmployeeAttendance(objectId: String!,startDate: String!, endDate: String!, workTypeList:[String!]): [AttendanceHistory]
+    getEmployeeAttendance(employeeOid: String!,startDate: String!, endDate: String!, workTypeList:[String!]): [AttendanceHistory]
     
     getMyAllGroupsMembers(employeeOid: String!): [Employee]
 }
 type Mutation {
-    markAttendance(objectId: String!, status: Boolean!): AttendanceStatusDTO
-    requestDayoff(objectId: String!, dateList: [String!], dayoffType: String!, requestComment: String!,beforeDateRemaining:Int!):[String!]
-    answerRequest(objectId: String!, requestStatus: String!, answerComment: String!, requestKey: String!):Boolean
-    saveFCMToken(objectId: String!, fcmToken: String!):Boolean
+    markAttendance(employeeOid: String!, status: Boolean!): AttendanceStatusDTO
+    requestDayoff(employeeOid: String!, dateList: [String!], dayoffType: String!, requestComment: String!,beforeDateRemaining:Int!):[String!]
+    answerRequest(employeeOid: String!, requestStatus: String!, answerComment: String!, requestKey: String!):Boolean
+    saveFCMToken(employeeOid: String!, fcmToken: String!):Boolean
 
     sendNotification(token: String!, title: String!, message:String!): String
-    sendNotificationToSupervisor( objectId: String!, title: String!, message:String!): String
+    sendNotificationToSupervisor( employeeOid: String!, title: String!, message:String!): String
     sendNotificationToEmployeeId(employeeId: Int!,  title: String!,  message: String!): String
 }

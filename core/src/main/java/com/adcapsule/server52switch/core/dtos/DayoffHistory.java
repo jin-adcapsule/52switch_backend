@@ -9,36 +9,36 @@ import com.adcapsule.server52switch.core.configs.DateUtils;
 
 
 public class DayoffHistory {
-    private int employeeId;
-    private String dayoffType;
-    private String requestComment;
-    private String dayoffDate;
-    private String requestStatus;
-    private String requestDate;
-    private String dayoffDateText;
-    private String requestKey;
-    private int supervisorId;
-    private int beforeDateRemaining;
-    private List<String> dayoffDates;
-
-    public DayoffHistory(
-        int employeeId,
-        String requestDate,
-        List<String> dayoffDates,
-        String dayoffType,
-        String requestKey,
-        String requestStatus,
-        int supervisorId,
-        String requestComment
-        ) {
-        this.employeeId = employeeId;
-        this.requestDate = formatDate(requestDate);
-        this.dayoffDates= dayoffDates;
-        this.dayoffDateText = getDayoffDateListToText(dayoffDates);
+    private final String employeeOid;
+    private final String dayoffType;
+    private final String requestComment;
+    private final String requestStatus;
+    private final String requestDate;
+    private final String requestKey;
+    private final String supervisorOid;
+    private final List<String> dayoffDates;
+    private final String dayoffDateText;
+    
+        public DayoffHistory(
+            String employeeOid,
+            String requestDate,
+            List<String> dayoffDates,
+            String dayoffType,
+            String requestKey,
+            String requestStatus,
+            String supervisorOid,
+            String requestComment
+            ) {
+            //this.employeeId = employeeId;
+            this.employeeOid = employeeOid;
+            this.requestDate = formatDate(requestDate);
+            this.dayoffDates= dayoffDates;
+            this.dayoffDateText = getDayoffDateListToText(dayoffDates);
         this.dayoffType = dayoffType;
         this.requestKey = requestKey;
-        this.supervisorId = supervisorId;
+        //this.supervisorId = supervisorId;
         this.requestStatus = requestStatus;
+        this.supervisorOid = supervisorOid;
         this.requestComment= requestComment;
 
     }
@@ -87,10 +87,10 @@ public class DayoffHistory {
     }
     
     // Getters and Setters
-    public int getEmployeeId() {
-        return employeeId;
-    }
 
+    public String getEmployeeOid() {
+        return employeeOid;
+    }
     public List<String> getDayoffDates() {
         return dayoffDates;
     }
@@ -112,9 +112,11 @@ public class DayoffHistory {
     public String getRequestKey() {
         return requestKey;
     }
-    public int getSupervisorId() {
-        return supervisorId;
-    }
-   
 
+    public String getSupervisorOid() {
+        return supervisorOid;
+    }
+    public String getDayoffDateText() {
+        return dayoffDateText;
+    }
 }

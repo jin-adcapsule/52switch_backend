@@ -19,8 +19,8 @@ public class EmployeeResolver {
     @Autowired
     private EmployeeService employeeService;
     @QueryMapping
-    public Employee getEmployeeInfo(@Argument String objectId) {
-        return employeeService.getEmployeeById(objectId);
+    public Employee getEmployeeInfo(@Argument String employeeOid) {
+        return employeeService.getEmployeeById(employeeOid);
     }
 
     @QueryMapping
@@ -37,8 +37,8 @@ public class EmployeeResolver {
         return employeeService.getWorkplaceByEmployeeId(employeeId);
     }
     @QueryMapping
-    public Map<String, Object> getLocationAndWorkDetailsByEmployeeId(@Argument int employeeId) {
-        return employeeService.getLocationAndWorkDetailsByEmployeeId(employeeId);
+    public LocationInfoDTO getLocationAndWorkDetailsByEmployeeOid(@Argument String employeeOid) {
+        return employeeService.getLocationAndWorkDetailsByEmployeeOid(employeeOid);
     }
     @QueryMapping
     public LocationInfoDTO getLocationInfo(@Argument String employeeOid) {

@@ -19,8 +19,8 @@ public class NotificationResolver {
         return "Notification sent successfully";
     }
     @MutationMapping
-    public String sendNotificationToSupervisor(@Argument String objectId, @Argument String title, @Argument String message) {
-        notificationService.sendNotificationToSupervisor(objectId, title, message);
+    public String sendNotificationToSupervisor(@Argument String employeeOid, @Argument String title, @Argument String message) {
+        notificationService.sendNotificationToSupervisor(employeeOid, title, message);
         return "Notification sent successfully";
     }
     @MutationMapping

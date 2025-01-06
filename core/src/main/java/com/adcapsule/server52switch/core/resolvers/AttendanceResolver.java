@@ -35,7 +35,7 @@ public class AttendanceResolver {
     // Query to fetch employee attendance
     @QueryMapping
     public List<AttendanceHistory> getEmployeeAttendance(
-        @Argument String objectId,
+        @Argument String employeeOid,
         @Argument String startDate,
         @Argument String endDate,
         @Argument List<String> workTypeList
@@ -48,7 +48,7 @@ public class AttendanceResolver {
         System.out.println("valueWorkType:");
         System.out.println(workTypeList_value);
         // Delegate the logic to the service
-        return attendanceService.getEmployeeAttendance(objectId, startDate, endDate, workTypeList_value);
+        return attendanceService.getEmployeeAttendance(employeeOid, startDate, endDate, workTypeList_value);
     }
     /* 
     @PostConstruct
@@ -59,9 +59,9 @@ public class AttendanceResolver {
     }
         */
     @MutationMapping
-    public AttendanceStatusDTO markAttendance(@Argument String objectId, @Argument boolean status) {
-        if (objectId == null || objectId.isEmpty()) {
-            throw new IllegalArgumentException("objectId cannot be null or empty");
+    public AttendanceStatusDTO markAttendance(@Argument String employeeOid, @Argument boolean status) {
+        if (employeeOid == null || employeeOid.isEmpty()) {
+            throw new IllegalArgumentException("employeeOid cannot be null or empty");
         }
         try {
              // Capture the current server time as an Instant
@@ -69,7 +69,7 @@ public class AttendanceResolver {
             // Convert Instant to Date for compatibility with existing methods
             Date serverReceivedDate = Date.from(serverReceivedTime);
             // Call the service method and return the result
-            AttendanceStatusDTO attendanceStatusDTO = attendanceService.createOrUpdateAttendance(objectId, serverReceivedDate, status);
+            AttendanceStatusDTO attendanceStatusDTO = attendanceService.createOrUpdateAttendance(employeeOid, serverReceivedDate, status);
             return attendanceStatusDTO;
         } catch (ParseException e) {
             throw new RuntimeException("error while markAttendance resolver");
@@ -78,11 +78,11 @@ public class AttendanceResolver {
 
    
     @QueryMapping
-    public AttendanceStatusDTO getAttendanceStatus(@Argument String objectId){
-        if (objectId == null || objectId.isEmpty()) {
-            throw new IllegalArgumentException("objectId cannot be null or empty");
+    public AttendanceStatusDTO getAttendanceStatus(@Argument String employeeOid){
+        if (employeeOid == null || employeeOid.isEmpty()) {
+            throw new IllegalArgumentException("employeeOid cannot be null or empty");
         }
-        AttendanceStatusDTO attendanceStatusDTO = attendanceService.getAttendanceStatus(objectId);
+        AttendanceStatusDTO attendanceStatusDTO = attendanceService.getAttendanceStatus(employeeOid);
         return attendanceStatusDTO;
     }
 }

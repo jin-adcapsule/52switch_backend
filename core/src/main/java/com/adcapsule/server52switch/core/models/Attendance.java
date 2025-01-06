@@ -13,15 +13,12 @@ public class Attendance {
     @Id
     private String _id; // This represents the MongoDB `_id` field
     private String employeeOid;
-    //fed fields from markattendance by pushing button
-    private int employeeId;
-    private Boolean status; // 1 for present 0 for out of office
+    private Boolean status;
     //time is checktime 
 
 
     //current date
     private String date; // format 'yyyy-mm-dd'
-    // Convert Date to Date
     private Date checkInTime; 
     private Date checkOutTime;
     private String checkInStatus;
@@ -39,13 +36,6 @@ public class Attendance {
 
     public void setEmployeeOid(String employeeOid) {
         this.employeeOid = employeeOid;
-    }
-    public int  getEmployeeId() {
-        return employeeId;
-    }
-
-    public void setEmployeeId(int employeeId) {
-        this.employeeId = employeeId;
     }
 
     public String getDate() {

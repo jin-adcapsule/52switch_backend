@@ -8,5 +8,14 @@ if (-Not (Test-Path "runner/.env")) {
 } else {
     Write-Host "runner/.env already exists."
 }
+# Check if Firebase key exists
+$firebaseKeyPath = "shared/module/src/main/resources/firebase/52switch_firebase_key.json"
+if (-Not (Test-Path $env:GOOGLE_APPLICATION_CREDENTIALS)) {
+    Write-Host "Firebase key not found. Running flutterfire configure..."
+    # Replace 'switch-cf287' with your actual Firebase project ID
+    flutterfire configure --project=switch-cf287
+} else {
+    Write-Host "Firebase key already exists at $env:GOOGLE_APPLICATION_CREDENTIALS"
+}
 # Run the Spring Boot application
 mvn -f runner/pom.xml spring-boot:run

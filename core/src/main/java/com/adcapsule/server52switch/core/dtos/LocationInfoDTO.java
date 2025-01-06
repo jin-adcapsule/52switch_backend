@@ -3,10 +3,10 @@ package com.adcapsule.server52switch.core.dtos;
 
 
 public class LocationInfoDTO {
-    private String workhourOn;
-    private String workhourOff;
-    private String workhourHalf;
-    private String workplace;
+    private final String workhourOn;
+    private final String workhourOff;
+    private final String workhourHalf;
+    private final String workplace;
 
     // Constructor
     public LocationInfoDTO(
@@ -19,7 +19,19 @@ public class LocationInfoDTO {
             this.workhourOff = workhourOff;
             this.workhourHalf = workhourHalf;
     }
-
+    public String getTimebyKey(String key){
+        if ("workhourOn".equals(key)) {
+            return workhourOn;
+        }
+        if ("workhourHalf".equals(key)) {
+            return workhourHalf;
+        }
+        if ("workhourOff".equals(key)) {
+            return workhourOff;
+        }
+        return null;  //
+    }
+    
     // Getter
     public String getWorkplace() {
         return workplace;

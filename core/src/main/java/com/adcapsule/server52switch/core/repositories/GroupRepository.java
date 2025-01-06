@@ -4,18 +4,16 @@ import java.util.List;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import com.adcapsule.server52switch.core.models.Group;
 import com.adcapsule.server52switch.core.repositories.projection.Projection.IdProjection;
-import org.springframework.stereotype.Repository;
 @Repository
 public interface GroupRepository extends MongoRepository<Group, String> {
     List<Group> findByGroupSupervisorOid(String supervisorOid);
     // Check if an employee is a supervisor of any group
-    boolean existsByGroupSupervisorEid(int employeeId);
+    boolean existsByGroupSupervisorOid(String employeeOid);
     // Custom query to find group by supervisorid
-    @Query(value = "{ 'groupSupervisorEid': ?0 }", fields = "{ '_id': 1 }")
-    List<IdProjection> findGroupIdListBySupervisorId(int supervisorId);
     @Query(value = "{ 'groupSupervisorOid': ?0 }", fields = "{ '_id': 1 }")
     List<IdProjection> findGroupIdListBySupervisorOid(String supervisorOid);
     // Custom query to find group by supervisorid

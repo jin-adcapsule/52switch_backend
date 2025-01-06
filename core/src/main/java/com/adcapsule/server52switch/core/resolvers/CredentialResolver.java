@@ -15,8 +15,8 @@ public class CredentialResolver {
 
 
     @MutationMapping
-    public Boolean  saveFCMToken(@Argument String objectId, @Argument String fcmToken) {
-        return credentialService.saveFCMToken(objectId, fcmToken);
+    public Boolean  saveFCMToken(@Argument String employeeOid, @Argument String fcmToken) {
+        return credentialService.saveFCMToken(employeeOid, fcmToken);
     }
     
 }

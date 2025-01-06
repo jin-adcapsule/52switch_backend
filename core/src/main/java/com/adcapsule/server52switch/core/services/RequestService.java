@@ -23,12 +23,12 @@ public class RequestService {
 
 
     //hard coded
-    public List<Map<String,String>> getRequestByTodayAndApprovedStatus(int employeeId){
+    public List<Map<String,String>> getRequestByTodayAndApprovedStatus(String employeeOid){
 
         String currentDateInKST = Config.getCurrentDate_String();
         String statusApproved = Config.requestStatusToTextMap.get("approved");
         // Fetch dayoff records based on filters
-        List<String> dayoffTypes = dayoffService.findDayoffTypeByEmployeeIdAndRequestStatusAndDate(employeeId, statusApproved, currentDateInKST);    
+        List<String> dayoffTypes = dayoffService.findDayoffTypeByEmployeeOidAndRequestStatusAndDate(employeeOid, statusApproved, currentDateInKST);    
         
         List<Map<String,String>> dayoffKeyMapList = Config.getWorkTypeAndWorkTimeToday(dayoffTypes);//workhourStart,workhourEnd,key as dayoffTypeValue
         return dayoffKeyMapList ;

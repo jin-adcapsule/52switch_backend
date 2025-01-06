@@ -68,8 +68,8 @@ public class SupervisorService {
             dayoffRepository.saveAll(dayoffList);
 
             return true; // Successfully updated and saved
-            }catch (Exception e) {
-                e.printStackTrace(); // Log the exception for debugging
+            }catch (Exception e) { // Log the exception for debugging
+            // Log the exception for debugging
                 return false;
             }
         }
@@ -94,8 +94,9 @@ public class SupervisorService {
         String pendingStatusText
         ) {
         try {
-            int employeeId = employeeService.getEmployeeIdById(_id);
-            List<Dayoff> dayoffs = dayoffRepository.findBySupervisorIdAndRequestStatus(employeeId, pendingStatusText);
+            String employeeOid = _id;
+            //int employeeId = employeeService.getEmployeeIdById(_id);
+            List<Dayoff> dayoffs = dayoffRepository.findBySupervisorOidAndRequestStatus(employeeOid, pendingStatusText);
             //Group Dayoff Requests
             Map<String, List<Dayoff>> dayoffGrouped = dayoffs.stream()
                 .collect(Collectors.groupingBy(Dayoff::getRequestKey));
@@ -110,16 +111,16 @@ public class SupervisorService {
                         .collect(Collectors.toList());
                     // Get employee name dynamically using employeeService
                         String employeeName = employeeService
-                        .getEmployeeMiniByEmployeeId(groupedDayoffs.get(0).getEmployeeId())
+                        .getEmployeeMiniByEmployeeOid(groupedDayoffs.get(0).getEmployeeOid())
                         .get("name")
                         .toString();
                     // Combine data from the grouped sublist to create a single DTO
                     RequestDTO requestDTO= new RequestDTO(
-                        groupedDayoffs.get(0).getEmployeeId(),   // Assuming all in group have same employeeId
+                        groupedDayoffs.get(0).getEmployeeOid(),   // Assuming all in group have same employeeId
                         employeeName,
                         "Dayoff",
                         groupedDayoffs.get(0).getRequestStatus(), // Assuming all in group have the same requestStatus
-                        groupedDayoffs.get(0).getSupervisorId(), // Assuming same supervisorId for all
+                        groupedDayoffs.get(0).getSupervisorOid(), // Assuming same supervisorId for all
                         requestKey,                             // Use the requestKey for the group
                         groupedDayoffs.get(0).getRequestDate(), // Take requestDate from the first element
                         groupedDayoffs.get(0).getRequestComment()
@@ -232,11 +233,11 @@ public class SupervisorService {
         List<String> requestStatusList
         ) {
         try {
-            int employeeId = employeeService.getEmployeeIdById(_id);
-
-            List<Integer> memberEidList=employeeService.findGroupMembersBySupervisorId(employeeId); // getting member eid list 
-            System.out.println(memberEidList);
-            List<Dayoff> dayoffs = dayoffRepository.findByEmployeeIdInAndRequestStatusAndRequestDateBetweenInclusive(memberEidList, requestStatusList,startDate,endDate);
+            //int employeeId = employeeService.getEmployeeIdById(_id);
+            String employeeOid = _id;
+            List<String> memberOidList=employeeService.findGroupMembersBySupervisorOid(employeeOid); // getting member eid list 
+            System.out.println(memberOidList);
+            List<Dayoff> dayoffs = dayoffRepository.findByEmployeeOidInAndRequestStatusAndRequestDateBetweenInclusive(memberOidList, requestStatusList,startDate,endDate);
             //Group Dayoff Requests
             Map<String, List<Dayoff>> dayoffGrouped = dayoffs.stream()
                 .collect(Collectors.groupingBy(Dayoff::getRequestKey));
@@ -251,16 +252,16 @@ public class SupervisorService {
                         .collect(Collectors.toList());
                     // Get employee name dynamically using employeeService
                         String employeeName = employeeService
-                        .getEmployeeMiniByEmployeeId(groupedDayoffs.get(0).getEmployeeId())
+                        .getEmployeeMiniByEmployeeOid(groupedDayoffs.get(0).getEmployeeOid())
                         .get("name")
                         .toString();
                     // Combine data from the grouped sublist to create a single DTO
                     RequestDTO requestDTO= new RequestDTO(
-                        groupedDayoffs.get(0).getEmployeeId(),   // Assuming all in group have same employeeId
+                        groupedDayoffs.get(0).getEmployeeOid(),   // Assuming all in group have same employeeId
                         employeeName,
                         "Dayoff",
                         groupedDayoffs.get(0).getRequestStatus(), // Assuming all in group have the same requestStatus
-                        groupedDayoffs.get(0).getSupervisorId(), // Assuming same supervisorId for all
+                        groupedDayoffs.get(0).getSupervisorOid(), // Assuming same supervisorId for all
                         requestKey,                             // Use the requestKey for the group
                         groupedDayoffs.get(0).getRequestDate(), // Take requestDate from the first element
                         groupedDayoffs.get(0).getRequestComment()
@@ -280,8 +281,8 @@ public class SupervisorService {
             return allRequests.stream()
                     .sorted(Comparator.comparing(RequestDTO::getRequestDate))
                     .collect(Collectors.toList());
-        } catch (Exception e) {
-            e.printStackTrace(); // Log the full stack trace for debugging
+        } catch (Exception e) { // Log the full stack trace for debugging
+            // Log the full stack trace for debugging
         throw new RuntimeException("ERROR WITH getRequestHistory: " + e.getMessage(), e);
         }
     }

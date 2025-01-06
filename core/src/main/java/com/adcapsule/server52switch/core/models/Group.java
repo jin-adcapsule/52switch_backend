@@ -11,8 +11,6 @@ public class Group {
     private String _id; // This represents the MongoDB `_id` field
 
     private String groupName;
-    private String groupSupervisorRole;
-    private int groupSupervisorEid;
     private String groupSupervisorOid;
     private List<String> subGroup;
     private String parentGroup; 
@@ -30,21 +28,8 @@ public class Group {
         this.groupName = groupName;
     }
 
-    public String getGroupSupervisorRole() {
-        return groupSupervisorRole;
-    }
 
-    public void setGroupSupervisorRole(String groupSupervisorRole) {
-        this.groupSupervisorRole = groupSupervisorRole;
-    }
 
-    public int getGroupSupervisorEid() {
-        return groupSupervisorEid;
-    }
-
-    public void setGroupSupervisorEid(int groupSupervisorEid) {
-        this.groupSupervisorEid = groupSupervisorEid;
-    }
     public String getGroupSupervisorOid() {
         return groupSupervisorOid;
     }

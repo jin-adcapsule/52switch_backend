@@ -1,12 +1,11 @@
 package com.adcapsule.server52switch.core.services;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.adcapsule.server52switch.core.dtos.EmployeeValDTO;
 import com.adcapsule.server52switch.core.models.Attendance;
 import com.adcapsule.server52switch.core.models.Employee;
 import com.adcapsule.server52switch.core.repositories.AttendanceRepository;
@@ -14,7 +13,8 @@ import com.adcapsule.server52switch.core.repositories.EmployeeRepository;
 import com.adcapsule.server52switch.core.repositories.GroupRepository;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.UserRecord;////firebase
+import com.google.firebase.auth.UserRecord;
+////firebase
 
 @Service
 public class AuthentificationService {
@@ -22,58 +22,51 @@ public class AuthentificationService {
     private final EmployeeRepository employeeRepository;
     private final AttendanceRepository attendanceRepository;
     private final GroupRepository groupRepository;
-    private final CredentialService credentialService;
+
     @Autowired
-    public AuthentificationService(EmployeeRepository employeeRepository, AttendanceRepository attendanceRepository, GroupRepository groupRepository,CredentialService credentialService) {
+    public AuthentificationService(EmployeeRepository employeeRepository, AttendanceRepository attendanceRepository, GroupRepository groupRepository) {
         this.employeeRepository = employeeRepository;
         this.attendanceRepository =  attendanceRepository;
         this.groupRepository =  groupRepository;
-        this.credentialService = credentialService;
 
     }
     
 
-    public Map<String, Object> validateUidAndPhone(String uid, String phone) {
+    public EmployeeValDTO validateUidAndPhone(String uid, String phone) {
         try {
-            //System.out.println("FIREBASE_AUTH_EMULATOR_HOST: " + System.getenv ("FIREBASE_AUTH_EMULATOR_HOST"));
-
             // Retrieve user record from Firebase by UID
             UserRecord userRecord = getUserWithRetry(uid, 5, 500); // Retry 5 times with 500ms delay//UserRecord userRecord = FirebaseAuth.getInstance().getUser(uid);
-            //System.out.println("uid_found:");
-            //System.out.println(uid);
-            //System.out.println(userRecord);
             // Extract phone number from user record
             String firebasePhone = userRecord.getPhoneNumber();
+            if(firebasePhone ==null){
+                throw new IllegalArgumentException("Phonenumber is null");
+            }
             String formattedPhone = firebasePhone.startsWith("+82") ? "0" + firebasePhone.substring(3) : firebasePhone;
             // Check if phone number matches
             if (formattedPhone == null || !formattedPhone.equals(phone)) {
-                //System.out.println(firebasePhone);
-                //System.out.println(phone);
                 throw new IllegalArgumentException("UID and phone number do not match.");
             }
 
             // Retrieve employee data from your database
             Employee employee = employeeRepository.findByPhone(phone)
                 .orElseThrow(() -> new IllegalArgumentException("Phone number not found in the database."));
-            // Check if there is today's attendance with status true
+            String employeeOid = employee.getId();
+            String employeeName = employee.getName();
             LocalDate today = LocalDate.now();
-            boolean isCurrentlyMarked = attendanceRepository.findByEmployeeIdAndDate(employee.getEmployeeId(), today.toString())
+            boolean isCurrentlyMarked = attendanceRepository.findByEmployeeOidAndDate(employeeOid, today.toString())
                     .map(Attendance::getStatus)
                     .orElse(false);
             //check employee is allocated as group leader
-            Boolean isSupervisor = groupRepository.existsByGroupSupervisorEid(employee.getEmployeeId());   
+            Boolean isSupervisor = groupRepository.existsByGroupSupervisorOid(employeeOid);   
             // update fcmToken
-
-            // Return employee details
-            Map<String, Object> response = new HashMap<>();
-            response.put("objectId", employee.getId());
-            response.put("employeeName", employee.getName());
-            
-            response.put("isSupervisor", isSupervisor);
-            response.put("currently_marked", isCurrentlyMarked);
-            
-            return response;
-        } catch (Exception e) {
+            // Map Attendance to AttendanceHistory DTO
+            return new EmployeeValDTO(
+                    employeeOid,
+                    employeeName,
+                    isCurrentlyMarked,
+                    isSupervisor
+                );
+        } catch (IllegalArgumentException e) {
             throw new RuntimeException("Error validating UID and phone number: " + e.getMessage());
         }
     
@@ -85,7 +78,6 @@ public class AuthentificationService {
                 return FirebaseAuth.getInstance().getUser(uid);
             } catch (FirebaseAuthException e) {
                 attempts++;
-                System.out.println("Attempt " + attempts + " to fetch UID failed: " + e.getMessage());
                 if (attempts >= maxRetries) {
                     throw new RuntimeException("Failed to retrieve user after " + maxRetries + " attempts.");
                 }

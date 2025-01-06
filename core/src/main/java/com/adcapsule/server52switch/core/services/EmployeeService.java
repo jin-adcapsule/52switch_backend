@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,8 +48,8 @@ public class EmployeeService {
                       .map(EmployeeIdProjection::getEmployeeId)
                       .collect(Collectors.toList());
     }
-    public String findGroupIdbyEmployeeId(int employeeId){
-        GroupIdProjection groupIdProjection = employeeRepository.findGroupIdByEmployeeId(employeeId);
+    public String findGroupIdbyEmployeOid(String employeeOid){
+        GroupIdProjection groupIdProjection = employeeRepository.findGroupIdByEmployeeOid(employeeOid);
         return groupIdProjection != null ? groupIdProjection.getGroupId() : null; // Return groupId or null if not found
     }
 /**
@@ -66,13 +65,6 @@ public class EmployeeService {
      * @return The Employee object with all resolved fields.
      */
     public Employee getEmployeeById(String objectId) {
-        // Convert String to ObjectId
-        ObjectId _id;
-        try {
-            _id = new ObjectId(objectId); // Convert String to ObjectId
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Invalid ObjectId format: " + objectId);
-        }
         Employee employee = employeeRepository.findById(objectId)
             .orElseThrow(() -> new RuntimeException("Employee not found with Id"));
         
@@ -94,35 +86,39 @@ public class EmployeeService {
     private void resolveGroupInfo(Employee employee) {
         // Find the group where this employee is a member
         Group group = groupService.getGroupById(employee.getGroupId());
-        int groupSupervisorEid = group.getGroupSupervisorEid();
+        //int groupSupervisorEid = group.getGroupSupervisorEid();
+        String groupSupervisorOid = group.getGroupSupervisorOid();
         String groupName = group.getGroupName();
-        
-        // Set the supervisor field using groupSupervisorEid
-        if (groupSupervisorEid == employee.getEmployeeId()) {
+        String employeeOid = employee.getId();
+        // Set the supervisor field using groupSupervisorOid
+        if (groupSupervisorOid == null ? employeeOid == null : groupSupervisorOid.equals(employeeOid)) {
             // Employee is their own supervisor
             employee.setSupervisorName(employee.getName());
             employee.setDepartment(groupName);
-            //employee.setSupervisorId(groupSupervisorEid); // Set the employee's own ID
+            employee.setSupervisorOid(groupSupervisorOid); // Set the employee's own ID
+            employee.setIsSupervisor(groupService.existsByGroupSupervisorOid(employeeOid)); 
         } else {
             // Fetch supervisor info by groupSupervisorEid
-            Employee supervisor = employeeRepository.findByEmployeeId(groupSupervisorEid)
-                .orElseThrow(() -> new RuntimeException("Supervisor not found with employeeId: " + groupSupervisorEid));
+            Employee supervisor = employeeRepository.findById(groupSupervisorOid)
+                .orElseThrow(() -> new RuntimeException("Supervisor not found with employeeOid: " + groupSupervisorOid));
             employee.setSupervisorName(supervisor.getName());
-            employee.setSupervisorId(groupSupervisorEid); // Set the supervisor's employee ID
+            employee.setSupervisorOid(groupSupervisorOid); // Set the supervisor's employee ID
             employee.setDepartment(groupName);
-            employee.setIsSupervisor(groupService.existsByGroupSupervisorEid(employee.getEmployeeId()));            // Set isSupervisor field
+            employee.setIsSupervisor(groupService.existsByGroupSupervisorOid(employeeOid));            // Set isSupervisor field
         }
     }
+    /* 
     public int getSupervisorEidbyEmployeeId(int employeeId) {
         // Find the group where this employee is a member
         int supervisorEid = findGroupSupervisorEidByEmployeeId(employeeId);
         return supervisorEid;
     }
+        */
     public String getSupervisorOidbyEmployeeOid(String objectId) {
-        int employeeId = getEmployeeIdById(objectId);
+        String employeeOid = objectId;
+        //int employeeId = getEmployeeIdById(objectId);
         // Find the group where this employee is a member
-        int supervisorEid = findGroupSupervisorEidByEmployeeId(employeeId);
-        String supervisorOid = getIdByEmployeeId(supervisorEid);
+        String supervisorOid = findGroupSupervisorOidByEmployeeOid(employeeOid);
         
         return supervisorOid;
     }
@@ -132,8 +128,8 @@ public class EmployeeService {
      * @param employeeId the employee ID to search for.
      * @return the group the employee belongs to, or null if not found.
      */
-    public Group findByEmployeeId(int employeeId) {
-        String groupId = findGroupIdbyEmployeeId(employeeId);
+    public Group findByEmployeeOid(String employeeOid) {
+        String groupId = findGroupIdbyEmployeOid(employeeOid);
         return groupService.getGroupById(groupId);
     }
      /**
@@ -151,26 +147,27 @@ public class EmployeeService {
      * @param employeeId the employee ID to search for.
      * @return the supervisor's employee ID if the employee belongs to a group, or null otherwise.
      */
-    public Integer findGroupSupervisorEidByEmployeeId(int employeeId) {
-        Group group = findByEmployeeId(employeeId);
-        return group != null ? group.getGroupSupervisorEid() : null;
+    public String findGroupSupervisorOidByEmployeeOid(String employeeOid) {
+
+        Group group = findByEmployeeOid(employeeOid);
+        return group != null ? group.getGroupSupervisorOid() : null;
     }
         /**
      * Find group members supervised by a specific supervisor ID.
      *
      * @param supervisorId the ID of the supervisor.
      * @return a list of group members under the supervisor.
-     */
-    public List<Integer> findGroupMembersBySupervisorId(int supervisorId) {
+   
+    public List<String> findGroupMembersBySupervisorOid(String supervisorOid) {
         // Fetch group IDs supervised by the given supervisor ID
-        List<String> groupIdList = groupService.findGroupIdListBySupervisorId(supervisorId);
+        List<String> groupIdList = groupService.findGroupIdListBySupervisorOid(supervisorOid);
         System.out.println("GroupIdList");
         System.out.println(groupIdList);
         
         // Initialize a list to store member IDs
-        List<Integer> memberIdList = new ArrayList<>();
+        List<String> memberIdList = new ArrayList<>();
         for (String groupId : groupIdList){
-            List<Integer> employeeIds = findEmployeeIdListbyGroupId(groupId);
+            List<String> employeeIds = findEmployeeOidListbyGroupId(groupId);
             System.out.println("employeeIds");
             System.out.println(employeeIds);
             memberIdList.addAll(employeeIds); // Add all fetched employee IDs to the member list
@@ -178,6 +175,7 @@ public class EmployeeService {
         
         return memberIdList;
     }
+          */
     /**
      * Resolve and set location-related information for an employee.
      *
@@ -213,7 +211,7 @@ public class EmployeeService {
      *
      * @param employeeId The unique identifier of the employee.
      * @return A map containing the workplace and workhourOn details.
-     */
+     
     public Map<String, Object> getLocationAndWorkDetailsByEmployeeId(int employeeId) {
         Employee employee = employeeRepository.findByEmployeeId(employeeId)
             .orElseThrow(() -> new RuntimeException("Employee not found with Id"));
@@ -231,7 +229,7 @@ public class EmployeeService {
         response.put("workhourHalf", workhourHalf);
         return response;
     }
-    
+    */
     public LocationInfoDTO getLocationAndWorkDetailsByEmployeeOid(String employeeOid) {
 
         LocationIdProjection locationIdProjection = employeeRepository.findLocationIdById(employeeOid);
@@ -250,17 +248,16 @@ public class EmployeeService {
 
         Optional<DayoffInfoProjection> optionalDayoffInfoProjection = employeeRepository.findDayoffInfoById(employeeOid);
         String groupId = optionalDayoffInfoProjection.map(DayoffInfoProjection::getGroupId).orElse(null);
-        int dayoffRemaining = optionalDayoffInfoProjection.map(DayoffInfoProjection::getDayoffRemaining).orElse(-1);
+        Integer dayoffPerYear = optionalDayoffInfoProjection.map(DayoffInfoProjection::getDayoffPerYear).orElse(-1);
         if(groupId == null){throw new RuntimeException("Group not found with Id");}
-        if(dayoffRemaining < 0){throw new RuntimeException("DayoffRemaining not found with Id");}
+        if(dayoffPerYear < 0){throw new RuntimeException("dayoffPerYear not found with Id");}
         Group group = groupService.getGroupById(groupId);
         String supervisorOid = group.getGroupSupervisorOid();
         Optional<NameProjection> optionalNameProjection = employeeRepository.findNameById(supervisorOid);
         String supervisorName = optionalNameProjection.map(NameProjection::getName).orElse(null);
         if(supervisorName == null){throw new RuntimeException("SupervisorName not found with Id");}
-        System.out.println(supervisorName);
-        System.out.println(supervisorOid);
-        return new DayoffInfoDTO(supervisorName,supervisorOid,dayoffRemaining);
+
+        return new DayoffInfoDTO(supervisorName,supervisorOid,dayoffPerYear);
 
     }
      /**
@@ -312,6 +309,17 @@ public class EmployeeService {
                 return miniEmployee;
             })
             .orElseThrow(() -> new RuntimeException("Employee not found with employeeId: " + employeeId));
+    }
+    public Map<String, Object> getEmployeeMiniByEmployeeOid(String employeeOid) {
+        return employeeRepository.findById(employeeOid)
+            .map(employee -> {
+                Map<String, Object> miniEmployee = new HashMap<>();
+                miniEmployee.put("employeeId", employee.getEmployeeId());
+                miniEmployee.put("name", employee.getName());
+                miniEmployee.put("department", employee.getDepartment());
+                return miniEmployee;
+            })
+            .orElseThrow(() -> new RuntimeException("Employee not found with employeeOid: " + employeeOid));
     }
 /**
      * Retrieve the employee ID using their unique ObjectId.
