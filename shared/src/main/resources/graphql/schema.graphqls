@@ -148,5 +148,5 @@ type Mutation {
 
     sendNotification(token: String!, title: String!, message:String!): String
     sendNotificationToSupervisor( employeeOid: String!, title: String!, message:String!): String
-    sendNotificationToEmployeeId(employeeId: Int!,  title: String!,  message: String!): String
+    sendNotificationToEmployeeOid(employeeOid: String!,  title: String!,  message: String!): String
 }

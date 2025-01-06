@@ -60,9 +60,7 @@ public class NotificationService {
             e.printStackTrace();
         }
     }
-    public void sendNotificationToEmployeeId(int employeeId, String title, String message) {
-        //get SupervisorOid
-        String employeeOid = employeeService.getEmployeeMiniByEmployeeId(employeeId).get("employeeOid").toString();
+    public void sendNotificationToEmployeeOid(String employeeOid, String title, String message) {
         //get token
         String employeeToken = credentialService.getFCMToken(employeeOid);
 

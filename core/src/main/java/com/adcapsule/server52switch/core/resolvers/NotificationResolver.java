@@ -24,8 +24,8 @@ public class NotificationResolver {
         return "Notification sent successfully";
     }
     @MutationMapping
-    public String sendNotificationToEmployeeId(@Argument int employeeId, @Argument String title, @Argument String message) {
-        notificationService.sendNotificationToEmployeeId(employeeId, title, message);
+    public String sendNotificationToEmployeeId(@Argument String employeeOid, @Argument String title, @Argument String message) {
+        notificationService.sendNotificationToEmployeeOid(employeeOid, title, message);
         return "Notification sent successfully";
     }
 }
