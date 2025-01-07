@@ -13,6 +13,8 @@ public interface GroupRepository extends MongoRepository<Group, String> {
     List<Group> findByGroupSupervisorOid(String supervisorOid);
     // Check if an employee is a supervisor of any group
     boolean existsByGroupSupervisorOid(String employeeOid);
+    @Query("{'groupSupervisorOid': ?0}")
+    long countByGroupSupervisorOid(String employeeOid);
     // Custom query to find group by supervisorid
     @Query(value = "{ 'groupSupervisorOid': ?0 }", fields = "{ '_id': 1 }")
     List<IdProjection> findGroupIdListBySupervisorOid(String supervisorOid);

@@ -10,7 +10,6 @@ import com.adcapsule.server52switch.core.models.Attendance;
 import com.adcapsule.server52switch.core.models.Employee;
 import com.adcapsule.server52switch.core.repositories.AttendanceRepository;
 import com.adcapsule.server52switch.core.repositories.EmployeeRepository;
-import com.adcapsule.server52switch.core.repositories.GroupRepository;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
@@ -21,13 +20,13 @@ public class AuthentificationService {
 
     private final EmployeeRepository employeeRepository;
     private final AttendanceRepository attendanceRepository;
-    private final GroupRepository groupRepository;
+    private final GroupService groupService;
 
     @Autowired
-    public AuthentificationService(EmployeeRepository employeeRepository, AttendanceRepository attendanceRepository, GroupRepository groupRepository) {
+    public AuthentificationService(EmployeeRepository employeeRepository, AttendanceRepository attendanceRepository, GroupService groupService) {
         this.employeeRepository = employeeRepository;
         this.attendanceRepository =  attendanceRepository;
-        this.groupRepository =  groupRepository;
+        this.groupService =  groupService;
 
     }
     
@@ -57,14 +56,15 @@ public class AuthentificationService {
                     .map(Attendance::getStatus)
                     .orElse(false);
             //check employee is allocated as group leader
-            Boolean isSupervisor = groupRepository.existsByGroupSupervisorOid(employeeOid);   
+            boolean isSupervisor = groupService.existsByGroupSupervisorOid(employeeOid);   
             // update fcmToken
             // Map Attendance to AttendanceHistory DTO
             return new EmployeeValDTO(
                     employeeOid,
                     employeeName,
-                    isCurrentlyMarked,
-                    isSupervisor
+                    isSupervisor,
+                    isCurrentlyMarked
+  
                 );
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Error validating UID and phone number: " + e.getMessage());

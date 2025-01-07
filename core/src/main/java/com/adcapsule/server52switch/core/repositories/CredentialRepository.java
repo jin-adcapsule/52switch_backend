@@ -7,9 +7,11 @@ import com.adcapsule.server52switch.core.models.Credential;
 import org.springframework.stereotype.Repository;
 @Repository
 public interface CredentialRepository extends MongoRepository<Credential, String> {
-    
-// Check if an employee is a supervisor of any group
+
 @Query(value = "{ 'employeeOid': ?0 }")
 Credential findbyEmployeeOid(String employeeOid);
+@Query(value = "{ 'fcmToken': ?0 }")
+Credential findByFcmToken(String fcmToken);
+
 
 }

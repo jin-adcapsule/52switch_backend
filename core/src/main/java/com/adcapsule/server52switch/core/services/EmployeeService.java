@@ -128,7 +128,7 @@ public class EmployeeService {
      * @param employeeId the employee ID to search for.
      * @return the group the employee belongs to, or null if not found.
      */
-    public Group findByEmployeeOid(String employeeOid) {
+    public Group findGroupByEmployeeOid(String employeeOid) {
         String groupId = findGroupIdbyEmployeOid(employeeOid);
         return groupService.getGroupById(groupId);
     }
@@ -149,7 +149,7 @@ public class EmployeeService {
      */
     public String findGroupSupervisorOidByEmployeeOid(String employeeOid) {
 
-        Group group = findByEmployeeOid(employeeOid);
+        Group group = findGroupByEmployeeOid(employeeOid);
         return group != null ? group.getGroupSupervisorOid() : null;
     }
         /**

@@ -45,7 +45,7 @@ public class SupervisorService {
      * @return true if the update is successful, false otherwise.
      */
     public Boolean answerRequest(
-        String _id,
+        String employeeOid,
         String requestStatus, 
         String answerComment, 
         String requestKey
@@ -90,13 +90,13 @@ public class SupervisorService {
      * @return A sorted list of RequestDTO objects representing the pending requests.
      */
     public List<RequestDTO> getPendingRequests(
-        String _id,
+        String employeeOid,
         String pendingStatusText
         ) {
         try {
-            String employeeOid = _id;
             //int employeeId = employeeService.getEmployeeIdById(_id);
             List<Dayoff> dayoffs = dayoffRepository.findBySupervisorOidAndRequestStatus(employeeOid, pendingStatusText);
+            System.out.println(dayoffs);
             //Group Dayoff Requests
             Map<String, List<Dayoff>> dayoffGrouped = dayoffs.stream()
                 .collect(Collectors.groupingBy(Dayoff::getRequestKey));
@@ -227,14 +227,13 @@ public class SupervisorService {
      * @return A sorted list of RequestDTO objects representing the request history.
      */
     public List<RequestDTO> getRequestHistory(
-        String _id,
+        String employeeOid,
         String startDate,
         String endDate,
         List<String> requestStatusList
         ) {
         try {
             //int employeeId = employeeService.getEmployeeIdById(_id);
-            String employeeOid = _id;
             List<String> memberOidList=employeeService.findGroupMembersBySupervisorOid(employeeOid); // getting member eid list 
             System.out.println(memberOidList);
             List<Dayoff> dayoffs = dayoffRepository.findByEmployeeOidInAndRequestStatusAndRequestDateBetweenInclusive(memberOidList, requestStatusList,startDate,endDate);

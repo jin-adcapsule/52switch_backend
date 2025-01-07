@@ -37,6 +37,10 @@ public class GroupService {
      */
     public boolean existsByGroupSupervisorOid(String employeeOid) {
         return groupRepository.existsByGroupSupervisorOid(employeeOid);
+        /*List<Group> result = groupRepository.findByGroupSupervisorOid(employeeOid);
+        
+        return !result.isEmpty(); // returns true if there are any results
+        */    
     }
 
     public List<String> findGroupIdListBySupervisorOid(String supervisorOid) {

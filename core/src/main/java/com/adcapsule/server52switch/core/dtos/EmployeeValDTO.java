@@ -5,14 +5,14 @@ package com.adcapsule.server52switch.core.dtos;
 public class EmployeeValDTO {
     private final String employeeOid;
     private final String employeeName;
-    private final Boolean isSupervisor;
+    private final boolean isSupervisor;
     private final Boolean currentlyMarked;
 
     // Constructor
     public EmployeeValDTO(
         String employeeOid,
         String employeeName,
-        Boolean isSupervisor,
+        boolean isSupervisor,
         Boolean currentlyMarked) {
             this.employeeOid = employeeOid;
             this.employeeName = employeeName;
@@ -29,7 +29,7 @@ public class EmployeeValDTO {
         return employeeName;
     }
 
-    public Boolean getIsSupervisor() {
+    public boolean getIsSupervisor() {
         return isSupervisor;
     }
     public Boolean getCurrentlyMarked() {

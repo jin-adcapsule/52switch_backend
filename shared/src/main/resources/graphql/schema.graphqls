@@ -147,6 +147,6 @@ type Mutation {
     saveFCMToken(employeeOid: String!, fcmToken: String!):Boolean
 
     sendNotification(token: String!, title: String!, message:String!): String
-    sendNotificationToSupervisor( employeeOid: String!, title: String!, message:String!): String
-    sendNotificationToEmployeeOid(employeeOid: String!,  title: String!,  message: String!): String
+    sendNotificationToSupervisor(employeeOid: String!, title: String!, message:String!, pageKey:String!): String
+    sendNotificationToEmployeeOid(employeeOid: String!,  title: String!,  message: String!, pageKey:String!): String
 }

@@ -20,10 +20,17 @@ public class CredentialService {
     
 
     public boolean saveFCMToken(String employeeOid, String fcmToken) {
+        // First, check if there is any credential document with the same fcmToken
+        Credential existingCredential = credentialRepository.findByFcmToken(fcmToken);
+        
+        // If an existing document with this fcmToken is found and it's not for the same employeeOid, delete it
+        if (existingCredential != null && !existingCredential.getEmployeeOid().equals(employeeOid)) {
+            credentialRepository.delete(existingCredential);  // Delete the existing entry
+        }
+    
+        
         // Try to find the existing credential document by employeeOid
         Credential credentialDoc = credentialRepository.findbyEmployeeOid(employeeOid);
-        System.out.println(employeeOid);
-        System.out.println(fcmToken);
         
         if (credentialDoc == null) {
             // If no document is found, create a new one
@@ -48,6 +55,8 @@ public class CredentialService {
             System.out.println("FCM Token is null");
             return null;
         }
+        System.out.println("FCM Token found");
+        System.out.println(fcmToken);
         return fcmToken;
     }
 }

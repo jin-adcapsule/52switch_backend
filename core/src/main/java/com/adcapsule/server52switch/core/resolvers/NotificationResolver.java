@@ -19,13 +19,21 @@ public class NotificationResolver {
         return "Notification sent successfully";
     }
     @MutationMapping
-    public String sendNotificationToSupervisor(@Argument String employeeOid, @Argument String title, @Argument String message) {
-        notificationService.sendNotificationToSupervisor(employeeOid, title, message);
-        return "Notification sent successfully";
+    public String sendNotificationToSupervisor(@Argument String employeeOid, @Argument String title, @Argument String message, @Argument String pageKey) {
+        try{
+            notificationService.sendNotificationToSupervisor(employeeOid, title, message,pageKey);
+            return "Notification sent successfully";
+        }catch (Exception e){
+            return "Failed to send Notification:" +e.getMessage();
+        }
     }
     @MutationMapping
-    public String sendNotificationToEmployeeId(@Argument String employeeOid, @Argument String title, @Argument String message) {
-        notificationService.sendNotificationToEmployeeOid(employeeOid, title, message);
-        return "Notification sent successfully";
+    public String sendNotificationToEmployeeOid(@Argument String employeeOid, @Argument String title, @Argument String message, @Argument String pageKey) {
+        try{
+            notificationService.sendNotificationToEmployeeOid(employeeOid, title, message,pageKey);
+            return "Notification sent successfully";
+        }catch (Exception e){
+            return "Failed to send Notification:" +e.getMessage();
+        }
     }
 }

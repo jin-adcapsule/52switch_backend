@@ -36,12 +36,14 @@ public class NotificationService {
             e.printStackTrace();
         }
     }
-    public void sendNotificationToSupervisor(String objectId, String title, String message) {
+    public void sendNotificationToSupervisor(String employeeOid, String title, String message,String pageKey) {
         //get SupervisorOid
-        String SupervisorOid = employeeService.getSupervisorOidbyEmployeeOid(objectId);
+        String SupervisorOid = employeeService.getSupervisorOidbyEmployeeOid(employeeOid);
         //get token
         String SupervisorToken = credentialService.getFCMToken(SupervisorOid);
-
+        System.out.println(SupervisorToken);
+        System.out.println(title);
+        System.out.println(message);
         Message firebaseMessage = Message.builder()
             .setToken(SupervisorToken)
             .putData("title", title)
@@ -50,6 +52,7 @@ public class NotificationService {
                 .setTitle(title)
                 .setBody(message)
                 .build()) // Notification payload
+            .putData("pageKey",pageKey)
             .build();
         //FirebaseMessaging.getInstance().sendAsync(firebaseMessage);
         try {
@@ -60,10 +63,13 @@ public class NotificationService {
             e.printStackTrace();
         }
     }
-    public void sendNotificationToEmployeeOid(String employeeOid, String title, String message) {
+    public void sendNotificationToEmployeeOid(String employeeOid, String title, String message,String pageKey) {
         //get token
         String employeeToken = credentialService.getFCMToken(employeeOid);
-
+        System.out.println(employeeToken);
+        System.out.println(title);
+        System.out.println(message);
+        
         Message firebaseMessage = Message.builder()
             .setToken(employeeToken)
             .putData("title", title)
@@ -72,6 +78,7 @@ public class NotificationService {
                 .setTitle(title)
                 .setBody(message)
                 .build()) // Notification payload
+            .putData("pageKey", pageKey)
             .build();
         //FirebaseMessaging.getInstance().sendAsync(firebaseMessage);
         try {

@@ -24,32 +24,32 @@ public class SupervisorResolver {
     // Query to fetch pending Requests
     @QueryMapping
     public List<RequestDTO> getPendingRequests(
-        @Argument String objectId
+        @Argument String employeeOid
     ) {
         String pendingStatusText="대기중";
-        return supervisorService.getPendingRequests(objectId,pendingStatusText);
+        return supervisorService.getPendingRequests(employeeOid,pendingStatusText);
     }
     // Mutation answering to request
     @MutationMapping
     public Boolean answerRequest(
-        @Argument String objectId,
+        @Argument String employeeOid,
         @Argument String requestStatus, 
         @Argument String answerComment, 
         @Argument String requestKey
     ) {
-        return supervisorService.answerRequest(objectId,requestStatus,answerComment,requestKey);
+        return supervisorService.answerRequest(employeeOid,requestStatus,answerComment,requestKey);
     }
     
     // Query to fetch request history
     @QueryMapping
     public List<RequestDTO> getRequestHistory(
-        @Argument String objectId,
+        @Argument String employeeOid,
         @Argument String startDate,
         @Argument String endDate,
         @Argument List<String> requestStatusList
         ) {
 
-            return supervisorService.getRequestHistory(objectId,startDate,endDate,requestStatusList);
+            return supervisorService.getRequestHistory(employeeOid,startDate,endDate,requestStatusList);
         }
 
 
