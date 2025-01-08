@@ -24,6 +24,8 @@ public class Attendance {
     private String checkInStatus;
     private String checkOutStatus;
     private List<String> workTypeList;
+    private String expectedCheckInTime;
+    private String expectedCheckOutTime;
     // Getter and Setter methods
 
 

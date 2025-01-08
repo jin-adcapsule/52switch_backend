@@ -25,18 +25,13 @@ public class AttendanceHistory {
         this.employeeOid = employeeOid;
         this.date = formatDate(date);
         this.checkInTime = formatTime(checkInTime);
-        //this.checkOutTime = formatTime(checkOutTime);
+        this.checkOutTime = revisedCheckOutTime(checkOutTime);
         this.status = status;
         this.workduration = calculateWorkduration(checkInTime,checkOutTime);
         this.checkInStatus = checkInStatus;//getCheckInStatus();
-        this.checkOutStatus = checkOutStatus;//getCheckOutStatus();
+        this.checkOutStatus = revisedCheckOutStatus(checkOutStatus);//getCheckOutStatus();
         this.workTypeList = workTypeList;//getWorkTypeList();
-        // Check if today and currently working
-        if (isToday(this.date) && status) {
-            this.checkOutTime = ""; // Currently working, so no check-out time
-        } else {
-            this.checkOutTime = formatTime(checkOutTime);
-        }
+
 
     }
     private String formatDate(String date) {
@@ -57,14 +52,49 @@ public class AttendanceHistory {
     }
     // Helper method to check if a date is today
     private boolean isToday(String date) {
-    try {
+        try {
 
-        LocalDate inputDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yy.MM.dd(E)", java.util.Locale.KOREAN));
-        return inputDate.isEqual(LocalDate.now());
-    } catch (Exception e) {
-        return false; // Return false if parsing fails
+            LocalDate inputDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yy.MM.dd(E)", java.util.Locale.KOREAN));
+            return inputDate.isEqual(LocalDate.now());
+        } catch (Exception e) {
+            return false; // Return if parsing fails
+        }
     }
-}
+    //Calculate Checkout Status for days before today and not toggled out
+    private String revisedCheckOutStatus(String checkOutStatus){
+        if (isToday(date)){
+            return checkOutStatus;
+        }
+        try{
+            // Check if checkOutStatus is null or '근무중'
+            if (checkOutStatus == null || "근무중".equals(checkOutStatus)) {
+                return "정상퇴근"; // Return if not toggled out or the status is '근무중'
+            }else{return checkOutStatus;}
+            
+
+        }catch (Exception e) {
+
+            return checkOutStatus; // Return if parsing fails
+        }
+    }
+    //Get revised checkouttime depends on revised checkout status
+    private String revisedCheckOutTime(Date checkOutTime){
+        // Check if today and currently working
+        if (isToday(date) && status) {
+            return ""; // Currently working, so no check-out time
+        } 
+        try{
+            // Check if checkOutStatus is null or '근무중'
+            if (checkOutStatus == null || "근무중".equals(checkOutStatus)) {
+                return "NONONONO";//return "정상퇴근"; // Return null if not toggled out or the status is '근무중'
+            }else{return formatTime(checkOutTime);}
+            
+
+        }catch (Exception e) {
+
+            return formatTime(checkOutTime); // Return if parsing fails
+        }
+    }
     // Calculate Work Duration
     private String calculateWorkduration(Date checkInTime, Date checkOutTime) {
         if (isToday(date) && status) {

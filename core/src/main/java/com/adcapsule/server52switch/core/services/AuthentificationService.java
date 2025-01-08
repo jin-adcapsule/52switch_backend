@@ -58,7 +58,7 @@ public class AuthentificationService {
             //check employee is allocated as group leader
             boolean isSupervisor = groupService.existsByGroupSupervisorOid(employeeOid);   
             // update fcmToken
-            // Map Attendance to AttendanceHistory DTO
+            // Map to DTO
             return new EmployeeValDTO(
                     employeeOid,
                     employeeName,

@@ -37,20 +37,22 @@ public class AttendanceService {
    }
 
    public AttendanceStatusDTO getAttendanceStatus(String objectId) {
-    try {
-        String dateToday = Config.getCurrentDate_String();
-        AttendanceStatusDTO AttendanceStatusDTO = attendanceRepository.findStatusByobjectOidAndDate(objectId, dateToday);
-        if (AttendanceStatusDTO == null) {
-            System.out.println(dateToday);
-            System.out.println(objectId);
-            return new AttendanceStatusDTO(false); // or handle accordingly
+        try {
+            String dateToday = Config.getCurrentDate_String();
+            AttendanceStatusDTO AttendanceStatusDTO = attendanceRepository.findStatusByobjectOidAndDate(objectId, dateToday);
+            if (AttendanceStatusDTO == null) {
+                System.out.println(dateToday);
+                System.out.println(objectId);
+                return new AttendanceStatusDTO(false); // or handle accordingly
+            }
+            System.out.println(AttendanceStatusDTO);
+            return AttendanceStatusDTO;
+        } catch (Exception e) {
+            throw new RuntimeException("error while getAttendanceStatus service ");
         }
-        System.out.println(AttendanceStatusDTO);
-        return AttendanceStatusDTO;
-    } catch (Exception e) {
-        throw new RuntimeException("error while getAttendanceStatus service ");
     }
-}
+    
+    
     public AttendanceStatusDTO createOrUpdateAttendance(String objectId, Date parsedcheckTime, Boolean status) throws ParseException {
         // Format the current date as 'yyyy-MM-dd'
         //dateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
@@ -70,7 +72,7 @@ public class AttendanceService {
         } else {
             throw new IllegalArgumentException("Parsed check time cannot be null");
         }
-        System.out.println(parsedcheckTime_hhmm);
+
         // search request whether there is approved request for today. if exists, apply to starthour or to endhour 
         
         String startTime = null;
@@ -151,14 +153,15 @@ public class AttendanceService {
             attendance.setEmployeeOid(employeeOid);
             //attendance.setEmployeeId(employeeId);
             attendance.setDate(currentDateInKST);
-
-            if (status) {//when checkintime will be initiated
+            attendance.setExpectedCheckInTime(startTime);
+            attendance.setExpectedCheckOutTime(endTime);
+            if (status) {//when checkintime will be initiated (first toggle on today)
                 attendance.setCheckInTime(parsedCheckTime);
-                attendance.setCheckOutStatus("working");    //whenever toggle(status) on  
-                if (startTime == null||parsedcheckTime_hhmm.compareTo(startTime) < 0) {
+                attendance.setCheckOutStatus("working");      
+                if (startTime == null||parsedcheckTime_hhmm.compareTo(startTime) < 0) {//not supposed to check in or early came
                     attendance.setCheckInStatus("onTimeArrival");
                     attendance.setWorkTypeList(workTypeListToday);
-                } else {
+                } else {//expected to check in but came late
                     attendance.setCheckInStatus("lateArrival");
                     attendance.setWorkTypeList(workTypeListToday);
                 }
@@ -194,7 +197,7 @@ public class AttendanceService {
             String employeeOid = _id;
             // Fetch attendance records based on filters
             List<Attendance> attendances = attendanceRepository.findByEmployeeOidInAndWorkTypeAndDateBetweenInclusive(employeeOid, workTypeList,startDate,endDate);
-            System.out.println(attendances);
+            
             
             // Map Attendance to AttendanceHistory DTO
             return attendances.stream()
