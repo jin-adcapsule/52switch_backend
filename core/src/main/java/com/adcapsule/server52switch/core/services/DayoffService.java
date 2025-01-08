@@ -3,6 +3,7 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -15,8 +16,8 @@ import com.adcapsule.server52switch.core.configs.Config;
 import com.adcapsule.server52switch.core.dtos.DayoffHistory;
 import com.adcapsule.server52switch.core.models.Dayoff;
 import com.adcapsule.server52switch.core.repositories.DayoffRepository;
+import com.adcapsule.server52switch.core.repositories.projection.Projection.DayoffTypeAndDateProjection;
 import com.adcapsule.server52switch.core.repositories.projection.Projection.DayoffTypeProjection;
-
 @Service
 public class DayoffService {
     private final DayoffRepository dayoffRepository;
@@ -116,5 +117,39 @@ public class DayoffService {
                 .map(DayoffTypeProjection::getDayoffType) // Access the `dayoffType` field
                 .collect(Collectors.toList());
     }
+    public List<String> findDayoffTypeByEmployeeOidAndWorkTypeInAndRequestStatusAndDate(String employeeOid, List<String> workTypeQueryList,String requestStatus, String Date){
+        return dayoffRepository
+                .findDayoffTypeByEmployeeOidAndworkTypeInAndRequestStatusAndDate(employeeOid,workTypeQueryList,requestStatus, Date)
+                .stream()
+                .map(DayoffTypeProjection::getDayoffType) // Access the `dayoffType` field
+                .collect(Collectors.toList());
+    }
+    
+    public List<Map<String, Object>> findDayoffTypeAndDateByEmployeeOidAndRequestStatusAndDateBetweenInclusive(String employeeOid, String requestStatus, String startDate, String endDate){
+        // Fetch raw data from the repository
+        List<DayoffTypeAndDateProjection> rawResults = dayoffRepository
+                .findDayoffTypeAndDateByEmployeeOidAndRequestStatusAndDateBetweenInclusive(
+                        employeeOid, requestStatus, startDate, endDate);
+
+        // Group by dayoffDate and collect dayoffType as a list
+        Map<String, List<String>> groupedResults = rawResults.stream()
+                .collect(Collectors.groupingBy(
+                        DayoffTypeAndDateProjection::getDayoffDate, // Group by dayoffDate
+                        Collectors.mapping(DayoffTypeAndDateProjection::getDayoffType, Collectors.toList()) // Collect dayoffType as a list
+                ));
+
+        // Convert the grouped results into the required output structure
+        List<Map<String, Object>> result = groupedResults.entrySet().stream()
+                .map(entry -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("dayoffDate", entry.getKey());
+                    map.put("dayoffType", entry.getValue());
+                    return map;
+                })
+                .collect(Collectors.toList());
+
+        return result;
+    }
+    
 }
 

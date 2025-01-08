@@ -34,4 +34,12 @@ public class RequestService {
         return dayoffKeyMapList ;
     }
 
+    public List<Map<String,String>> getRequestByWorkTypeInAndApprovedStatusAndDate(String employeeOid,List<String> workTypeQueryList,String dateString){
+        String statusApproved = Config.requestStatusToTextMap.get("approved");
+        // Fetch dayoff records based on filters
+        List<String> dayoffTypes = dayoffService.findDayoffTypeByEmployeeOidAndWorkTypeInAndRequestStatusAndDate(employeeOid,workTypeQueryList, statusApproved, dateString);    
+        List<Map<String,String>> dayoffKeyMapList = Config.getWorkTypeAndWorkTimeToday(dayoffTypes);//workhourStart,workhourEnd,key as dayoffTypeValue
+        return dayoffKeyMapList ;
+    }
+    
 }

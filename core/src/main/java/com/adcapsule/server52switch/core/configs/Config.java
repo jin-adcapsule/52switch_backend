@@ -2,6 +2,7 @@ package com.adcapsule.server52switch.core.configs;
 
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -189,5 +190,17 @@ public class Config {
       }
     return WorkhourKeyMapLists;
   }
+  public static String getEarliestStringTime(String time1, String time2) {
+    if (time1 == null) return time2;
+    if (time2 == null) return time1;
+    return time1.compareTo(time2) < 0 ? time1 : time2;
+  }
+
+  public static String getLatestStringTime(String time1, String time2) {
+      if (time1 == null) return time2;
+      if (time2 == null) return time1;
+      return time1.compareTo(time2) > 0 ? time1 : time2;
+  }
+
   
 }

@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.adcapsule.server52switch.core.models.Dayoff;
+import com.adcapsule.server52switch.core.repositories.projection.Projection.DayoffTypeAndDateProjection;
 import com.adcapsule.server52switch.core.repositories.projection.Projection.DayoffTypeProjection;
 @Repository
 public interface DayoffRepository extends MongoRepository<Dayoff, String> {
@@ -42,5 +43,20 @@ public interface DayoffRepository extends MongoRepository<Dayoff, String> {
         String employeeOid, 
         String requestStatus,
         String Date
+    );
+    @Query(value="{ 'employeeOid': ?0, 'dayoffType': { $in: ?1 },'requestStatus':?2 , 'dayoffDate': ?3 }", fields="{ 'dayoffType' : 1}")
+    List<DayoffTypeProjection> findDayoffTypeByEmployeeOidAndworkTypeInAndRequestStatusAndDate(
+        String employeeOid, 
+        List<String> dayoffTypeQueryList,
+        String requestStatus,
+        String Date
+    );
+    
+    @Query(value="{ 'employeeOid': ?0,'requestStatus':?1 ,'dayoffDate': { '$gte': ?2, '$lte': ?3} }\" }", fields="{ 'dayoffDate' : 1,'dayoffType' : 1}")
+    List<DayoffTypeAndDateProjection> findDayoffTypeAndDateByEmployeeOidAndRequestStatusAndDateBetweenInclusive(
+        String employeeOid, 
+        String requestStatus,
+        String startDate,
+        String endDate
     );
 }

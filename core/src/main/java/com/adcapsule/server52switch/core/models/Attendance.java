@@ -1,7 +1,6 @@
 package com.adcapsule.server52switch.core.models;
 
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -22,12 +21,13 @@ public class Attendance {
     private Date checkInTime; 
     private Date checkOutTime;
     private String locationId;
-
+    /* 
     private String checkInStatus;
     private String checkOutStatus;
     private List<String> workTypeList;
     private String expectedCheckInTime;
     private String expectedCheckOutTime;
+    */
     // Getter and Setter methods
 
 
@@ -75,17 +75,17 @@ public class Attendance {
     public void setCheckOutTime(Date checkOutTime) {
         this.checkOutTime = checkOutTime;
     }
-
-    
-    public String getCheckInStatus() {
-        return checkInStatus;
-    }
     public void setLocationId(String locationId) {
         this.locationId = locationId;
     }
     public String getLocationId() {
         return locationId;
     }
+    /* 
+    public String getCheckInStatus() {
+        return checkInStatus;
+    }
+
     public void setCheckInStatus(String checkInStatus) {
         this.checkInStatus = checkInStatus;
     }
@@ -115,4 +115,5 @@ public class Attendance {
     public String getExpectedCheckOutTime() {
         return expectedCheckOutTime;
     }
+        */
 }

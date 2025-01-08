@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification; // Import Notification class
 
@@ -32,8 +33,7 @@ public class NotificationService {
         try {
             String response = FirebaseMessaging.getInstance().send(firebaseMessage);
             System.out.println("Notification sent successfully: " + response);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (FirebaseMessagingException e) {
         }
     }
     public void sendNotificationToSupervisor(String employeeOid, String title, String message,String pageKey) {
@@ -59,8 +59,7 @@ public class NotificationService {
             String response = FirebaseMessaging.getInstance().send(firebaseMessage);
             
             System.out.println("Notification sent successfully: " + response+" To: "+SupervisorOid);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (FirebaseMessagingException e) {
         }
     }
     public void sendNotificationToEmployeeOid(String employeeOid, String title, String message,String pageKey) {
@@ -85,8 +84,7 @@ public class NotificationService {
             String response = FirebaseMessaging.getInstance().send(firebaseMessage);
             
             System.out.println("Notification sent successfully: " + response+" To: "+employeeOid);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (FirebaseMessagingException e) {
         }
     }
 }

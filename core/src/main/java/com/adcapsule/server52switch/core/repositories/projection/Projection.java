@@ -32,4 +32,8 @@ public class Projection {
                 String getGroupId(); 
                 Integer getDayoffPerYear();
         }
+        public interface DayoffTypeAndDateProjection{
+                String getDayoffType();
+                String getDayoffDate();
+        }
 }

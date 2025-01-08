@@ -45,8 +45,7 @@ public class AttendanceResolver {
             .map(Config.workTypeTextToValueMap::get) // Get the corresponding text from the map
             .filter(Objects::nonNull)    // Exclude null values in case of unmatched keys
             .collect(Collectors.toList());
-        System.out.println("valueWorkType:");
-        System.out.println(workTypeList_value);
+
         // Delegate the logic to the service
         return attendanceService.getEmployeeAttendance(employeeOid, startDate, endDate, workTypeList_value);
     }

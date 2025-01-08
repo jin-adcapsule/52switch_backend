@@ -65,7 +65,7 @@ public class AttendanceService {
         //String workhourOn = (String) employeeService.getLocationAndWorkDetailsByEmployeeId(employeeId).get("workhourOn");
         String locationId = employeeService.findLocationIdById(employeeOid);
         // Parse workhourOn into a Date object for comparison
-        
+       /* 
         String parsedcheckTime_hhmm = null;
         if (parsedCheckTime != null) {
             parsedcheckTime_hhmm = Config.getCheckTime_HHmm_String(parsedCheckTime);
@@ -74,7 +74,6 @@ public class AttendanceService {
         }
 
         // search request whether there is approved request for today. if exists, apply to starthour or to endhour 
-        
         String startTime = null;
         String endTime = null;        
         List<Map<String,String>> requestWorkhourKeyMapList=requestService.getRequestByTodayAndApprovedStatus(employeeOid);
@@ -105,10 +104,9 @@ public class AttendanceService {
             workTypeListToday.add(requestWorkhourKeyMap.get("key"));
         }
  
-         
+          
         // Check if an attendance record exists for the given date and employeeId
         Optional<Attendance> existingAttendance = attendanceRepository.findByEmployeeOidAndDate(employeeOid, currentDateInKST);
-        System.out.println(workTypeListToday);
         Attendance attendance;
         if (existingAttendance.isPresent()) {
             // Update existing record
@@ -147,10 +145,8 @@ public class AttendanceService {
             }
         } else {
             // Create new record
-            
             attendance = new Attendance();
             attendance.setEmployeeOid(employeeOid);
-            //attendance.setEmployeeId(employeeId);
             attendance.setDate(currentDateInKST);
             attendance.setLocationId(locationId);
             attendance.setExpectedCheckInTime(startTime);
@@ -176,20 +172,90 @@ public class AttendanceService {
                 }
             }
 
-        }
-            
+        }*/
+        Optional<Attendance> existingAttendance = attendanceRepository.findByEmployeeOidAndDate(employeeOid, currentDateInKST);
+        Attendance attendance;
+        if (existingAttendance.isPresent()) {
+            // Update existing record
+            attendance = existingAttendance.get();
+
+            if (status) { // Check-in logic
+                if (attendance.getCheckInTime() == null || parsedCheckTime.before(attendance.getCheckInTime())) {//when checkintime will be initiated
+                    attendance.setCheckInTime(parsedCheckTime);  
+                }
+            } else { // Check-out logic
+                if (attendance.getCheckOutTime() == null || parsedCheckTime.after(attendance.getCheckOutTime())) {
+                    attendance.setCheckOutTime(parsedCheckTime);
+
+                }
+            }
+        } else {
+            // Create new record
+            attendance = new Attendance();
+            attendance.setEmployeeOid(employeeOid);
+            attendance.setDate(currentDateInKST);
+            attendance.setLocationId(locationId);
+            if (status) {//when checkintime will be initiated (first toggle on today)
+                attendance.setCheckInTime(parsedCheckTime);     
+            } else {
+                attendance.setCheckOutTime(parsedCheckTime);
+            }
+
+        }    
         attendance.setStatus(status);
         attendanceRepository.save(attendance);
         return new AttendanceStatusDTO(status);
     }
-
-
+    public AttendanceHistory resolveAttendanceHistoryDTO(Attendance attendance,List<String> workTypeQueryList){
+        // search request whether there is approved request for today. if exists, apply to starthour or to endhour 
+        String dateString = attendance.getDate();
+        String employeeOid = attendance.getEmployeeOid();
+        String startTime = null;
+        String endTime = null; 
+        List<String> workTypeListResponse= new ArrayList<>();      
+        // Get approved day-off/workhour requests for today
+        List<Map<String,String>> requestWorkhourKeyMapList=requestService.getRequestByWorkTypeInAndApprovedStatusAndDate(employeeOid,workTypeQueryList,dateString);
+        // Get location details for this employee
+        LocationInfoDTO locationDetail = employeeService.getLocationAndWorkDetailsByEmployeeOid(employeeOid);
+        // Process each request and determine the earliest startTime and latest endTime
+        for (Map<String,String> requestWorkhourKeyMap : requestWorkhourKeyMapList) {
+            //this would be 'null' for cases of 휴가 경조휴가 휴직
+            String workhourStartKey =requestWorkhourKeyMap.get("workhourStart");
+            String workhourEndKey =requestWorkhourKeyMap.get("workhourEnd");
+            workTypeListResponse.add(requestWorkhourKeyMap.get("key"));// Collect work types
+            // Map workhour keys to actual times from location details
+            String requestStartTime = locationDetail.getTimebyKey(workhourStartKey);
+            String requestEndTime = locationDetail.getTimebyKey(workhourEndKey);
+            // Update the overall startTime and endTime using comparison
+            startTime = Config.getEarliestStringTime(startTime, requestStartTime);
+            endTime = Config.getLatestStringTime(endTime, requestEndTime);
+        }  
+        AttendanceHistory response = new AttendanceHistory(
+            attendance.getEmployeeOid(),
+            attendance.getDate(),
+            attendance.getLocationId(),
+            attendance.getCheckInTime(),  
+            attendance.getCheckOutTime(),   
+            attendance.getStatus(),
+            workTypeListResponse,//approvedExistingworkTypeList
+            startTime,//expectedCheckInTime
+            endTime //expectedCheckOutTime
+        );
+        // Check if workTypeListResponse intersects with workTypeQueryList
+        List<String> intersection = new ArrayList<>(response.getWorkTypeValueList());
+        intersection.retainAll(workTypeQueryList); // Retain only the common elements
+        // If there is no intersection, skip returning the AttendanceHistory
+        if (intersection.isEmpty()) {
+            return null; // No match with workTypeQueryList, so we return null (skip the case)
+        }
+        return response;
+    }
     // Fetch employee attendance between two dates
     public List<AttendanceHistory> getEmployeeAttendance(
         String _id, 
         String startDate, 
         String endDate, 
-        List<String> workTypeList
+        List<String> workTypeQueryList
         ) {
         try {
 
@@ -197,26 +263,11 @@ public class AttendanceService {
             String employeeOid = _id;
             
             // Fetch attendance records based on filters
-            List<Attendance> attendances = attendanceRepository.findByEmployeeOidInAndWorkTypeAndDateBetweenInclusive(employeeOid, workTypeList,startDate,endDate);
-            
-            
-            // Map Attendance to AttendanceHistory DTO
+            List<Attendance> attendances = attendanceRepository.findByEmployeeOidAndDateBetweenInclusive(employeeOid,startDate,endDate);
+            // Map Attendance to AttendanceHistory DTOs with enriched data
             return attendances.stream()
                 .sorted(Comparator.comparing(Attendance::getDate).reversed()) // Sort by date descending
-                .map(attendance -> new AttendanceHistory(
-                    //attendance.getEmployeeId(),
-                    attendance.getEmployeeOid(),
-                    attendance.getDate(),
-                    attendance.getLocationId(),
-                    attendance.getCheckInTime(),
-                    attendance.getCheckOutTime(),
-                    attendance.getStatus(),
-                    attendance.getCheckInStatus(),
-                    attendance.getCheckOutStatus(),
-                    attendance.getWorkTypeList(),
-                    attendance.getExpectedCheckInTime(),
-                    attendance.getExpectedCheckOutTime()
-                ))
+                .map(attendance -> resolveAttendanceHistoryDTO(attendance,workTypeQueryList))
                 .collect(Collectors.toList());
         } catch (Exception e) {
             throw new RuntimeException("Error while Service getEmployeeAttendance.");
