@@ -32,7 +32,6 @@ public class NotificationService {
         //FirebaseMessaging.getInstance().sendAsync(firebaseMessage);
         try {
             String response = FirebaseMessaging.getInstance().send(firebaseMessage);
-            System.out.println("Notification sent successfully: " + response);
         } catch (FirebaseMessagingException e) {
         }
     }
@@ -41,9 +40,6 @@ public class NotificationService {
         String SupervisorOid = employeeService.getSupervisorOidbyEmployeeOid(employeeOid);
         //get token
         String SupervisorToken = credentialService.getFCMToken(SupervisorOid);
-        System.out.println(SupervisorToken);
-        System.out.println(title);
-        System.out.println(message);
         Message firebaseMessage = Message.builder()
             .setToken(SupervisorToken)
             .putData("title", title)
@@ -58,16 +54,12 @@ public class NotificationService {
         try {
             String response = FirebaseMessaging.getInstance().send(firebaseMessage);
             
-            System.out.println("Notification sent successfully: " + response+" To: "+SupervisorOid);
         } catch (FirebaseMessagingException e) {
         }
     }
     public void sendNotificationToEmployeeOid(String employeeOid, String title, String message,String pageKey) {
         //get token
         String employeeToken = credentialService.getFCMToken(employeeOid);
-        System.out.println(employeeToken);
-        System.out.println(title);
-        System.out.println(message);
         
         Message firebaseMessage = Message.builder()
             .setToken(employeeToken)
@@ -82,8 +74,6 @@ public class NotificationService {
         //FirebaseMessaging.getInstance().sendAsync(firebaseMessage);
         try {
             String response = FirebaseMessaging.getInstance().send(firebaseMessage);
-            
-            System.out.println("Notification sent successfully: " + response+" To: "+employeeOid);
         } catch (FirebaseMessagingException e) {
         }
     }

@@ -87,6 +87,12 @@ type EmployeeValDTO {
     currentlyMarked: Boolean!
 
 }
+type AttendanceStatusAndDetailsDTO{
+    status: Boolean!
+    workTypeList: [String!]
+    startTime:String!
+    endTime:String!
+}
 type AttendanceStatusDTO {
     status: Boolean!
 
@@ -126,6 +132,7 @@ type Query {
     validateUidAndPhone(uid: String!, phone: String!): EmployeeValDTO
     getObjectIdByPhone(phone: String!): Employee
     
+    getAttendanceStatusAndDetails(employeeOid: String! ): AttendanceStatusAndDetailsDTO
     getAttendanceStatus(employeeOid: String!): AttendanceStatusDTO
     getEmployeeDayoff(employeeOid: String!,startDate: String!, endDate: String!,requestStatusList: [String!]): [DayoffHistory]
     

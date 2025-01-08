@@ -152,30 +152,6 @@ public class EmployeeService {
         Group group = findGroupByEmployeeOid(employeeOid);
         return group != null ? group.getGroupSupervisorOid() : null;
     }
-        /**
-     * Find group members supervised by a specific supervisor ID.
-     *
-     * @param supervisorId the ID of the supervisor.
-     * @return a list of group members under the supervisor.
-   
-    public List<String> findGroupMembersBySupervisorOid(String supervisorOid) {
-        // Fetch group IDs supervised by the given supervisor ID
-        List<String> groupIdList = groupService.findGroupIdListBySupervisorOid(supervisorOid);
-        System.out.println("GroupIdList");
-        System.out.println(groupIdList);
-        
-        // Initialize a list to store member IDs
-        List<String> memberIdList = new ArrayList<>();
-        for (String groupId : groupIdList){
-            List<String> employeeIds = findEmployeeOidListbyGroupId(groupId);
-            System.out.println("employeeIds");
-            System.out.println(employeeIds);
-            memberIdList.addAll(employeeIds); // Add all fetched employee IDs to the member list
-        }
-        
-        return memberIdList;
-    }
-          */
     /**
      * Resolve and set location-related information for an employee.
      *
@@ -352,15 +328,10 @@ public class EmployeeService {
     public List<String> findGroupMembersBySupervisorOid(String supervisorOid) {
         // Fetch group IDs supervised by the given supervisor ID
         List<String> groupIdList = groupService.findGroupIdListBySupervisorOid(supervisorOid);
-        System.out.println("GroupIdList");
-        System.out.println(groupIdList);
-        
         // Initialize a list to store member IDs
         List<String> memberOidList = new ArrayList<>();
         for (String groupId : groupIdList){
             List<String> employeeOids = findEmployeeOidListbyGroupId(groupId);
-            System.out.println("employeeIds");
-            System.out.println(employeeOids);
             memberOidList.addAll(employeeOids); // Add all fetched employee IDs to the member list
         }
         

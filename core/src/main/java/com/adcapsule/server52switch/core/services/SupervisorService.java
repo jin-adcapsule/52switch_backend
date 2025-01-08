@@ -54,7 +54,6 @@ public class SupervisorService {
             // Find the list of Dayoff documents by requestKey
             List<Dayoff> dayoffList = dayoffRepository.findByRequestKey(requestKey);
             if (dayoffList.isEmpty()) {
-                System.out.println("No Dayoff documents found with the provided requestKey: " + requestKey);
                 return false; // No documents found
             }
 
@@ -96,7 +95,6 @@ public class SupervisorService {
         try {
             //int employeeId = employeeService.getEmployeeIdById(_id);
             List<Dayoff> dayoffs = dayoffRepository.findBySupervisorOidAndRequestStatus(employeeOid, pendingStatusText);
-            System.out.println(dayoffs);
             //Group Dayoff Requests
             Map<String, List<Dayoff>> dayoffGrouped = dayoffs.stream()
                 .collect(Collectors.groupingBy(Dayoff::getRequestKey));
@@ -235,7 +233,6 @@ public class SupervisorService {
         try {
             //int employeeId = employeeService.getEmployeeIdById(_id);
             List<String> memberOidList=employeeService.findGroupMembersBySupervisorOid(employeeOid); // getting member eid list 
-            System.out.println(memberOidList);
             List<Dayoff> dayoffs = dayoffRepository.findByEmployeeOidInAndRequestStatusAndRequestDateBetweenInclusive(memberOidList, requestStatusList,startDate,endDate);
             //Group Dayoff Requests
             Map<String, List<Dayoff>> dayoffGrouped = dayoffs.stream()

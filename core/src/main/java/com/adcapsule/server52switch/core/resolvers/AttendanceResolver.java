@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 
 import com.adcapsule.server52switch.core.configs.Config;
 import com.adcapsule.server52switch.core.dtos.AttendanceHistory;
+import com.adcapsule.server52switch.core.dtos.AttendanceStatusAndDetailsDTO;
 import com.adcapsule.server52switch.core.dtos.AttendanceStatusDTO;
 import com.adcapsule.server52switch.core.services.AttendanceService;
 
@@ -49,14 +50,7 @@ public class AttendanceResolver {
         // Delegate the logic to the service
         return attendanceService.getEmployeeAttendance(employeeOid, startDate, endDate, workTypeList_value);
     }
-    /* 
-    @PostConstruct
-    public void emitTestData() {
-        // Emit test data for verification
-        System.out.println("emitTestData is excuted");
-        sink.tryEmitNext(new AttendanceStatus("6731bc0cbc054ba2e52b53e1", "2024-12-04", true));
-    }
-        */
+ 
     @MutationMapping
     public AttendanceStatusDTO markAttendance(@Argument String employeeOid, @Argument boolean status) {
         if (employeeOid == null || employeeOid.isEmpty()) {
@@ -83,5 +77,13 @@ public class AttendanceResolver {
         }
         AttendanceStatusDTO attendanceStatusDTO = attendanceService.getAttendanceStatus(employeeOid);
         return attendanceStatusDTO;
+    }
+    @QueryMapping
+    public AttendanceStatusAndDetailsDTO getAttendanceStatusAndDetails(@Argument String employeeOid){
+        if (employeeOid == null || employeeOid.isEmpty()) {
+            throw new IllegalArgumentException("employeeOid cannot be null or empty");
+        }
+        AttendanceStatusAndDetailsDTO attendanceStatusAndDetailsDTO = attendanceService.getAttendanceStatusAndDetails(employeeOid);
+        return attendanceStatusAndDetailsDTO;
     }
 }

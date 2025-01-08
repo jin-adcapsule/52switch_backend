@@ -12,16 +12,16 @@ import com.adcapsule.server52switch.core.configs.Config;
 
 
 public class AttendanceHistory {
-    private final String employeeOid;
-    private final String date;
-    private final String locationId;
-    private final String checkInTime;
-    private final String checkOutTime;
-    private final boolean status;
-    private final String checkInStatus; 
-    private final String checkOutStatus;
-    private final List<String> workTypeList;   
-    private final String workduration;
+    private String employeeOid;
+    private String date;
+    private String locationId;
+    private String checkInTime;
+    private String checkOutTime;
+    private boolean status;
+    private String checkInStatus; 
+    private String checkOutStatus;
+    private List<String> workTypeList;   
+    private String workduration;
 
     public AttendanceHistory(
         String employeeOid,
@@ -38,11 +38,11 @@ public class AttendanceHistory {
         this.date = formatDate(date);
         this.locationId = locationId;
         this.checkInTime = formatTime(checkInTime);
-        this.checkOutTime = revisedCheckOutTime(checkOutTime,expectedCheckOutTime);
+        this.checkOutTime = revisedCheckOutTime(checkOutTime,expectedCheckOutTime,date,status);
         this.status = status;
         this.workduration = calculateWorkduration(checkInTime,checkOutTime);
         this.checkInStatus = resolveCheckInStatus(checkInTime,expectedCheckInTime);//getCheckInStatus();
-        this.checkOutStatus = resolveCheckOutStatus(checkOutTime,expectedCheckOutTime);//getCheckOutStatus();
+        this.checkOutStatus = resolveCheckOutStatus(checkOutTime,expectedCheckOutTime,date,status);//getCheckOutStatus();
         this.workTypeList = resolveWorkTypeList(workTypeList);//getWorkTypeList();
 
         
@@ -65,11 +65,12 @@ public class AttendanceHistory {
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
         return time.toInstant().atZone(java.time.ZoneId.of("Asia/Seoul")).format(timeFormatter);
     }
-    // Helper method to check if a date is today
+    // Helper method to check if a date is today input format is yyyy-mm-dd
     private boolean isToday(String date) {
         try {
-
-            LocalDate inputDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yy.MM.dd(E)", java.util.Locale.KOREAN));
+            // Parse the input date in ISO-8601 format (yyyy-MM-dd)
+            LocalDate inputDate = LocalDate.parse(date);
+            //LocalDate inputDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yy.MM.dd(E)", java.util.Locale.KOREAN));
             return inputDate.isEqual(LocalDate.now());
         } catch (Exception e) {
             return false; // Return if parsing fails
@@ -95,7 +96,7 @@ public class AttendanceHistory {
 
     }
     //Calculate Checkout Status for days before today and not toggled out
-    private String resolveCheckOutStatus(Date checkOutTimeDate,String expectedCheckOutTime){
+    private String resolveCheckOutStatus( Date checkOutTimeDate,String expectedCheckOutTime, String date, boolean status){
         String checkOutTimeString;
         if (checkOutTimeDate != null) {
             checkOutTimeString = Config.getCheckTime_HHmm_String(checkOutTimeDate);
@@ -103,11 +104,12 @@ public class AttendanceHistory {
             throw new IllegalArgumentException("Parsed check time cannot be null");
         }
         try{             
+            
             if (isToday(date)&&status){
                 return "working";//return "working"; 
             }   
             // Check if checkOutStatus is null or '근무중'
-            if (!isToday(date)&&(checkOutStatus == null || "working".equals(checkOutStatus))) {
+            if (!isToday(date)&&(checkOutStatus == null || status)) {
                 return "onTimeLeft"; // Return if not toggled out or the status is '근무중'
             }else{
                 if (expectedCheckOutTime == null||checkOutTimeString.compareTo(expectedCheckOutTime) > 0) {//not supposed to check in or early came
@@ -122,15 +124,10 @@ public class AttendanceHistory {
         }
     }
     //Get revised checkouttime depends on revised checkout status
-    private String revisedCheckOutTime(Date checkOutTime,String expectedCheckOutTime){
+    private String revisedCheckOutTime(Date checkOutTime,String expectedCheckOutTime, String date, boolean status){
         // Check if today and currently working
-        System.out.println("todya");
-        System.out.println(date);
-        System.out.println(status);
+  
         if (isToday(date) && status) {
-            System.out.println("todya");
-            System.out.println(date);
-            System.out.println(status);
             return ""; // Currently working, so no check-out time
         } 
         try{
@@ -149,14 +146,10 @@ public class AttendanceHistory {
     }
     // Calculate Work Duration
     private String calculateWorkduration(Date checkInTime, Date checkOutTime) {
-        if (isToday(date) && status) {
-            return "working"; // Currently working
-        }
         
         try {
             // Ensure both dates are not null
             if (checkInTime == null || checkOutTime == null) {
-                System.out.println("Error: One or both Date objects are null");
                 return null;  // Return null or handle the error appropriately
             }
             
@@ -215,7 +208,7 @@ public class AttendanceHistory {
         return checkOutTime;
     }
 
-    public boolean isStatus() {
+    public boolean getStatus() {
         return status;
     }
     public String getWorkduration(){

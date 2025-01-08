@@ -46,17 +46,13 @@ public class CredentialService {
         // Fetch the FCM token from MongoDB
         Credential credentialOpt = credentialRepository.findbyEmployeeOid(employeeOid);
         if (credentialOpt== null) {
-            System.out.println("FCM Token not found for user: " + employeeOid);
             return null;
         }
 
         String fcmToken = credentialOpt.getFcmToken();
         if (fcmToken == null) {
-            System.out.println("FCM Token is null");
             return null;
         }
-        System.out.println("FCM Token found");
-        System.out.println(fcmToken);
         return fcmToken;
     }
 }
