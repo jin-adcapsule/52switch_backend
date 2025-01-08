@@ -63,7 +63,7 @@ public class AttendanceService {
         //int employeeId = employeeService.getEmployeeIdById(objectId);
         String employeeOid = objectId;
         //String workhourOn = (String) employeeService.getLocationAndWorkDetailsByEmployeeId(employeeId).get("workhourOn");
-        
+        String locationId = employeeService.findLocationIdById(employeeOid);
         // Parse workhourOn into a Date object for comparison
         
         String parsedcheckTime_hhmm = null;
@@ -86,7 +86,6 @@ public class AttendanceService {
         List<String> workTypeListToday= new ArrayList<>();
 
         LocationInfoDTO locationDetail = employeeService.getLocationAndWorkDetailsByEmployeeOid(employeeOid);
-
         for (Map<String,String> requestWorkhourKeyMap : requestWorkhourKeyMapList) {
             //this would be 'null' for cases of 휴가 경조휴가 휴직
             String _startTimeLocationKey=requestWorkhourKeyMap.get("workhourStart");
@@ -153,6 +152,7 @@ public class AttendanceService {
             attendance.setEmployeeOid(employeeOid);
             //attendance.setEmployeeId(employeeId);
             attendance.setDate(currentDateInKST);
+            attendance.setLocationId(locationId);
             attendance.setExpectedCheckInTime(startTime);
             attendance.setExpectedCheckOutTime(endTime);
             if (status) {//when checkintime will be initiated (first toggle on today)
@@ -195,6 +195,7 @@ public class AttendanceService {
 
             //int employeeId = employeeService.getEmployeeIdById(_id);
             String employeeOid = _id;
+            
             // Fetch attendance records based on filters
             List<Attendance> attendances = attendanceRepository.findByEmployeeOidInAndWorkTypeAndDateBetweenInclusive(employeeOid, workTypeList,startDate,endDate);
             
@@ -206,12 +207,15 @@ public class AttendanceService {
                     //attendance.getEmployeeId(),
                     attendance.getEmployeeOid(),
                     attendance.getDate(),
+                    attendance.getLocationId(),
                     attendance.getCheckInTime(),
                     attendance.getCheckOutTime(),
                     attendance.getStatus(),
                     attendance.getCheckInStatus(),
                     attendance.getCheckOutStatus(),
-                    attendance.getWorkTypeList()
+                    attendance.getWorkTypeList(),
+                    attendance.getExpectedCheckInTime(),
+                    attendance.getExpectedCheckOutTime()
                 ))
                 .collect(Collectors.toList());
         } catch (Exception e) {

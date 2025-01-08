@@ -21,6 +21,8 @@ public class Attendance {
     private String date; // format 'yyyy-mm-dd'
     private Date checkInTime; 
     private Date checkOutTime;
+    private String locationId;
+
     private String checkInStatus;
     private String checkOutStatus;
     private List<String> workTypeList;
@@ -78,7 +80,12 @@ public class Attendance {
     public String getCheckInStatus() {
         return checkInStatus;
     }
-
+    public void setLocationId(String locationId) {
+        this.locationId = locationId;
+    }
+    public String getLocationId() {
+        return locationId;
+    }
     public void setCheckInStatus(String checkInStatus) {
         this.checkInStatus = checkInStatus;
     }
@@ -95,5 +102,17 @@ public class Attendance {
 
     public void setWorkTypeList(List<String> workTypeList) {
         this.workTypeList = workTypeList;
+    }
+    public void setExpectedCheckInTime(String expectedCheckInTime) {
+        this.expectedCheckInTime = expectedCheckInTime;
+    }
+    public String getExpectedCheckInTime() {
+        return expectedCheckInTime;
+    }
+    public void setExpectedCheckOutTime(String expectedCheckOutTime) {
+        this.expectedCheckOutTime = expectedCheckOutTime;
+    }
+    public String getExpectedCheckOutTime() {
+        return expectedCheckOutTime;
     }
 }

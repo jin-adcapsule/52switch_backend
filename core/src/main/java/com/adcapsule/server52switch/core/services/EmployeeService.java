@@ -230,10 +230,12 @@ public class EmployeeService {
         return response;
     }
     */
-    public LocationInfoDTO getLocationAndWorkDetailsByEmployeeOid(String employeeOid) {
-
+    public String findLocationIdById(String employeeOid){
         LocationIdProjection locationIdProjection = employeeRepository.findLocationIdById(employeeOid);
-        String locationId = locationIdProjection != null ? locationIdProjection.getLocationId() : null; // Return groupId or null if not found
+        return locationIdProjection != null ? locationIdProjection.getLocationId() : null; // Return groupId or null if not found
+    }
+    public LocationInfoDTO getLocationAndWorkDetailsByEmployeeOid(String employeeOid) {
+        String locationId = findLocationIdById(employeeOid);
         if(locationId == null){throw new RuntimeException("Employee not found with Id");}
         Location location = locationService.getLocationById(locationId);
         // Extract the required details

@@ -13,6 +13,7 @@ import com.adcapsule.server52switch.core.configs.Config;
 public class AttendanceHistory {
     private final String employeeOid;
     private final String date;
+    private final String locationId;
     private final String checkInTime;
     private final String checkOutTime;
     private final boolean status;
@@ -20,10 +21,25 @@ public class AttendanceHistory {
     private final String checkOutStatus;
     private final List<String> workTypeList;   
     private final String workduration;
-    public AttendanceHistory(String employeeOid,String date, Date checkInTime, Date checkOutTime, boolean status, String checkInStatus,String checkOutStatus,List<String> workTypeList) {
+    private final String expectedCheckInTime;
+    private final String expectedCheckOutTime;
+    public AttendanceHistory(
+        String employeeOid,
+        String date, 
+        String locationId,
+        Date checkInTime,
+        Date checkOutTime, 
+        boolean status, 
+        String checkInStatus,
+        String checkOutStatus,
+        List<String> workTypeList,
+        String expectedCheckInTime,
+        String expectedCheckOutTime
+        ) {
         //this.employeeId = employeeId;
         this.employeeOid = employeeOid;
         this.date = formatDate(date);
+        this.locationId = locationId;
         this.checkInTime = formatTime(checkInTime);
         this.checkOutTime = revisedCheckOutTime(checkOutTime);
         this.status = status;
@@ -31,6 +47,8 @@ public class AttendanceHistory {
         this.checkInStatus = checkInStatus;//getCheckInStatus();
         this.checkOutStatus = revisedCheckOutStatus(checkOutStatus);//getCheckOutStatus();
         this.workTypeList = workTypeList;//getWorkTypeList();
+        this.expectedCheckInTime=expectedCheckInTime;
+        this.expectedCheckOutTime=expectedCheckOutTime;
 
 
     }
@@ -84,10 +102,12 @@ public class AttendanceHistory {
             return ""; // Currently working, so no check-out time
         } 
         try{
-            // Check if checkOutStatus is null or '근무중'
-            if (checkOutStatus == null || "근무중".equals(checkOutStatus)) {
-                return "NONONONO";//return "정상퇴근"; // Return null if not toggled out or the status is '근무중'
-            }else{return formatTime(checkOutTime);}
+            // Check if date is before today and checkOutStatus is null or '근무중'
+            if (!isToday(date)&&(checkOutStatus == null || "근무중".equals(checkOutStatus))) {
+                return expectedCheckOutTime;
+            }else{
+                return formatTime(checkOutTime);
+            }
             
 
         }catch (Exception e) {
@@ -136,7 +156,9 @@ public class AttendanceHistory {
     public String getDate() {
         return date;
     }
-
+    public String getLocationId() {
+        return locationId;
+    }
     public String getCheckInTime() {
         return checkInTime;
     }
@@ -166,5 +188,13 @@ public class AttendanceHistory {
             .filter(Objects::nonNull)    // Exclude null values in case of unmatched keys
             .map(String.class::cast)                      // Ensure the result is String
             .collect(Collectors.toList());
+    }
+    public String getExpectedCheckInTime() {
+
+        return expectedCheckInTime;
+    }
+    public String getExpectedCheckOutTime() {
+
+        return expectedCheckOutTime;
     }
 }

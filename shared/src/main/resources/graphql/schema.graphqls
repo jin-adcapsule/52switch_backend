@@ -62,6 +62,7 @@ type Dayoff {
 type AttendanceHistory {
     employeeOid: String
     date: String
+    locationId: String
     checkInTime: String
     checkOutTime: String
     status: Boolean
@@ -71,7 +72,6 @@ type AttendanceHistory {
     workduration: String
 }
 type DayoffHistory {
-
     dayoffType: String!
     requestComment: String!
     dayoffDateText: String!
@@ -79,7 +79,6 @@ type DayoffHistory {
     requestDate: String
     supervisorOid: String
     requestKey: String
-
 }
 type EmployeeValDTO {
     employeeOid: String!
@@ -90,6 +89,7 @@ type EmployeeValDTO {
 }
 type AttendanceStatusDTO {
     status: Boolean!
+
 }
 type RequestDTO {
     employeeOid: String
