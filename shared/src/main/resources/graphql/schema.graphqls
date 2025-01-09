@@ -84,7 +84,7 @@ type EmployeeValDTO {
     employeeOid: String!
     employeeName: String!
     isSupervisor: Boolean!
-    currentlyMarked: Boolean!
+    currentlyMarked: Boolean
 
 }
 type AttendanceStatusAndDetailsDTO{

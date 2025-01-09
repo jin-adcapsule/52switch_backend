@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.adcapsule.server52switch.core.dtos.AttendanceStatusAndDetailsDTO;
 import com.adcapsule.server52switch.core.dtos.EmployeeValDTO;
 import com.adcapsule.server52switch.core.models.Attendance;
 import com.adcapsule.server52switch.core.models.Employee;
@@ -19,13 +20,13 @@ import com.google.firebase.auth.UserRecord;
 public class AuthentificationService {
 
     private final EmployeeRepository employeeRepository;
-    private final AttendanceRepository attendanceRepository;
+    private final AttendanceService attendanceService;
     private final GroupService groupService;
 
     @Autowired
-    public AuthentificationService(EmployeeRepository employeeRepository, AttendanceRepository attendanceRepository, GroupService groupService) {
+    public AuthentificationService(EmployeeRepository employeeRepository, AttendanceService attendanceService, GroupService groupService) {
         this.employeeRepository = employeeRepository;
-        this.attendanceRepository =  attendanceRepository;
+        this.attendanceService =  attendanceService;
         this.groupService =  groupService;
 
     }
@@ -51,10 +52,9 @@ public class AuthentificationService {
                 .orElseThrow(() -> new IllegalArgumentException("Phone number not found in the database."));
             String employeeOid = employee.getId();
             String employeeName = employee.getName();
-            LocalDate today = LocalDate.now();
-            boolean isCurrentlyMarked = attendanceRepository.findByEmployeeOidAndDate(employeeOid, today.toString())
-                    .map(Attendance::getStatus)
-                    .orElse(false);
+
+            AttendanceStatusAndDetailsDTO attendanceStatusAndDetails = attendanceService.getAttendanceStatusAndDetails(employeeOid);
+            Boolean isCurrentlyMarked = attendanceStatusAndDetails.getStatus();
             //check employee is allocated as group leader
             boolean isSupervisor = groupService.existsByGroupSupervisorOid(employeeOid);   
             // update fcmToken

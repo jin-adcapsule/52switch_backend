@@ -54,15 +54,10 @@ public class AttendanceService {
     public AttendanceStatusAndDetailsDTO getAttendanceStatusAndDetails(String employeeOid) {
         try {
             boolean todayStatus= getAttendanceStatus(employeeOid).getStatus();
-            System.out.println("employeeOid");
-            System.out.println(employeeOid);
             // Get approved day-off/workhour requests for today
             List<Map<String,String>> requestWorkhourKeyMapList= requestService.getRequestByTodayAndApprovedStatus(employeeOid);
-            System.out.println(requestWorkhourKeyMapList);
             // Process each request and determine the earliest startTime and latest endTime
             Map<String,Object> expectedTimesAndWorkTypeListMap=getExpectedTimesAndWorkTypeList(employeeOid,requestWorkhourKeyMapList);
-            System.out.println("expectedTimesAndWorkTypeListMap");
-            System.out.println(expectedTimesAndWorkTypeListMap);
             return new AttendanceStatusAndDetailsDTO(
                 todayStatus,
                 (List<String>)expectedTimesAndWorkTypeListMap.get("workTypeListResponse"),
