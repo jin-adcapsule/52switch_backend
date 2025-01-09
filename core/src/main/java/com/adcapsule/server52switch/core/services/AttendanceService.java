@@ -54,11 +54,15 @@ public class AttendanceService {
     public AttendanceStatusAndDetailsDTO getAttendanceStatusAndDetails(String employeeOid) {
         try {
             boolean todayStatus= getAttendanceStatus(employeeOid).getStatus();
+            System.out.println("employeeOid");
+            System.out.println(employeeOid);
             // Get approved day-off/workhour requests for today
             List<Map<String,String>> requestWorkhourKeyMapList= requestService.getRequestByTodayAndApprovedStatus(employeeOid);
+            System.out.println(requestWorkhourKeyMapList);
             // Process each request and determine the earliest startTime and latest endTime
             Map<String,Object> expectedTimesAndWorkTypeListMap=getExpectedTimesAndWorkTypeList(employeeOid,requestWorkhourKeyMapList);
-
+            System.out.println("expectedTimesAndWorkTypeListMap");
+            System.out.println(expectedTimesAndWorkTypeListMap);
             return new AttendanceStatusAndDetailsDTO(
                 todayStatus,
                 (List<String>)expectedTimesAndWorkTypeListMap.get("workTypeListResponse"),
@@ -119,24 +123,40 @@ public class AttendanceService {
         return new AttendanceStatusDTO(status);
     }
     public Map<String,Object> getExpectedTimesAndWorkTypeList(String employeeOid,List<Map<String,String>> requestWorkhourKeyMapList){
+        //if full dayoff then e.g. [{workhourStart=null, key=dayoffFull, workhourEnd=null}]
         List<String> workTypeListResponse= new ArrayList<>();      
         String startTime = null;
         String endTime = null;  
         // Get location details for this employee
         LocationInfoDTO locationDetail = employeeService.getLocationAndWorkDetailsByEmployeeOid(employeeOid);
+        // Flag to check if we should prioritize null
+        boolean prioritizeNull = false;
         // Process each request and determine the earliest startTime and latest endTime 
         for (Map<String,String> requestWorkhourKeyMap : requestWorkhourKeyMapList) {
-            //this would be 'null' for cases of 휴가 경조휴가 휴직
-            String workhourStartKey =requestWorkhourKeyMap.get("workhourStart");
-            String workhourEndKey =requestWorkhourKeyMap.get("workhourEnd");
-            workTypeListResponse.add(requestWorkhourKeyMap.get("key"));// Collect work types
-            // Map workhour keys to actual times from location details
-            String requestStartTime = locationDetail.getTimebyKey(workhourStartKey);
-            String requestEndTime = locationDetail.getTimebyKey(workhourEndKey);
-            // Update the overall startTime and endTime using comparison
-            startTime = Config.getEarliestStringTime(startTime, requestStartTime);
-            endTime = Config.getLatestStringTime(endTime, requestEndTime);
+            // Add the work type to the response list
+            workTypeListResponse.add(requestWorkhourKeyMap.get("key"));
+            // Check if "null" should be prioritized
+            String workhourStartKey = requestWorkhourKeyMap.get("workhourStart");
+            String workhourEndKey = requestWorkhourKeyMap.get("workhourEnd");
+            if ("null".equals(workhourStartKey) || "null".equals(workhourEndKey)) {
+                prioritizeNull = true;
+            }
+
+            // If "null" is not prioritized, map workhour keys to actual times
+            if (!prioritizeNull) {
+                String requestStartTime = locationDetail.getTimebyKey(workhourStartKey);
+                String requestEndTime = locationDetail.getTimebyKey(workhourEndKey);
+
+                // Update the overall startTime and endTime using comparison
+                startTime = Config.getEarliestStringTime(startTime, requestStartTime);
+                endTime = Config.getLatestStringTime(endTime, requestEndTime);
+            }
         }  
+        // If "null" was prioritized, reset startTime and endTime to null
+        if (prioritizeNull) {
+            startTime = "";
+            endTime = "";
+        }
         Map<String,Object> response = new HashMap<>();
         response.put("locationName",locationDetail.getWorkplace());
         response.put("startTime",startTime);
@@ -151,8 +171,10 @@ public class AttendanceService {
 
         // Get approved day-off/workhour requests for today
         List<Map<String,String>> requestWorkhourKeyMapList=requestService.getRequestByWorkTypeInAndApprovedStatusAndDate(employeeOid,workTypeQueryList,dateString);
+        System.out.println(requestWorkhourKeyMapList);
         // Process each request and determine the earliest startTime and latest endTime
         Map<String,Object> expectedTimesAndWorkTypeListMap=getExpectedTimesAndWorkTypeList(employeeOid,requestWorkhourKeyMapList);
+        System.out.println(expectedTimesAndWorkTypeListMap);
         AttendanceHistory response = new AttendanceHistory(
             attendance.getEmployeeOid(),
             attendance.getDate(),

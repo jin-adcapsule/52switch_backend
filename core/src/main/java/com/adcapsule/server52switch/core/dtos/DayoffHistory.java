@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.adcapsule.server52switch.core.configs.Config;
 import com.adcapsule.server52switch.core.configs.DateUtils;
 
 
@@ -96,7 +97,7 @@ public class DayoffHistory {
     }
 
     public String getDayoffType() {
-        return dayoffType;
+        return Config.workTypeToTextMap.get(dayoffType);
     }
 
     public String getRequestComment() {
@@ -104,7 +105,7 @@ public class DayoffHistory {
     }
 
     public String getRequestStatus() {
-        return requestStatus;
+        return Config.requestStatusToTextMap.get(requestStatus);
     }
     public String getRequestDate() {
         return requestDate;

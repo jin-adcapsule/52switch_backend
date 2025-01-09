@@ -1,5 +1,7 @@
 package com.adcapsule.server52switch.core.services;
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
@@ -14,10 +16,14 @@ import org.springframework.stereotype.Service;
 
 import com.adcapsule.server52switch.core.configs.Config;
 import com.adcapsule.server52switch.core.dtos.DayoffHistory;
+import com.adcapsule.server52switch.core.dtos.DayoffInfoDTO;
 import com.adcapsule.server52switch.core.models.Dayoff;
+import com.adcapsule.server52switch.core.models.Group;
 import com.adcapsule.server52switch.core.repositories.DayoffRepository;
+import com.adcapsule.server52switch.core.repositories.projection.Projection.DayoffInfoProjection;
 import com.adcapsule.server52switch.core.repositories.projection.Projection.DayoffTypeAndDateProjection;
 import com.adcapsule.server52switch.core.repositories.projection.Projection.DayoffTypeProjection;
+import com.adcapsule.server52switch.core.repositories.projection.Projection.NameProjection;
 @Service
 public class DayoffService {
     private final DayoffRepository dayoffRepository;
@@ -49,7 +55,7 @@ public class DayoffService {
         dayoff.setDayoffDate(dayoffdate);
         dayoff.setRequestKey(requestKey);
         dayoff.setRequestComment(requestComment);
-        dayoff.setRequestStatus("대기중");
+        dayoff.setRequestStatus("pending");
         dayoff.setSupervisorOid(employeeService.getSupervisorOidbyEmployeeOid(objectId));
         dayoff.setBeforeDateRemaining(beforeDateRemaining);
         // Save and return the Dayoff record
@@ -57,7 +63,32 @@ public class DayoffService {
         return dayoffRepository.save(dayoff);
     }
 
+    public DayoffInfoDTO getDayoffInfoByEmployeeOid(String employeeOid) {
 
+            Optional<DayoffInfoProjection> optionalDayoffInfoProjection = employeeService.findDayoffInfoById(employeeOid);//groupId and dayoffPerYear
+            String groupId = optionalDayoffInfoProjection.map(DayoffInfoProjection::getGroupId).orElse(null);
+            if(groupId == null){throw new RuntimeException("Group not found with Id");}
+            Integer dayoffPerYear = optionalDayoffInfoProjection.map(DayoffInfoProjection::getDayoffPerYear).orElse(-1);//yearly available dayoff
+            if(dayoffPerYear < 0){throw new RuntimeException("dayoffPerYear not found with Id");}
+            
+            String currentYearStart = LocalDate.now().withMonth(1).withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            String currentYearEnd = LocalDate.now().withMonth(12).withDayOfMonth(31).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            Integer dayoffApproved =dayoffRepository.countByEmployeeOidAndRequestStatusAndDayoffDateBetween(employeeOid,"approved",currentYearStart,currentYearEnd);          
+            Integer dayoffRemaining = dayoffPerYear-dayoffApproved;
+            System.out.println("dayoffremainingcalc");
+            System.out.println(dayoffRemaining);
+            System.out.println(dayoffApproved);
+            if(dayoffRemaining <0){throw new RuntimeException("DayoffRemaining Calc Error");}
+
+            Group group = employeeService.getGroupById(groupId);
+            String supervisorOid = group.getGroupSupervisorOid();
+            Optional<NameProjection> optionalNameProjection = employeeService.findNameById(supervisorOid);
+            String supervisorName = optionalNameProjection.map(NameProjection::getName).orElse(null);
+            if(supervisorName == null){throw new RuntimeException("SupervisorName not found with Id");}
+
+            return new DayoffInfoDTO(supervisorName,supervisorOid,dayoffRemaining);
+
+        }
 
 
 // Fetch employee attendance between two dates

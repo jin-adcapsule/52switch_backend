@@ -59,4 +59,11 @@ public interface DayoffRepository extends MongoRepository<Dayoff, String> {
         String startDate,
         String endDate
     );
+    // Custom query method to count requests based on employeeOid, requestStatus, and date range
+    Integer countByEmployeeOidAndRequestStatusAndDayoffDateBetween(
+        String employeeOid, 
+        String requestStatus,
+        String startDate,
+        String endDate
+    );
 }

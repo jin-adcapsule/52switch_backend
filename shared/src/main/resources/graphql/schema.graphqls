@@ -92,6 +92,7 @@ type AttendanceStatusAndDetailsDTO{
     workTypeList: [String!]
     startTime:String!
     endTime:String!
+    locationName:String!
 }
 type AttendanceStatusDTO {
     status: Boolean!
@@ -122,7 +123,7 @@ type LocationInfoDTO {
 type DayoffInfoDTO {
     supervisorName: String!
     supervisorOid: String!
-    dayoffPerYear: Int!
+    dayoffRemaining: Int!
 }
 type GroupMembersDTO {
   groupName: String!

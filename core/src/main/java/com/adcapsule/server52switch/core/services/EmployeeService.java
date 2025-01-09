@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.adcapsule.server52switch.core.dtos.DayoffInfoDTO;
 import com.adcapsule.server52switch.core.dtos.LocationInfoDTO;
 import com.adcapsule.server52switch.core.models.Employee;
 import com.adcapsule.server52switch.core.models.Group;
@@ -222,22 +221,7 @@ public class EmployeeService {
         return new LocationInfoDTO(workplace,workhourOn,workhourOff,workhourHalf);
 
     }
-    public DayoffInfoDTO getDayoffInfoByEmployeeOid(String employeeOid) {
-
-        Optional<DayoffInfoProjection> optionalDayoffInfoProjection = employeeRepository.findDayoffInfoById(employeeOid);
-        String groupId = optionalDayoffInfoProjection.map(DayoffInfoProjection::getGroupId).orElse(null);
-        Integer dayoffPerYear = optionalDayoffInfoProjection.map(DayoffInfoProjection::getDayoffPerYear).orElse(-1);
-        if(groupId == null){throw new RuntimeException("Group not found with Id");}
-        if(dayoffPerYear < 0){throw new RuntimeException("dayoffPerYear not found with Id");}
-        Group group = groupService.getGroupById(groupId);
-        String supervisorOid = group.getGroupSupervisorOid();
-        Optional<NameProjection> optionalNameProjection = employeeRepository.findNameById(supervisorOid);
-        String supervisorName = optionalNameProjection.map(NameProjection::getName).orElse(null);
-        if(supervisorName == null){throw new RuntimeException("SupervisorName not found with Id");}
-
-        return new DayoffInfoDTO(supervisorName,supervisorOid,dayoffPerYear);
-
-    }
+    
      /**
      * Retrieve an employee by their phone number.
      *
@@ -360,5 +344,17 @@ public class EmployeeService {
         response.put("workhourOff", workhourOff);
         response.put("workhourHalf", workhourHalf);
         return response;
+    }
+
+
+
+    public Optional<DayoffInfoProjection> findDayoffInfoById(String employeeOid){
+        return employeeRepository.findDayoffInfoById(employeeOid);
+    }
+    public Group getGroupById(String groupId){
+        return groupService.getGroupById(groupId);
+    }
+    public Optional<NameProjection> findNameById(String employeeOid){
+        return employeeRepository.findNameById(employeeOid);
     }
 }

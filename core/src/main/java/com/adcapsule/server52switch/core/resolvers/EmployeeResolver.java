@@ -7,7 +7,6 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
-import com.adcapsule.server52switch.core.dtos.DayoffInfoDTO;
 import com.adcapsule.server52switch.core.dtos.LocationInfoDTO;
 import com.adcapsule.server52switch.core.models.Employee;
 import com.adcapsule.server52switch.core.services.EmployeeService;
@@ -48,8 +47,5 @@ public class EmployeeResolver {
     public int getEmployeeIdById(String _id) {
         return employeeService.getEmployeeIdById(_id);
     }
-    @QueryMapping
-    public DayoffInfoDTO getDayoffInfo(@Argument String employeeOid) {
-        return employeeService.getDayoffInfoByEmployeeOid(employeeOid);
-    }
+
 }

@@ -2,7 +2,6 @@ package com.adcapsule.server52switch.core.configs;
 
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -24,7 +23,7 @@ public class Config {
         {
 
             put("승인", "approved");
-            put("거절", "denied");
+            put("반려", "denied");
             put("대기중", "pending");
         }
     }; 
@@ -36,9 +35,11 @@ public class Config {
             put("정상근무", "workFull");
             put("오전반차", "dayoffFirstHalf");
             put("오후반차", "dayoffSecondHalf");
-            put("휴가", "dayoffFull");
+            put("정기휴가", "dayoffFull");
             put("경조휴가", "dayoffExtra");
             put("휴직", "dayoffLOA");
+            put("예비군", "dayoffMilitary");
+            
 
             put("지각", "lateArrival");
             put("정상출근", "onTimeArrival");
@@ -174,12 +175,12 @@ public class Config {
       return times;
     }
   //MappingMethod for dayofftype to StartTime and EndTime
-  public static List<Map<String,String>> getWorkTypeAndWorkTimeToday(List<String> dayoffTypes){
-      List<String> workTypesToday = new ArrayList<>(dayoffTypes); // Create a copy of the provided dayoffTypes
-      if(workTypesToday.isEmpty()){workTypesToday.add("정상근무");}//if no dayoff then
+  public static List<Map<String,String>> getWorkTypeAndWorkTimeToday(List<String> dayoffTypeValues){
+      List<String> workTypeValuesToday = new ArrayList<>(dayoffTypeValues); // Create a copy of the provided dayoffTypesValue
+      if(workTypeValuesToday.isEmpty()){workTypeValuesToday.add("workFull");}//if no dayoff then
       List<Map<String, String>> WorkhourKeyMapLists= new ArrayList<>();
-      for (String workType : workTypesToday) {
-          String workTypeValue=workTypeTextToValueMap.get(workType);
+      for (String workTypeValue : workTypeValuesToday) {
+          //String workTypeValue=workTypeTextToValueMap.get(workType);
           Map<String,String> locationKeysetforWorkType = workTypeToLocationKeyMap.get(workTypeValue);
           // Create a new map to avoid modifying the original map
           Map<String, String> newMap = new HashMap<>(locationKeysetforWorkType);

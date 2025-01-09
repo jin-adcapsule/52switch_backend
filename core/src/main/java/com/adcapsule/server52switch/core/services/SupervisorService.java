@@ -90,11 +90,11 @@ public class SupervisorService {
      */
     public List<RequestDTO> getPendingRequests(
         String employeeOid,
-        String pendingStatusText
+        String pendingStatus
         ) {
         try {
             //int employeeId = employeeService.getEmployeeIdById(_id);
-            List<Dayoff> dayoffs = dayoffRepository.findBySupervisorOidAndRequestStatus(employeeOid, pendingStatusText);
+            List<Dayoff> dayoffs = dayoffRepository.findBySupervisorOidAndRequestStatus(employeeOid, pendingStatus);
             //Group Dayoff Requests
             Map<String, List<Dayoff>> dayoffGrouped = dayoffs.stream()
                 .collect(Collectors.groupingBy(Dayoff::getRequestKey));

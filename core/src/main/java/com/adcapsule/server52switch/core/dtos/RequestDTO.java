@@ -2,6 +2,7 @@ package com.adcapsule.server52switch.core.dtos;
 
 import java.util.List;
 
+import com.adcapsule.server52switch.core.configs.Config;
 import com.adcapsule.server52switch.core.configs.DateUtils;
 
 public class RequestDTO {
@@ -37,7 +38,7 @@ public class RequestDTO {
         this.employeeOid = employeeOid;
         this.employeeName = employeeName;
         this.requestType = requestType;
-        this.requestStatus = requestStatus;
+        this.requestStatus = Config.requestStatusToTextMap.get(requestStatus);;
         //this.supervisorId = supervisorId;
         this.supervisorOid = supervisorOid;
         this.requestKey = requestKey;
@@ -92,7 +93,7 @@ public class RequestDTO {
     }
 
     public String getDayoffType() {
-        return dayoffType;
+        return Config.workTypeToTextMap.get(dayoffType);
     }
 
     public List<String> getDayoffDates() {

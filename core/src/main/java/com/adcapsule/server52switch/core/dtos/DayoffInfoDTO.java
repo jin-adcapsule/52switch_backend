@@ -5,16 +5,16 @@ package com.adcapsule.server52switch.core.dtos;
 public class DayoffInfoDTO {
     private final String supervisorName;
     private final String supervisorOid;
-    private final Integer dayoffPerYear;
+    private final Integer dayoffRemaining;
 
     // Constructor
     public DayoffInfoDTO(
         String supervisorName,
         String supervisorOid,
-        Integer dayoffPerYear) {
+        Integer dayoffRemaining) {
             this.supervisorName = supervisorName;
             this.supervisorOid = supervisorOid;
-            this.dayoffPerYear = dayoffPerYear;
+            this.dayoffRemaining = dayoffRemaining;
     }
 
     // Getter
@@ -26,8 +26,8 @@ public class DayoffInfoDTO {
         return supervisorOid;
     }
 
-    public Integer getDayoffPerYear() {
-        return dayoffPerYear;
+    public Integer getDayoffRemaining() {
+        return dayoffRemaining;
     }
 
 

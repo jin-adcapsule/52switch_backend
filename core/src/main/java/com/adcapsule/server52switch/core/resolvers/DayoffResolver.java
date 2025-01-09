@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Controller;
 
 import com.adcapsule.server52switch.core.configs.Config;
 import com.adcapsule.server52switch.core.dtos.DayoffHistory;
+import com.adcapsule.server52switch.core.dtos.DayoffInfoDTO;
 import com.adcapsule.server52switch.core.models.Dayoff;
 import com.adcapsule.server52switch.core.services.DayoffService;
 
@@ -36,9 +38,17 @@ public class DayoffResolver {
         @Argument String endDate,
         @Argument List<String> requestStatusList
     ) {
+        // Convert the requestStatusList using the map
+        List<String> mappedRequestStatusList = requestStatusList.stream()
+            .map(status -> Config.requestStatusTextToValueMap.getOrDefault(status, status)) // Map the text to value or keep it as is
+            .collect(Collectors.toList());
 
         // Delegate the logic to the service
-        return dayoffService.getEmployeeDayoff(employeeOid, startDate, endDate, requestStatusList);
+        return dayoffService.getEmployeeDayoff(employeeOid, startDate, endDate, mappedRequestStatusList);
+    }
+    @QueryMapping
+    public DayoffInfoDTO getDayoffInfo(@Argument String employeeOid) {
+        return dayoffService.getDayoffInfoByEmployeeOid(employeeOid);
     }
     @MutationMapping
     public List<String> requestDayoff(
@@ -48,6 +58,7 @@ public class DayoffResolver {
         @Argument String requestComment,
         @Argument int beforeDateRemaining
     ) {
+        String dayoffTypeValue= Config.workTypeTextToValueMap.get(dayoffType);
         List<String> responseMessages = new ArrayList<>();
         // Capture the current server time as an Instant
         Instant serverReceivedTime = Instant.now();
@@ -70,7 +81,7 @@ public class DayoffResolver {
                 try {
 
                     // Call the service method for each date
-                    Dayoff dayoff = dayoffService.createOrUpdateDayoff(employeeOid, requestKey,date, dayoffType, requestComment,beforeDateRemaining,serverReceivedDate);
+                    Dayoff dayoff = dayoffService.createOrUpdateDayoff(employeeOid, requestKey,date, dayoffTypeValue, requestComment,beforeDateRemaining,serverReceivedDate);
     
                     // Add the created/updated Dayoff to the list
                     dayoffList.add(dayoff);
