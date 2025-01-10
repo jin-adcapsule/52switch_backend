@@ -29,7 +29,7 @@ public class NotificationService {
                 .setBody(message)
                 .build()) // Notification payload
             .build();
-        //FirebaseMessaging.getInstance().sendAsync(firebaseMessage);
+        //FirebaseMessaging.getInstanced().sendAsync(firebaseMessage);
         try {
             String response = FirebaseMessaging.getInstance().send(firebaseMessage);
         } catch (FirebaseMessagingException e) {
