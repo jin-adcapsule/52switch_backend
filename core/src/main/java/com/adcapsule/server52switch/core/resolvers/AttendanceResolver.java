@@ -47,7 +47,7 @@ public class AttendanceResolver {
             .filter(Objects::nonNull)    // Exclude null values in case of unmatched keys
             .collect(Collectors.toList());
 
-        // Delegate the logic to the service
+            
         return attendanceService.getEmployeeAttendance(employeeOid, startDate, endDate, workTypeList_value);
     }
  

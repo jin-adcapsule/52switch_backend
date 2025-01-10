@@ -4,7 +4,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 
 public class DotenvConfig {
 
-    private static Dotenv dotenv;
+    private static final Dotenv dotenv;
 
     // Initialize dotenv in a static block
     static {

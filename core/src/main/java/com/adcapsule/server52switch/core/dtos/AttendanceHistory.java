@@ -12,16 +12,16 @@ import com.adcapsule.server52switch.core.configs.Config;
 
 
 public class AttendanceHistory {
-    private String employeeOid;
-    private String date;
-    private String locationId;
-    private String checkInTime;
-    private String checkOutTime;
-    private boolean status;
-    private String checkInStatus; 
-    private String checkOutStatus;
-    private List<String> workTypeList;   
-    private String workduration;
+    private final String employeeOid;
+    private final String date;
+    private final String locationId;
+    private final String checkInTime;
+    private final String checkOutTime;
+    private final boolean status;
+    private final String checkInStatus; 
+    private final String checkOutStatus;
+    private final List<String> workTypeList;   
+    private final String workduration;
 
     public AttendanceHistory(
         String employeeOid,

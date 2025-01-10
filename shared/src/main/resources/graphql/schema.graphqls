@@ -147,6 +147,7 @@ type Query {
     getEmployeeAttendance(employeeOid: String!,startDate: String!, endDate: String!, workTypeList:[String!]): [AttendanceHistory]
     
     getMyAllGroupsMembers(employeeOid: String!): [Employee]
+
 }
 type Mutation {
     markAttendance(employeeOid: String!, status: Boolean!): AttendanceStatusDTO

@@ -2,7 +2,7 @@ package com.adcapsule.server52switch.core.dtos;
 
 
 public class AttendanceStatusDTO {
-    private Boolean status;
+    private final Boolean status;
 
     // Constructor
     public AttendanceStatusDTO(Boolean status) {

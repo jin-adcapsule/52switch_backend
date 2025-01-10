@@ -38,7 +38,7 @@ public class RequestDTO {
         this.employeeOid = employeeOid;
         this.employeeName = employeeName;
         this.requestType = requestType;
-        this.requestStatus = Config.requestStatusToTextMap.get(requestStatus);;
+        this.requestStatus = Config.requestStatusToTextMap.get(requestStatus);
         //this.supervisorId = supervisorId;
         this.supervisorOid = supervisorOid;
         this.requestKey = requestKey;

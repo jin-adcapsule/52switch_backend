@@ -1,15 +1,12 @@
 package com.adcapsule.server52switch.core.services;
 
-import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.adcapsule.server52switch.core.dtos.AttendanceStatusAndDetailsDTO;
 import com.adcapsule.server52switch.core.dtos.EmployeeValDTO;
-import com.adcapsule.server52switch.core.models.Attendance;
 import com.adcapsule.server52switch.core.models.Employee;
-import com.adcapsule.server52switch.core.repositories.AttendanceRepository;
 import com.adcapsule.server52switch.core.repositories.EmployeeRepository;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;

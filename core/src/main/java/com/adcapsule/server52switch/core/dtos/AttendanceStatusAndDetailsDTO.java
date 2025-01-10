@@ -7,14 +7,14 @@ import java.util.stream.Collectors;
 import com.adcapsule.server52switch.core.configs.Config;
 
 public class AttendanceStatusAndDetailsDTO {
-    private Boolean status;
-    private List<String> workTypeList;
-    private String startTime;
-    private String endTime;
-    private String locationName;
+    private final Boolean status;
+    private final List<String> workTypeList;
+    private final String startTime;
+    private final String endTime;
+    private final String locationName;
     // Constructor
     public AttendanceStatusAndDetailsDTO(Boolean status,List<String> workTypeList,String startTime,String endTime, String locationName) {
-        this.status = (startTime==""&&endTime=="")?null:status; //if today dayoff then status null
+        this.status = ("".equals(startTime)&&"".equals(endTime))?null:status; //if today dayoff then status null
         this.workTypeList = workTypeList;
         this.startTime = startTime;
         this.endTime = endTime;
