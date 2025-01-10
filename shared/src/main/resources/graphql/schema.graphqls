@@ -88,7 +88,7 @@ type EmployeeValDTO {
 
 }
 type AttendanceStatusAndDetailsDTO{
-    status: Boolean!
+    status: Boolean
     workTypeList: [String!]
     startTime:String!
     endTime:String!
