@@ -13,4 +13,6 @@ public interface HolidayRepository extends MongoRepository<Holiday, String> {
     @Query("{ 'holidayDate': { $gte: ?0, $lte: ?1 } }")
     List<Holiday> findHolidaysByDateRange(String startDate, String endDate);
     Optional<Holiday> findByHolidayDate(String holidayDate);
+    @Query("{ 'holidayDate': { '$gte': ?0 } }")
+    List<Holiday> findHolidaysAfterOrOn(String date);
 }

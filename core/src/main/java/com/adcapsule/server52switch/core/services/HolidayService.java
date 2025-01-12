@@ -20,7 +20,9 @@ public class HolidayService {
 
             
         }
-
+        public List<Holiday> findHolidaysAfterOrOn(String date){
+            return holidayRepository.findHolidaysAfterOrOn(date);
+        }
         public List<Holiday> findHolidaysByDateRange(String startDate, String endDate){
             return holidayRepository.findHolidaysByDateRange(startDate, endDate);
         }

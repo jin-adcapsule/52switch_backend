@@ -57,7 +57,10 @@ type Dayoff {
     supervisorOid: String
     requestKey: String
 }
-
+type Holiday {
+    holidayName: String!     # Name of the holiday
+    holidayDate: String!     # Date of the holiday in 'yyyy-MM-dd' format
+}
 
 type AttendanceHistory {
     employeeOid: String
@@ -124,6 +127,7 @@ type DayoffInfoDTO {
     supervisorName: String!
     supervisorOid: String!
     dayoffRemaining: Int!
+    holidayList: [Holiday!]!    # List of holidays
 }
 type GroupMembersDTO {
   groupName: String!

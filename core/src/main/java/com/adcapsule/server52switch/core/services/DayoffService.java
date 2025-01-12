@@ -1,5 +1,6 @@
 package com.adcapsule.server52switch.core.services;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -19,6 +20,7 @@ import com.adcapsule.server52switch.core.dtos.DayoffHistory;
 import com.adcapsule.server52switch.core.dtos.DayoffInfoDTO;
 import com.adcapsule.server52switch.core.models.Dayoff;
 import com.adcapsule.server52switch.core.models.Group;
+import com.adcapsule.server52switch.core.models.Holiday;
 import com.adcapsule.server52switch.core.repositories.DayoffRepository;
 import com.adcapsule.server52switch.core.repositories.projection.Projection.DayoffInfoProjection;
 import com.adcapsule.server52switch.core.repositories.projection.Projection.DayoffTypeAndDateProjection;
@@ -29,12 +31,14 @@ public class DayoffService {
     private final DayoffRepository dayoffRepository;
 
     private final EmployeeService employeeService; 
+    private final HolidayService holidayService;
    // private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");//just to compare date inforation
     
    @Autowired
-   public DayoffService(DayoffRepository dayoffRepository, EmployeeService employeeService) {
+   public DayoffService(DayoffRepository dayoffRepository, EmployeeService employeeService, HolidayService holidayService) {
        this.dayoffRepository = dayoffRepository;
        this.employeeService = employeeService;
+       this.holidayService = holidayService;
    }
     public Optional<Dayoff> findByIdAndDayoffDate(String objectId, String dayoffdate){
         String employeeOid = objectId;
@@ -75,9 +79,7 @@ public class DayoffService {
             String currentYearEnd = LocalDate.now().withMonth(12).withDayOfMonth(31).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             Integer dayoffApproved =dayoffRepository.countByEmployeeOidAndRequestStatusAndDayoffDateBetween(employeeOid,"approved",currentYearStart,currentYearEnd);          
             Integer dayoffRemaining = dayoffPerYear-dayoffApproved;
-            System.out.println("dayoffremainingcalc");
-            System.out.println(dayoffRemaining);
-            System.out.println(dayoffApproved);
+
             if(dayoffRemaining <0){throw new RuntimeException("DayoffRemaining Calc Error");}
 
             Group group = employeeService.getGroupById(groupId);
@@ -86,7 +88,9 @@ public class DayoffService {
             String supervisorName = optionalNameProjection.map(NameProjection::getName).orElse(null);
             if(supervisorName == null){throw new RuntimeException("SupervisorName not found with Id");}
 
-            return new DayoffInfoDTO(supervisorName,supervisorOid,dayoffRemaining);
+            String todayDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());// Format the current date as a string
+            List<Holiday> holidayList=holidayService.findHolidaysAfterOrOn(todayDate);
+            return new DayoffInfoDTO(supervisorName,supervisorOid,dayoffRemaining,holidayList);
 
         }
 
