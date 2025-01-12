@@ -21,13 +21,7 @@ public class Attendance {
     private Date checkInTime; 
     private Date checkOutTime;
     private String locationId;
-    /* 
-    private String checkInStatus;
-    private String checkOutStatus;
-    private List<String> workTypeList;
-    private String expectedCheckInTime;
-    private String expectedCheckOutTime;
-    */
+
     // Getter and Setter methods
 
 
@@ -81,39 +75,5 @@ public class Attendance {
     public String getLocationId() {
         return locationId;
     }
-    /* 
-    public String getCheckInStatus() {
-        return checkInStatus;
-    }
-
-    public void setCheckInStatus(String checkInStatus) {
-        this.checkInStatus = checkInStatus;
-    }
-    public String getCheckOutStatus() {
-        return checkOutStatus;
-    }
-
-    public void setCheckOutStatus(String checkOutStatus) {
-        this.checkOutStatus = checkOutStatus;
-    }
-    public List<String> getWorkTypeList() {
-        return workTypeList;
-    }
-
-    public void setWorkTypeList(List<String> workTypeList) {
-        this.workTypeList = workTypeList;
-    }
-    public void setExpectedCheckInTime(String expectedCheckInTime) {
-        this.expectedCheckInTime = expectedCheckInTime;
-    }
-    public String getExpectedCheckInTime() {
-        return expectedCheckInTime;
-    }
-    public void setExpectedCheckOutTime(String expectedCheckOutTime) {
-        this.expectedCheckOutTime = expectedCheckOutTime;
-    }
-    public String getExpectedCheckOutTime() {
-        return expectedCheckOutTime;
-    }
-        */
+    
 }

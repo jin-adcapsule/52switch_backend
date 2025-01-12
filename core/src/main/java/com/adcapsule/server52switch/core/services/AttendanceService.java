@@ -1,5 +1,8 @@
 package com.adcapsule.server52switch.core.services;
 import java.text.ParseException;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -7,18 +10,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.adcapsule.server52switch.core.configs.Config;
+import com.adcapsule.server52switch.core.configs.DateUtils;
 import com.adcapsule.server52switch.core.dtos.AttendanceHistory;
 import com.adcapsule.server52switch.core.dtos.AttendanceStatusAndDetailsDTO;
 import com.adcapsule.server52switch.core.dtos.AttendanceStatusDTO;
 import com.adcapsule.server52switch.core.dtos.LocationInfoDTO;
 import com.adcapsule.server52switch.core.models.Attendance;
+import com.adcapsule.server52switch.core.models.Dayoff;
+import com.adcapsule.server52switch.core.models.Holiday;
 import com.adcapsule.server52switch.core.repositories.AttendanceRepository;
+import com.adcapsule.server52switch.core.repositories.HolidayRepository;
 
 
 @Service
@@ -27,15 +35,15 @@ public class AttendanceService {
     private final AttendanceRepository attendanceRepository;
     private final EmployeeService employeeService; 
     private final RequestService requestService; 
-
+    private final HolidayService holidayService;
    // private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");//just to compare date inforation
     
    @Autowired
-   public AttendanceService(AttendanceRepository attendanceRepository, EmployeeService employeeService,RequestService requestService) {
+   public AttendanceService(AttendanceRepository attendanceRepository, EmployeeService employeeService,RequestService requestService, HolidayService holidayService) {
        this.attendanceRepository = attendanceRepository;
        this.employeeService = employeeService;
        this.requestService = requestService;
-       
+       this.holidayService = holidayService;
    }
 
    public AttendanceStatusDTO getAttendanceStatus(String employeeOid) {
@@ -54,13 +62,19 @@ public class AttendanceService {
     public AttendanceStatusAndDetailsDTO getAttendanceStatusAndDetails(String employeeOid) {
         try {
             boolean todayStatus= getAttendanceStatus(employeeOid).getStatus();
+            boolean isTodayWeekend = DateUtils.isTodayWeekend();
             // Get approved day-off/workhour requests for today
             List<Map<String,String>> requestWorkhourKeyMapList= requestService.getRequestByTodayAndApprovedStatus(employeeOid);
             // Process each request and determine the earliest startTime and latest endTime
             Map<String,Object> expectedTimesAndWorkTypeListMap=getExpectedTimesAndWorkTypeList(employeeOid,requestWorkhourKeyMapList);
+            //check whether today is fulldayoff day
+            List<String> workTypeListResponse = (List<String>)expectedTimesAndWorkTypeListMap.get("workTypeListResponse");
+            List<String> fulldayOffList=Config.fullDayoffList;
+            boolean isTodayFullDayoff=workTypeListResponse.stream().anyMatch(fulldayOffList::contains);
+            
             return new AttendanceStatusAndDetailsDTO(
-                todayStatus,
-                (List<String>)expectedTimesAndWorkTypeListMap.get("workTypeListResponse"),
+                (isTodayWeekend || isTodayFullDayoff) ? null : todayStatus,
+                workTypeListResponse,
                 (String)expectedTimesAndWorkTypeListMap.get("startTime"),
                 (String)expectedTimesAndWorkTypeListMap.get("endTime"),
                 (String)expectedTimesAndWorkTypeListMap.get("locationName")
@@ -163,13 +177,10 @@ public class AttendanceService {
         // search request whether there is approved request for today. if exists, apply to starthour or to endhour 
         String dateString = attendance.getDate();
         String employeeOid = attendance.getEmployeeOid();
-
         // Get approved day-off/workhour requests for today
         List<Map<String,String>> requestWorkhourKeyMapList=requestService.getRequestByWorkTypeInAndApprovedStatusAndDate(employeeOid,workTypeQueryList,dateString);
-        System.out.println(requestWorkhourKeyMapList);
         // Process each request and determine the earliest startTime and latest endTime
         Map<String,Object> expectedTimesAndWorkTypeListMap=getExpectedTimesAndWorkTypeList(employeeOid,requestWorkhourKeyMapList);
-        System.out.println(expectedTimesAndWorkTypeListMap);
         AttendanceHistory response = new AttendanceHistory(
             attendance.getEmployeeOid(),
             attendance.getDate(),
@@ -190,6 +201,108 @@ public class AttendanceService {
         }
         return response;
     }
+    public List<AttendanceHistory> getEmployeeHistory(
+        String _id, 
+        String startDate, 
+        String endDate, 
+        List<String> workTypeQueryList
+        ) {
+            try {  
+                String employeeOid = _id;
+
+                // Create objects with attended dates with  
+                List<AttendanceHistory> response = getEmployeeAttendance(
+                    employeeOid, 
+                    startDate, 
+                    endDate, 
+                    workTypeQueryList
+                    );
+                    System.out.println("Debugcheck");
+                    System.out.println(_id);
+                // Convert the start and end dates to LocalDate
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                LocalDate start = LocalDate.parse(startDate, formatter);
+                LocalDate end = LocalDate.parse(endDate, formatter);
+                // Get approved Full dayoff date List
+                List<Dayoff> approvedDayoffDayoffs=requestService.findByRequestStatusAndDateBetweenInclusive(employeeOid,"approved", startDate, endDate);
+                List<String> approvedDayoffDateStrings = approvedDayoffDayoffs.stream()
+                    .map(Dayoff::getDayoffDate)
+                    .collect(Collectors.toList());
+                // Get any Attendance Existed 
+                List<Attendance> existingAttendances=attendanceRepository.findByEmployeeOidAndDateBetweenInclusive(employeeOid,startDate, endDate);
+                List<String> existingAttendanceStrings = existingAttendances.stream()
+                    .map(Attendance::getDate)
+                    .collect(Collectors.toList());
+                // Get Holidays
+                List<Holiday> holidayDates = holidayService.findHolidaysByDateRange(startDate,endDate);
+                List<String> holidayDateStrings = holidayDates.stream()
+                    .map(Holiday::getHolidayDate)
+                    .collect(Collectors.toList());
+                        // Get a list of weekday dates between start and end date (inclusive)
+                List<String> allDates = DateUtils.getWeekdaysBetween(start, end);
+                
+                // Filter out dates that are:
+                // - Already in the attendance list
+                // - Holidays
+                if (workTypeQueryList.contains("absent")){
+                    List<String> availableDates = allDates.stream()
+                        .filter(date -> (approvedDayoffDateStrings.isEmpty() || !approvedDayoffDateStrings.contains(date))) // Exclude if not empty
+                        .filter(date -> (existingAttendanceStrings.isEmpty() || !existingAttendanceStrings.contains(date))) // Exclude if not empty
+                        .filter(date -> (holidayDateStrings.isEmpty() || !holidayDateStrings.contains(date))) // Exclude if not empty
+                        .collect(Collectors.toList());
+
+                    // Create AttendanceHistory objects with 'absent' work type for available dates
+                    List<AttendanceHistory> absents = availableDates.stream()
+                        .map(date -> {
+                            List<String> workTypeList = new ArrayList<>();
+                            workTypeList.add("absent"); // Mark as absent for missing attendance
+                            return new AttendanceHistory(
+                                employeeOid, 
+                                date, 
+                                null, // You can replace this with the actual location if needed
+                                null, // Check-in time is null as it's absent
+                                null, // Check-out time is null as it's absent
+                                false, // Status can be false for absent days
+                                workTypeList, 
+                                null, // Example: expected check-in time
+                                null // Example: expected check-out time
+                            );
+                        }).collect(Collectors.toList());
+                    response.addAll(absents);
+                }
+                if (workTypeQueryList.contains("holiday")){
+                    // Create AttendanceHistory objects with 'absent' work type for available dates
+                    List<AttendanceHistory> holidays = holidayDateStrings.stream()
+                        .map(date -> {
+                            List<String> workTypeList = new ArrayList<>();
+                            workTypeList.add("holiday"); // Mark as absent for missing attendance
+                            return new AttendanceHistory(
+                                employeeOid, 
+                                date, 
+                                null, // You can replace this with the actual location if needed
+                                null, // Check-in time is null as it's absent
+                                null, // Check-out time is null as it's absent
+                                false, // Status can be false for absent days
+                                workTypeList, 
+                                null, // Example: expected check-in time
+                                null // Example: expected check-out time
+                            );
+                        }).collect(Collectors.toList());
+                    response.addAll(holidays);
+
+                }
+            response =response.stream().sorted(Comparator.comparing(AttendanceHistory::getDate).reversed()) // Sort by date descending
+                .collect(Collectors.toList());  // Collect back into a list
+     
+        return response;
+        
+        }catch (Exception e) {
+            throw new RuntimeException("Error while Service getEmployeeHistory."+e);
+        }
+
+        
+    }
+
     // Fetch employee attendance between two dates
     public List<AttendanceHistory> getEmployeeAttendance(
         String _id, 
@@ -206,7 +319,7 @@ public class AttendanceService {
             List<Attendance> attendances = attendanceRepository.findByEmployeeOidAndDateBetweenInclusive(employeeOid,startDate,endDate);
             // Map Attendance to AttendanceHistory DTOs with enriched data
             return attendances.stream()
-                .sorted(Comparator.comparing(Attendance::getDate).reversed()) // Sort by date descending
+                //.sorted(Comparator.comparing(Attendance::getDate).reversed()) // Sort by date descending
                 .map(attendance -> resolveAttendanceHistoryDTO(attendance,workTypeQueryList))
                 .collect(Collectors.toList());
         } catch (Exception e) {

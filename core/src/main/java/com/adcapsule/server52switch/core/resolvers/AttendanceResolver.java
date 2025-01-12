@@ -48,7 +48,7 @@ public class AttendanceResolver {
             .collect(Collectors.toList());
 
             
-        return attendanceService.getEmployeeAttendance(employeeOid, startDate, endDate, workTypeList_value);
+        return attendanceService.getEmployeeHistory(employeeOid, startDate, endDate, workTypeList_value);
     }
  
     @MutationMapping

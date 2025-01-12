@@ -36,13 +36,13 @@ public class AttendanceHistory {
         ) {
         this.employeeOid = employeeOid;
         this.date = formatDate(date);
-        this.locationId = locationId;
-        this.checkInTime = formatTime(checkInTime);
-        this.checkOutTime = revisedCheckOutTime(checkOutTime,expectedCheckOutTime,date,status);
+        this.locationId = (locationId != null) ? locationId: null;
+        this.checkInTime = (checkInTime != null) ? formatTime(checkInTime): null;
+        this.checkOutTime = (checkOutTime != null) ? revisedCheckOutTime(checkOutTime,expectedCheckOutTime,date,status): null ;
         this.status = status;
         this.workduration = calculateWorkduration(checkInTime,checkOutTime);
-        this.checkInStatus = resolveCheckInStatus(checkInTime,expectedCheckInTime);//getCheckInStatus();
-        this.checkOutStatus = resolveCheckOutStatus(checkOutTime,expectedCheckOutTime,date,status);//getCheckOutStatus();
+        this.checkInStatus = (expectedCheckInTime != null) ? resolveCheckInStatus(checkInTime,expectedCheckInTime): null;//getCheckInStatus();
+        this.checkOutStatus = (expectedCheckOutTime != null) ? resolveCheckOutStatus(checkOutTime,expectedCheckOutTime,date,status): null;//getCheckOutStatus();
         this.workTypeList = resolveWorkTypeList(workTypeList);//getWorkTypeList();
 
         

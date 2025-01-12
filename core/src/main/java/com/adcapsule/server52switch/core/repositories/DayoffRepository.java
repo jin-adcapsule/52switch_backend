@@ -66,4 +66,19 @@ public interface DayoffRepository extends MongoRepository<Dayoff, String> {
         String startDate,
         String endDate
     );
+    @Query("{ 'employeeOid': ?0 ,'requestStatus': ?1 , 'dayoffType': { $in: ?2 },'dayoffDate': { '$gte': ?3, '$lte': ?4} }")
+    List<Dayoff> findByRequestStatusAndWorkTypeListAndDateBetweenInclusive(
+        String employeeOid,
+        String requestStatus, 
+        List<String> workTypeList,
+        String startDate,
+        String endDate
+    );
+    @Query("{ 'employeeOid': ?0 ,'requestStatus': ?1 ,'dayoffDate': { '$gte': ?2, '$lte': ?3} }")
+    List<Dayoff> findByRequestStatusAndDateBetweenInclusive(
+        String employeeOid,
+        String requestStatus, 
+        String startDate,
+        String endDate
+    );
 }

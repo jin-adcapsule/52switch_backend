@@ -181,6 +181,17 @@ public class DayoffService {
 
         return result;
     }
+    public List<Dayoff> findByRequestStatusAndWorkTypeListAndDateBetweenInclusive(String employeeOid,String requestStatus, List<String> workTypeList,String startDate,String endDate){
+        return dayoffRepository.findByRequestStatusAndWorkTypeListAndDateBetweenInclusive(employeeOid,requestStatus, workTypeList,startDate, endDate);
+    }
+    public List<Dayoff> findByRequestStatusAndDateBetweenInclusive(String employeeOid,String requestStatus,String startDate,String endDate){
+        List<Dayoff> results = dayoffRepository.findByRequestStatusAndDateBetweenInclusive(
+            employeeOid, requestStatus, startDate, endDate
+        );
+        System.out.println(results);
     
+        return results;
+        //return dayoffRepository.findByRequestStatusAndDateBetweenInclusive(employeeOid,requestStatus,startDate, endDate);
+    }
 }
 

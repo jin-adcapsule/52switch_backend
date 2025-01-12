@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.adcapsule.server52switch.core.configs.Config;
+import com.adcapsule.server52switch.core.models.Dayoff;
 
 
 @Service
@@ -28,11 +29,9 @@ public class RequestService {
         String currentDateInKST = Config.getCurrentDate_String();
         String statusApproved="approved";//String statusApproved = Config.requestStatusToTextMap.get("approved");
         // Fetch dayoff records based on filters
-        System.out.println(statusApproved);
-        System.out.println(currentDateInKST);
+
         List<String> dayoffTypes = dayoffService.findDayoffTypeByEmployeeOidAndRequestStatusAndDate(employeeOid, statusApproved, currentDateInKST);    
-        System.out.println("dayoffTypes");
-        System.out.println(dayoffTypes);
+
         List<Map<String,String>> dayoffKeyMapList = Config.getWorkTypeAndWorkTimeToday(dayoffTypes);//workhourStart,workhourEnd,key as dayoffTypeValue
         return dayoffKeyMapList ;
     }
@@ -44,5 +43,10 @@ public class RequestService {
         List<Map<String,String>> dayoffKeyMapList = Config.getWorkTypeAndWorkTimeToday(dayoffTypes);//workhourStart,workhourEnd,key as dayoffTypeValue
         return dayoffKeyMapList ;
     }
-    
+    public List<Dayoff> findByRequestStatusAndWorkTypeListAndDateBetweenInclusive(String employeeOid,String requestStatus, List<String> workTypeQueryList,String startDate,String endDate){
+        return dayoffService.findByRequestStatusAndWorkTypeListAndDateBetweenInclusive(employeeOid,requestStatus, workTypeQueryList,startDate, endDate);
+    }
+    public List<Dayoff> findByRequestStatusAndDateBetweenInclusive(String employeeOid,String requestStatus,String startDate,String endDate){
+        return dayoffService.findByRequestStatusAndDateBetweenInclusive(employeeOid,requestStatus,startDate, endDate);
+    }  
 }

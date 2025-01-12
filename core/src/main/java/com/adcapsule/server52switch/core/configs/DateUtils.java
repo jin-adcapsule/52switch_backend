@@ -1,8 +1,11 @@
 package com.adcapsule.server52switch.core.configs;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DateUtils {
 
@@ -63,5 +66,26 @@ public class DateUtils {
         // Format date as yy.mm.dd(요일)
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy.MM.dd(E)", java.util.Locale.KOREAN);
         return localDate.format(formatter);
+    }
+    public static List<String> getWeekdaysBetween(LocalDate startDate, LocalDate endDate) {
+        return Stream.iterate(startDate, date -> date.plusDays(1))
+                .limit(startDate.until(endDate).getDays() + 1)
+                .filter(date -> {
+                    // Exclude weekends (Saturday and Sunday)
+                    DayOfWeek dayOfWeek = date.getDayOfWeek();
+                    return dayOfWeek != DayOfWeek.SATURDAY && dayOfWeek != DayOfWeek.SUNDAY;
+                })
+                .map(LocalDate::toString)
+                .collect(Collectors.toList());
+    }
+    public static boolean isTodayWeekend() {
+        // Get today's date
+        LocalDate today = LocalDate.now();
+
+        // Get the day of the week
+        DayOfWeek dayOfWeek = today.getDayOfWeek();
+
+        // Check if the day is Saturday or Sunday
+        return dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY;
     }
 }

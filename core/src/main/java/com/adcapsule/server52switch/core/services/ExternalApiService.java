@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
@@ -20,8 +21,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.adcapsule.server52switch.core.configs.DotenvConfig;
 import com.adcapsule.server52switch.core.models.Holiday;
-import com.adcapsule.server52switch.core.models.Holiday.HolidayItem;
-import com.adcapsule.server52switch.core.repositories.HolidayRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -32,14 +31,14 @@ public class ExternalApiService {
     private String apiUrl;
     private ObjectMapper objectMapper = new ObjectMapper();
     private final RestTemplate restTemplate;
-    private final HolidayRepository holidayRepository;
+    private final HolidayService holidayService;
     private SimpleDateFormat inputDateFormat = new SimpleDateFormat("yyyyMMdd");
     private SimpleDateFormat outputDateFormat = new SimpleDateFormat("yyyy-MM-dd")
     ;
 
-    public ExternalApiService(RestTemplate restTemplate, HolidayRepository holidayRepository) {
+    public ExternalApiService(RestTemplate restTemplate, HolidayService holidayService) {
         this.restTemplate = restTemplate;
-        this.holidayRepository = holidayRepository;
+        this.holidayService = holidayService;
     }
     private String encode(String rawString){return URLEncoder.encode(rawString.trim(), StandardCharsets.UTF_8);}
     /**
@@ -70,66 +69,67 @@ public class ExternalApiService {
             // Fetch the API response
             String response = restTemplate.getForObject(uri, String.class);
             // Parse and process the API response
-            List<HolidayItem> items = parseApiResponse(response,String.valueOf(year));
+            List<Holiday> holidays = parseApiResponse(response, year);
 
-            // Save to MongoDB
-            if (!items.isEmpty()) {
-                Holiday holiday = holidayRepository.findByYear(year);
-                if (holiday == null) {
-                    holiday = new Holiday();
-                    holiday.setYear(year);
-                }
-                holiday.setHolidayList(items);
+            // Save each holiday as a separate document
+            for (Holiday holiday : holidays) {
                 holiday.setUpdatedAt(new Date());
-                holidayRepository.save(holiday);
+                // Check if a holiday with the same holidayDate already exists
+                Optional<Holiday> existingHoliday = holidayService.findByHolidayDate(holiday.getHolidayDate());
+
+                if (existingHoliday.isPresent()) {
+                    // Update existing holiday
+                    Holiday existing = existingHoliday.get();
+                    existing.setHolidayName(holiday.getHolidayName());
+                    existing.setIsHoliday(holiday.getIsHoliday());
+                    existing.setUpdatedAt(new Date()); // Set the updated date
+                    holidayService.saveHoliday(existing);
+                } else {
+                    // Save as a new holiday
+                    holidayService.saveHoliday(holiday);
+                }
             }
-        }catch (Exception e){
-            // Catching any exceptions to get insights into the problem
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        
     }
 
     /**
      * Parse the API response and extract holiday items.
      */
-    private List<HolidayItem> parseApiResponse(String response,String year) {
-        List<HolidayItem> holidayItems = new ArrayList<>();
+    private List<Holiday> parseApiResponse(String response, int year) {
+        List<Holiday> holidays = new ArrayList<>();
         try {
-            // Parse the JSON response into a JsonNode
             JsonNode rootNode = objectMapper.readTree(response);
-            // Add the default holiday item at the beginning of the list
-            HolidayItem defaultHolidayItem = new HolidayItem();
-            defaultHolidayItem.setHolidayName("근로자의 날");  // Default holiday name
-            defaultHolidayItem.setHolidayDate(year+"-05-01");     // Default holiday date
-            defaultHolidayItem.setIsHoliday(true);                // Default isHoliday flag
-            holidayItems.add(defaultHolidayItem);   
-            // Navigate through the JSON structure
             JsonNode itemsNode = rootNode.path("response").path("body").path("items").path("item");
 
-            // Check if the "item" is an array and parse it
+            // Add a default holiday (e.g., Labor Day)
+            Holiday defaultHoliday = new Holiday();
+            defaultHoliday.setHolidayName("근로자의 날");
+            defaultHoliday.setHolidayDate(year + "-05-01");
+            defaultHoliday.setIsHoliday(true);
+            holidays.add(defaultHoliday);
+
+            // Parse the rest of the holidays
             if (itemsNode.isArray()) {
                 for (JsonNode item : itemsNode) {
                     String dateName = item.path("dateName").asText();
-                    boolean isHoliday = item.path("isHoliday").asText().equals("Y");
+                    boolean isHoliday = "Y".equals(item.path("isHoliday").asText());
                     String locdate = item.path("locdate").asText();
-                    // Format locdate to yyyy-MM-dd
                     String formattedDate = formatDate(locdate);
-                    // Create a new HolidayItem object and set values
-                    HolidayItem holidayItem = new HolidayItem();
-                    holidayItem.setHolidayName(dateName);
-                    holidayItem.setIsHoliday(isHoliday);
-                    holidayItem.setHolidayDate(formattedDate);
 
-                    // Add to the list
-                    holidayItems.add(holidayItem);
+                    Holiday holiday = new Holiday();
+                    holiday.setHolidayName(dateName);
+                    holiday.setHolidayDate(formattedDate);
+                    holiday.setIsHoliday(isHoliday);
+
+                    holidays.add(holiday);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            // Handle any parsing errors if needed
         }
-        return holidayItems;
+        return holidays;
     }
 
     // Helper method to format the locdate to 'yyyy-MM-dd' format
@@ -148,6 +148,7 @@ public class ExternalApiService {
     @Scheduled(cron = "0 0 0 * * ?") // Runs daily at midnight
     public void scheduleHolidayFetch() {
         int currentYear = java.time.Year.now().getValue();
+        fetchAndStoreHolidayData(currentYear - 1);
         fetchAndStoreHolidayData(currentYear);
         fetchAndStoreHolidayData(currentYear + 1);
     }

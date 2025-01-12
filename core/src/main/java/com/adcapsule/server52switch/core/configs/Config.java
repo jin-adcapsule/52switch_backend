@@ -6,6 +6,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
@@ -47,10 +48,12 @@ public class Config {
             put("정상퇴근", "onTimeLeft");
             put("근무중", "working");
 
+            put("결근","absent");
+            put("공휴일","holiday");
         }
     };   
   public static Map<String,String> workTypeToTextMap= invertMapUsingStreams(workTypeTextToValueMap);
-
+  public static List<String> fullDayoffList = Arrays.asList("dayoffMilitary", "dayoffLOA", "dayoffExtra", "dayoffFull");
   public static final Map<String, Map<String, String>> workTypeToLocationKeyMap = Map.of(
         "workFull", Map.of("workhourStart", "workhourOn", "workhourEnd", "workhourOff"),
         "dayoffFirstHalf", Map.of("workhourStart", "workhourOn", "workhourEnd", "workhourHalf"),
