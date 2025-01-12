@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "group")
 public class Group {
     @Id
-    private String _id; // This represents the MongoDB `_id` field
+    private String _id; // This represents the MongoDB `_id#` field
 
     private String groupName;
     private String groupSupervisorOid;
