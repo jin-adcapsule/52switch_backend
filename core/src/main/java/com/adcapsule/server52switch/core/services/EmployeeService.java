@@ -357,4 +357,7 @@ public class EmployeeService {
     public Optional<NameProjection> findNameById(String employeeOid){
         return employeeRepository.findNameById(employeeOid);
     }
+    public List<Location> findAllLocations(){
+        return locationService.findAllLocations();
+    }
 }

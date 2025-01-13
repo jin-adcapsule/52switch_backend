@@ -1,5 +1,6 @@
 package com.adcapsule.server52switch.core.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,5 +64,8 @@ public class LocationService {
     public Location getLocationById(String objectId) {
         return locationRepository.findById(objectId)
             .orElseThrow(() -> new RuntimeException("Group not found with Id: " + objectId));
+    }
+    public List<Location> findAllLocations(){
+        return locationRepository.findAll();
     }
 }

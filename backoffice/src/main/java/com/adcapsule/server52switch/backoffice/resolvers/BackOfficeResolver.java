@@ -7,9 +7,10 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
+import com.adcapsule.server52switch.backoffice.dtos.GroupMembersDTO;
 import com.adcapsule.server52switch.backoffice.services.BackOfficeService;
-import com.adcapsule.server52switch.core.models.Employee;
 import com.adcapsule.server52switch.core.models.Group;
+import com.adcapsule.server52switch.core.models.Location;
 @Controller
 public class BackOfficeResolver {
 
@@ -25,7 +26,13 @@ public class BackOfficeResolver {
         return backOfficeService.getMyAllGroups(employeeOid);
     }
     @QueryMapping
-    public List<Employee> getMyAllGroupsMembers(@Argument String employeeOid) {
+    public List<GroupMembersDTO> getMyAllGroupsMembers(@Argument String employeeOid) {
         return backOfficeService.getMyAllGroupsMembers(employeeOid);
     }
+    @QueryMapping
+    public List<Location> getAllLocations(@Argument String employeeOid) {
+        return backOfficeService.getAllLocations();
+    }
+    
+
 }

@@ -1,14 +1,15 @@
 type Employee {
-    #_id: ID
+    _id: ID
+    
     employeeId: Int
     name: String
     email: String
     position: String
     phone: String
     joindate: String
+    department: String
 
     #groupId: ID # groupId
-    department: String
     supervisorName: String
     supervisorOid: String
     isSupervisor: Boolean
@@ -24,10 +25,10 @@ type Employee {
 }
 
 type Group {
+    _id: ID
     groupName: String
     groupSupervisorOid: String
-    subgroup: [ID] 
-    parentGroup: ID 
+    parentGroupId: ID 
 }
 
 type Attendance {
@@ -43,6 +44,7 @@ type Attendance {
 }
 
 type Location {
+    _id: ID
     workplace: String
     workhourOn: String
     workhourOff: String
@@ -131,6 +133,9 @@ type DayoffInfoDTO {
 }
 type GroupMembersDTO {
   groupName: String!
+  groupId: String
+  parentGroupId: String
+  groupSupervisorOid: String
   members: [Employee!]!
 }
 type Query {
@@ -150,7 +155,9 @@ type Query {
     getDayoffInfo(employeeOid: String!): DayoffInfoDTO
     getEmployeeAttendance(employeeOid: String!,startDate: String!, endDate: String!, workTypeList:[String!]): [AttendanceHistory]
     
-    getMyAllGroupsMembers(employeeOid: String!): [Employee]
+    getMyAllGroupsMembers(employeeOid: String!): [GroupMembersDTO]
+    getMyAllGroups(employeeOid: String!): [Group]
+    getAllLocations(employeeOid: String!): [Location]
 
 }
 type Mutation {

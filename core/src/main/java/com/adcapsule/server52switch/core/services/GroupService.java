@@ -65,13 +65,40 @@ public class GroupService {
 
         // Step 3: Recursively find all subgroups of root groups
         for (Group rootGroup : rootGroups) {
+            System.out.println("rootgroupdebug");
+            System.out.println(rootGroup.getGroupName());
             allSubGroups.add(rootGroup); // Add the root group to the result
-            findSubGroupsRecursive(rootGroup.getSubGroup(), allSubGroups, visited);
+            findSubGroupsByParentGroupRecursive(rootGroup.getId(), allSubGroups, visited);
+            //findSubGroupsRecursive(rootGroup.getSubGroup(), allSubGroups, visited);
         }
 
         // Step 4: Convert the result to a list and return
         return new ArrayList<>(allSubGroups);
     }
+    /**
+     * Recursively fetches subgroups using the parentGroup property and adds them to the result set.
+     * 
+     * @param parentGroupId The ID of the parent group to process.
+     * @param result        A Set to store unique subgroups (avoids duplicates).
+     * @param visited       A Set to track visited group IDs (prevents infinite loops in cyclic relationships).
+     */
+    private void findSubGroupsByParentGroupRecursive(String parentGroupId, Set<Group> result, Set<String> visited) {
+        if (parentGroupId == null || visited.contains(parentGroupId)) {
+            return; // Base case: No parent group or already visited
+        }
+        visited.add(parentGroupId); // Mark group ID as visited
+
+        // Fetch all groups where parentGroup equals the given parentGroupId
+        List<Group> subGroups = groupRepository.findByParentGroupId(parentGroupId);
+
+        for (Group subGroup : subGroups) {
+            if (!result.contains(subGroup)) {
+                result.add(subGroup); // Add the subgroup to the result
+                findSubGroupsByParentGroupRecursive(subGroup.getId(), result, visited); // Recursive call for its subgroups
+            }
+        }
+    }
+
 
 /**
  * Recursively fetches subgroups and adds them to the result set.
@@ -80,25 +107,25 @@ public class GroupService {
  * @param result      A Set to store unique subgroups (avoids duplicates).
  * @param visited     A Set to track visited group IDs (prevents infinite loops in cyclic relationships).
  */
-    private void findSubGroupsRecursive(List<String> subGroupIds, Set<Group> result, Set<String> visited) {
-        if (subGroupIds == null || subGroupIds.isEmpty()) {
-            return; // Base case: No subgroups to process
-        }
+    // private void findSubGroupsRecursive(List<String> subGroupIds, Set<Group> result, Set<String> visited) {
+    //     if (subGroupIds == null || subGroupIds.isEmpty()) {
+    //         return; // Base case: No subgroups to process
+    //     }
     
-        for (String subGroupId : subGroupIds) {
-            if (visited.contains(subGroupId)) {
-                continue; // Skip already visited groups
-            }
-            visited.add(subGroupId); // Mark group ID as visited
+    //     for (String subGroupId : subGroupIds) {
+    //         if (visited.contains(subGroupId)) {
+    //             continue; // Skip already visited groups
+    //         }
+    //         visited.add(subGroupId); // Mark group ID as visited
     
-            // Fetch the subgroup by ID
-            Group subGroup = groupRepository.findById(subGroupId).orElse(null);
-            if (subGroup != null) {
-                result.add(subGroup); // Add subgroup to the result
-                findSubGroupsRecursive(subGroup.getSubGroup(), result, visited); // Recursive call for its subgroups
-            }
-        }
-    }
+    //         // Fetch the subgroup by ID
+    //         Group subGroup = groupRepository.findById(subGroupId).orElse(null);
+    //         if (subGroup != null) {
+    //             result.add(subGroup); // Add subgroup to the result
+    //             findSubGroupsRecursive(subGroup.getSubGroup(), result, visited); // Recursive call for its subgroups
+    //         }
+    //     }
+    // }
     /**
      * Retrieve a group document by its ObjectId.
      *

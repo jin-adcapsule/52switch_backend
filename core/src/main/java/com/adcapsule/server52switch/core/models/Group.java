@@ -1,7 +1,5 @@
 package com.adcapsule.server52switch.core.models;
 
-import java.util.List;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -12,8 +10,7 @@ public class Group {
 
     private String groupName;
     private String groupSupervisorOid;
-    private List<String> subGroup;
-    private String parentGroup; 
+    private String parentGroupId; 
 
     // Getters and Setters
 
@@ -39,19 +36,12 @@ public class Group {
     }
 
 
-    public List<String> getSubGroup() {
-        return subGroup;
+
+    public String getParentGroupId() {
+        return parentGroupId;
     }
 
-    public void setSubGroup(List<String> subGroup) {
-        this.subGroup = subGroup;
-    }
-
-    public String getParentGroup() {
-        return parentGroup;
-    }
-
-    public void setParentGroup(String parentGroup) {
-        this.parentGroup = parentGroup;
+    public void setParentGroup(String parentGroupId) {
+        this.parentGroupId = parentGroupId;
     }
 }

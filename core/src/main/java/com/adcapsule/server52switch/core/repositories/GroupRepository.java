@@ -18,6 +18,8 @@ public interface GroupRepository extends MongoRepository<Group, String> {
     // Custom query to find group by supervisorid
     @Query(value = "{ 'groupSupervisorOid': ?0 }", fields = "{ '_id': 1 }")
     List<IdProjection> findGroupIdListBySupervisorOid(String supervisorOid);
+    @Query("{'parentGroupId': ?0}")
+    List<Group> findByParentGroupId(String parentGroupId);
     // Custom query to find group by supervisorid
     //@Query(value = "{ 'groupSupervisorEid': ?0 }", fields = "{ 'groupMembers': 1, '_id': 0 }")
     //List<Document> _findGroupMembersBySupervisorId(int supervisorId);
