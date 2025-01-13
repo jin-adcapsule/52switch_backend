@@ -37,12 +37,12 @@ public class AttendanceHistory {
         this.employeeOid = employeeOid;
         this.date = formatDate(date);
         this.locationId = (locationId != null) ? locationId: null;
-        this.checkInTime = (checkInTime != null) ? formatTime(checkInTime): null;
-        this.checkOutTime = (checkOutTime != null) ? revisedCheckOutTime(checkOutTime,expectedCheckOutTime,date,status): null ;
+        this.checkInTime =formatTime(checkInTime);
+        this.checkOutTime = revisedCheckOutTime(checkOutTime,expectedCheckOutTime,date,status) ;
         this.status = status;
         this.workduration = calculateWorkduration(checkInTime,checkOutTime);
-        this.checkInStatus = (expectedCheckInTime != null) ? resolveCheckInStatus(checkInTime,expectedCheckInTime): null;//getCheckInStatus();
-        this.checkOutStatus = (expectedCheckOutTime != null) ? resolveCheckOutStatus(checkOutTime,expectedCheckOutTime,date,status): null;//getCheckOutStatus();
+        this.checkInStatus = (expectedCheckInTime != null&&checkInTime != null) ? resolveCheckInStatus(checkInTime,expectedCheckInTime): null;//getCheckInStatus();
+        this.checkOutStatus = (expectedCheckOutTime != null&&checkOutTime !=null) ? resolveCheckOutStatus(checkOutTime,expectedCheckOutTime,date,status): null;//getCheckOutStatus();
         this.workTypeList = resolveWorkTypeList(workTypeList);//getWorkTypeList();
 
         
@@ -69,7 +69,7 @@ public class AttendanceHistory {
     private boolean isToday(String date) {
         try {
             // Parse the input date in ISO-8601 format (yyyy-MM-dd)
-            LocalDate inputDate = LocalDate.parse(date);
+            LocalDate inputDate = LocalDate.parse(date);    
             //LocalDate inputDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yy.MM.dd(E)", java.util.Locale.KOREAN));
             return inputDate.isEqual(LocalDate.now());
         } catch (Exception e) {

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.adcapsule.server52switch.core.configs.DateUtils;
 import com.adcapsule.server52switch.core.configs.DotenvConfig;
 import com.adcapsule.server52switch.core.models.Holiday;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -157,6 +158,32 @@ public class ExternalApiService {
      */
     @PostConstruct
     public void initializeHolidayFetch() {
+        if (shouldSkipHolidayFetch()) {
+            System.out.println("Holiday fetch skipped: Last update was less than 23 hours ago.");
+            return;
+        }
+        // Logic to schedule or perform the holiday fetch
+        System.out.println("Fetching and updating holiday data...");
         scheduleHolidayFetch();
     }
+    private boolean shouldSkipHolidayFetch() {
+        // Fetch the random holiday document
+        Holiday randomHoliday = holidayService.findRandomHoliday(); // Custom repository method
+        
+        if (randomHoliday == null) {
+            System.out.println("No holiday document found. Proceeding with fetch.");
+            return false; // No document found; fetch should proceed
+        }
+
+        Date updatedAt = randomHoliday.getUpdatedAt();
+        if (updatedAt == null) {
+            System.out.println("Holiday document missing updatedAt. Proceeding with fetch.");
+            return false; // Missing timestamp; fetch should proceed
+        }
+
+        // Calculate the duration since the last update
+        
+        return DateUtils.getDurationHoursBetweenNowAndDate(updatedAt) < 23; // Skip fetch if less than 23 hours have passed
+    }
+
 }

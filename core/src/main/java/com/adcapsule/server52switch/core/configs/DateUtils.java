@@ -1,8 +1,10 @@
 package com.adcapsule.server52switch.core.configs;
 import java.time.DayOfWeek;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -88,4 +90,11 @@ public class DateUtils {
         // Check if the day is Saturday or Sunday
         return dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY;
     }
+    public static long getDurationHoursBetweenNowAndDate(Date dateToCompare){
+        // Convert Date to Instant for comparison
+        Instant dateToCompareInstant = dateToCompare.toInstant();
+        Instant nowInstant = Instant.now();
+        Duration duration = Duration.between(dateToCompareInstant,nowInstant);
+        return duration.toHours();
+    } 
 }

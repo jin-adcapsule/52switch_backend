@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Service;
 
 import com.adcapsule.server52switch.core.models.Holiday;
@@ -19,6 +18,15 @@ public class HolidayService {
             this.holidayRepository = holidayRepository;
 
             
+        }
+        public Holiday findRandomHoliday(){//pick first Holiday
+            // Use aggregation to fetch a random document
+            List<Holiday> holidays = holidayRepository.findAll(); // Fetch all holidays
+    
+            if (holidays.isEmpty()) {
+                return null; // No holidays available
+            }
+            return holidays.get(0);
         }
         public List<Holiday> findHolidaysAfterOrOn(String date){
             return holidayRepository.findHolidaysAfterOrOn(date);

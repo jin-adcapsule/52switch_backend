@@ -1,6 +1,5 @@
 package com.adcapsule.server52switch.core.services;
 import java.text.ParseException;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -10,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +24,6 @@ import com.adcapsule.server52switch.core.models.Attendance;
 import com.adcapsule.server52switch.core.models.Dayoff;
 import com.adcapsule.server52switch.core.models.Holiday;
 import com.adcapsule.server52switch.core.repositories.AttendanceRepository;
-import com.adcapsule.server52switch.core.repositories.HolidayRepository;
 
 
 @Service
@@ -179,19 +176,36 @@ public class AttendanceService {
         String employeeOid = attendance.getEmployeeOid();
         // Get approved day-off/workhour requests for today
         List<Map<String,String>> requestWorkhourKeyMapList=requestService.getRequestByWorkTypeInAndApprovedStatusAndDate(employeeOid,workTypeQueryList,dateString);
+        System.out.println("Debugcheck:attendance");
+        System.out.println(attendance.getDate());
+        System.out.println("Debugcheck");
+        System.out.println(requestWorkhourKeyMapList);
         // Process each request and determine the earliest startTime and latest endTime
         Map<String,Object> expectedTimesAndWorkTypeListMap=getExpectedTimesAndWorkTypeList(employeeOid,requestWorkhourKeyMapList);
-        AttendanceHistory response = new AttendanceHistory(
-            attendance.getEmployeeOid(),
-            attendance.getDate(),
-            attendance.getLocationId(),
-            attendance.getCheckInTime(),  
-            attendance.getCheckOutTime(),   
-            attendance.getStatus(),
-            (List<String>)expectedTimesAndWorkTypeListMap.get("workTypeListResponse"),//approvedExistingworkTypeList
-            (String)expectedTimesAndWorkTypeListMap.get("startTime"),//expectedCheckInTime
-            (String)expectedTimesAndWorkTypeListMap.get("endTime") //expectedCheckOutTime
-        );
+        System.out.println("Debugcheck");
+        System.out.println(expectedTimesAndWorkTypeListMap);
+        AttendanceHistory response = null;
+        try {
+            response = new AttendanceHistory(
+                attendance.getEmployeeOid(),
+                attendance.getDate(),
+                attendance.getLocationId(),
+                attendance.getCheckInTime(),
+                attendance.getCheckOutTime(),
+                attendance.getStatus(),
+                (List<String>) expectedTimesAndWorkTypeListMap.get("workTypeListResponse"), // Ensure this is a List<String>
+                (String) expectedTimesAndWorkTypeListMap.get("startTime"), // Ensure this is a String
+                (String) expectedTimesAndWorkTypeListMap.get("endTime") // Ensure this is a String
+            );
+        } catch (ClassCastException e) {
+            // Log the error or handle it appropriately
+            System.out.println("Error casting values: " + e.getMessage());
+        } catch (Exception e) {
+            // Catch any other general exceptions
+            System.out.println("Error creating AttendanceHistory: " + e.getMessage());
+        }
+        System.out.println("Debugcheck:response");
+        System.out.println(response);
         // Check if workTypeListResponse intersects with workTypeQueryList
         List<String> intersection = new ArrayList<>(response.getWorkTypeValueList());
         intersection.retainAll(workTypeQueryList); // Retain only the common elements
@@ -209,7 +223,8 @@ public class AttendanceService {
         ) {
             try {  
                 String employeeOid = _id;
-
+                System.out.println("Debugcheck");
+                System.out.println(workTypeQueryList);
                 // Create objects with attended dates with  
                 List<AttendanceHistory> response = getEmployeeAttendance(
                     employeeOid, 
@@ -217,8 +232,8 @@ public class AttendanceService {
                     endDate, 
                     workTypeQueryList
                     );
-                    System.out.println("Debugcheck");
-                    System.out.println(_id);
+                System.out.println("Debugcheck");
+                System.out.println(_id);
                 // Convert the start and end dates to LocalDate
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 LocalDate start = LocalDate.parse(startDate, formatter);
@@ -317,6 +332,8 @@ public class AttendanceService {
             
             // Fetch attendance records based on filters
             List<Attendance> attendances = attendanceRepository.findByEmployeeOidAndDateBetweenInclusive(employeeOid,startDate,endDate);
+            System.out.println("Debugcheck");
+            System.out.println(attendances);
             // Map Attendance to AttendanceHistory DTOs with enriched data
             return attendances.stream()
                 //.sorted(Comparator.comparing(Attendance::getDate).reversed()) // Sort by date descending
