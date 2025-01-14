@@ -9,6 +9,9 @@ import org.springframework.stereotype.Controller;
 
 import com.adcapsule.server52switch.backoffice.dtos.GroupMembersDTO;
 import com.adcapsule.server52switch.backoffice.services.BackOfficeService;
+import com.adcapsule.server52switch.core.models.Attendance;
+import com.adcapsule.server52switch.core.models.Dayoff;
+import com.adcapsule.server52switch.core.models.Employee;
 import com.adcapsule.server52switch.core.models.Group;
 import com.adcapsule.server52switch.core.models.Location;
 @Controller
@@ -30,9 +33,24 @@ public class BackOfficeResolver {
         return backOfficeService.getMyAllGroupsMembers(employeeOid);
     }
     @QueryMapping
-    public List<Location> getAllLocations(@Argument String employeeOid) {
+    public List<Location> getAllLocations() {
         return backOfficeService.getAllLocations();
     }
     
-
+    @QueryMapping
+    public List<Employee> getAllEmployees() {
+        return backOfficeService.getAllEmployees();
+    }
+    @QueryMapping
+    public List<Group> getAllGroups() {
+        return backOfficeService.getAllGroups();
+    }
+    @QueryMapping
+    public List<Dayoff> getAllDayoffs() {
+        return backOfficeService.getAllDayoffs();
+    }
+    @QueryMapping
+    public List<Attendance> getAllAttendances() {
+        return backOfficeService.getAllAttendances();
+    }
 }

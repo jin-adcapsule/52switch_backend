@@ -109,9 +109,8 @@ public class SupervisorService {
                         .collect(Collectors.toList());
                     // Get employee name dynamically using employeeService
                         String employeeName = employeeService
-                        .getEmployeeMiniByEmployeeOid(groupedDayoffs.get(0).getEmployeeOid())
-                        .get("name")
-                        .toString();
+                        .getEmployeeById(groupedDayoffs.get(0).getEmployeeOid())
+                        .getName();
                     // Combine data from the grouped sublist to create a single DTO
                     RequestDTO requestDTO= new RequestDTO(
                         groupedDayoffs.get(0).getEmployeeOid(),   // Assuming all in group have same employeeId
@@ -248,9 +247,8 @@ public class SupervisorService {
                         .collect(Collectors.toList());
                     // Get employee name dynamically using employeeService
                         String employeeName = employeeService
-                        .getEmployeeMiniByEmployeeOid(groupedDayoffs.get(0).getEmployeeOid())
-                        .get("name")
-                        .toString();
+                        .getEmployeeById(groupedDayoffs.get(0).getEmployeeOid())
+                        .getName();
                     // Combine data from the grouped sublist to create a single DTO
                     RequestDTO requestDTO= new RequestDTO(
                         groupedDayoffs.get(0).getEmployeeOid(),   // Assuming all in group have same employeeId

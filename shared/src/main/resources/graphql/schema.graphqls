@@ -1,5 +1,5 @@
-type Employee {
-    _id: ID
+type EmployeeDTO {
+    employeeOid: String
     
     employeeId: Int
     name: String
@@ -9,7 +9,7 @@ type Employee {
     joindate: String
     department: String
 
-    #groupId: ID # groupId
+    groupId: ID 
     supervisorName: String
     supervisorOid: String
     isSupervisor: Boolean
@@ -23,6 +23,19 @@ type Employee {
 
     dayoffPerYear: Int
 }
+type Employee{
+    _id: ID
+    employeeId: Int
+    name: String
+    email: String
+    position: String
+    phone: String
+    joindate: String
+    department: String
+    groupId: ID 
+    locationId: ID
+    dayoffPerYear: Int
+}
 
 type Group {
     _id: ID
@@ -32,15 +45,13 @@ type Group {
 }
 
 type Attendance {
-    employeeOid: String
+    _id: ID
     date: String
-    checkInTime: String
-    checkOutTime: String
-    location: String
+    checkInTime: String #original Type Date
+    checkOutTime: String #original Type Date
+    locationId: String
     status: Boolean
-    checkInStatus: String
-    checkOutStatus: String
-    workTypeList: [String!]
+    employeeOid: String
 }
 
 type Location {
@@ -51,6 +62,8 @@ type Location {
     workhourHalf: String
 }
 type Dayoff {
+    _id: ID
+    employeeOid:String
     dayoffType: String!
     requestComment: String
     dayoffDate: String!
@@ -136,11 +149,11 @@ type GroupMembersDTO {
   groupId: String
   parentGroupId: String
   groupSupervisorOid: String
-  members: [Employee!]!
+  members: [EmployeeDTO!]!
 }
 type Query {
     validateUidAndPhone(uid: String!, phone: String!): EmployeeValDTO
-    getObjectIdByPhone(phone: String!): Employee
+    #getObjectIdByPhone(phone: String!): Employee
     
     getAttendanceStatusAndDetails(employeeOid: String! ): AttendanceStatusAndDetailsDTO
     getAttendanceStatus(employeeOid: String!): AttendanceStatusDTO
@@ -150,15 +163,19 @@ type Query {
     getPendingRequests(employeeOid:String!): [RequestDTO]
     getRequestHistory(employeeOid: String!, startDate: String!, endDate: String!, requestStatusList: [String!]): [RequestDTO]
     
-    getEmployeeInfo(employeeOid: String!): Employee
+    getEmployeeInfo(employeeOid: String!): EmployeeDTO
     getLocationInfo(employeeOid: String!): LocationInfoDTO
     getDayoffInfo(employeeOid: String!): DayoffInfoDTO
     getEmployeeAttendance(employeeOid: String!,startDate: String!, endDate: String!, workTypeList:[String!]): [AttendanceHistory]
     
     getMyAllGroupsMembers(employeeOid: String!): [GroupMembersDTO]
     getMyAllGroups(employeeOid: String!): [Group]
-    getAllLocations(employeeOid: String!): [Location]
-
+    
+    getAllLocations: [Location]
+    getAllEmployees: [Employee]
+    getAllDayoffs: [Dayoff]
+    getAllAttendances: [Attendance]
+    getAllGroups: [Group]
 }
 type Mutation {
     markAttendance(employeeOid: String!, status: Boolean!): AttendanceStatusDTO

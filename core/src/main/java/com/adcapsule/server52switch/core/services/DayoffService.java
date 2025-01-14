@@ -40,6 +40,9 @@ public class DayoffService {
        this.employeeService = employeeService;
        this.holidayService = holidayService;
    }
+   public List<Dayoff> findAll(){
+        return dayoffRepository.findAll();
+   }
     public Optional<Dayoff> findByIdAndDayoffDate(String objectId, String dayoffdate){
         String employeeOid = objectId;
         //int employeeId = employeeService.getEmployeeIdById(objectId);

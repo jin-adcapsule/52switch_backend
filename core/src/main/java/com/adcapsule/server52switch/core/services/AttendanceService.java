@@ -42,8 +42,10 @@ public class AttendanceService {
        this.requestService = requestService;
        this.holidayService = holidayService;
    }
-
-   public AttendanceStatusDTO getAttendanceStatus(String employeeOid) {
+    public List<Attendance> findAll(){
+        return attendanceRepository.findAll();          
+    }
+    public AttendanceStatusDTO getAttendanceStatus(String employeeOid) {
         try {
             String dateToday = Config.getCurrentDate_String();
             AttendanceStatusDTO AttendanceStatusDTO = attendanceRepository.findStatusByobjectOidAndDate(employeeOid, dateToday);
@@ -176,14 +178,10 @@ public class AttendanceService {
         String employeeOid = attendance.getEmployeeOid();
         // Get approved day-off/workhour requests for today
         List<Map<String,String>> requestWorkhourKeyMapList=requestService.getRequestByWorkTypeInAndApprovedStatusAndDate(employeeOid,workTypeQueryList,dateString);
-        System.out.println("Debugcheck:attendance");
-        System.out.println(attendance.getDate());
-        System.out.println("Debugcheck");
-        System.out.println(requestWorkhourKeyMapList);
+
         // Process each request and determine the earliest startTime and latest endTime
         Map<String,Object> expectedTimesAndWorkTypeListMap=getExpectedTimesAndWorkTypeList(employeeOid,requestWorkhourKeyMapList);
-        System.out.println("Debugcheck");
-        System.out.println(expectedTimesAndWorkTypeListMap);
+
         AttendanceHistory response = null;
         try {
             response = new AttendanceHistory(
@@ -332,8 +330,6 @@ public class AttendanceService {
             
             // Fetch attendance records based on filters
             List<Attendance> attendances = attendanceRepository.findByEmployeeOidAndDateBetweenInclusive(employeeOid,startDate,endDate);
-            System.out.println("Debugcheck");
-            System.out.println(attendances);
             // Map Attendance to AttendanceHistory DTOs with enriched data
             return attendances.stream()
                 //.sorted(Comparator.comparing(Attendance::getDate).reversed()) // Sort by date descending

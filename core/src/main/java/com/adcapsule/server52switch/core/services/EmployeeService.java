@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.adcapsule.server52switch.core.dtos.EmployeeDTO;
 import com.adcapsule.server52switch.core.dtos.LocationInfoDTO;
 import com.adcapsule.server52switch.core.models.Employee;
 import com.adcapsule.server52switch.core.models.Group;
@@ -40,6 +41,9 @@ public class EmployeeService {
     }
 
 
+    public List<Employee> findAll(){
+        return employeeRepository.findAll();
+    }
     public List<Integer> findEmployeeIdListbyGroupId(String groupId){
         
         // Map the projections to a list of strings (dayoffType)
@@ -66,10 +70,37 @@ public class EmployeeService {
     public Employee getEmployeeById(String objectId) {
         Employee employee = employeeRepository.findById(objectId)
             .orElseThrow(() -> new RuntimeException("Employee not found with Id"));
-        
-        resolveGroupInfo(employee);
-        resolveLocationInfo(employee);
         return employee;
+    }
+    public EmployeeDTO getEmployeeDTOById(String employeeOid) {
+        // Fetch the employee from the repository
+        Employee employee = employeeRepository.findById(employeeOid)
+            .orElseThrow(() -> new RuntimeException("Employee not found with Id"));
+        // Resolve group and location info as maps
+        Map<String, Object> groupInfo = resolveGroupInfo(employee);
+        Map<String, Object> locationInfo = resolveLocationInfo(employee);
+        // Create a new EmployeeDTO
+        EmployeeDTO employeeDTO = new EmployeeDTO(
+            employee.getId(),
+            employee.getEmployeeId(),
+            employee.getName(),
+            employee.getEmail(),
+            employee.getPosition(),
+            employee.getPhone(),
+            employee.getJoindate(),
+            employee.getGroupId(),
+            employee.getLocationId(),
+            employee.getDayoffPerYear(),
+            (String) groupInfo.get("department"),
+            (String) groupInfo.get("supervisorOid"),
+            (String) groupInfo.get("supervisorName"),
+            (Boolean) groupInfo.get("isSupervisor"),
+            (String) locationInfo.get("workhourOn"),
+            (String) locationInfo.get("workhourOff"),
+            (String) locationInfo.get("workhourHalf"),
+            (String) locationInfo.get("workplace")
+        );
+        return employeeDTO;
     }
      /**
      * Resolve and set group-related information for an employee.
@@ -82,7 +113,8 @@ public class EmployeeService {
      *
      * @param employee The employee object to update with group-related information.
      */
-    private void resolveGroupInfo(Employee employee) {
+    private Map<String,Object> resolveGroupInfo(Employee employee) {
+        Map<String, Object> groupInfo = new HashMap<>();
         // Find the group where this employee is a member
         Group group = groupService.getGroupById(employee.getGroupId());
         //int groupSupervisorEid = group.getGroupSupervisorEid();
@@ -92,19 +124,20 @@ public class EmployeeService {
         // Set the supervisor field using groupSupervisorOid
         if (groupSupervisorOid == null ? employeeOid == null : groupSupervisorOid.equals(employeeOid)) {
             // Employee is their own supervisor
-            employee.setSupervisorName(employee.getName());
-            employee.setDepartment(groupName);
-            employee.setSupervisorOid(groupSupervisorOid); // Set the employee's own ID
-            employee.setIsSupervisor(groupService.existsByGroupSupervisorOid(employeeOid)); 
+            groupInfo.put("supervisorName", employee.getName());
+            groupInfo.put("department", groupName);
+            groupInfo.put("supervisorOid",groupSupervisorOid); // Set the employee's own ID
+            groupInfo.put("isSupervisor", groupService.existsByGroupSupervisorOid(employeeOid)); 
         } else {
             // Fetch supervisor info by groupSupervisorEid
             Employee supervisor = employeeRepository.findById(groupSupervisorOid)
                 .orElseThrow(() -> new RuntimeException("Supervisor not found with employeeOid: " + groupSupervisorOid));
-            employee.setSupervisorName(supervisor.getName());
-            employee.setSupervisorOid(groupSupervisorOid); // Set the supervisor's employee ID
-            employee.setDepartment(groupName);
-            employee.setIsSupervisor(groupService.existsByGroupSupervisorOid(employeeOid));            // Set isSupervisor field
+                groupInfo.put("supervisorName", supervisor.getName());
+                groupInfo.put("supervisorOid", groupSupervisorOid); // Set the supervisor's employee ID
+                groupInfo.put("department", groupName);
+                groupInfo.put("isSupervisor", groupService.existsByGroupSupervisorOid(employeeOid));            // Set isSupervisor field
         }
+        return groupInfo;
     }
     /* 
     public int getSupervisorEidbyEmployeeId(int employeeId) {
@@ -162,7 +195,8 @@ public class EmployeeService {
      *
      * @param employee The employee object to update with location-related information.
      */
-    private void resolveLocationInfo(Employee employee) {
+    private Map<String,Object> resolveLocationInfo(Employee employee) {
+        Map<String, Object> locationInfo = new HashMap<>();
         // Find the group where this employee is a member
         Location location = locationService.getLocationById(employee.getLocationId());
         String workhourOn = location.getWorkhourOn();
@@ -170,41 +204,13 @@ public class EmployeeService {
         String workhourHalf = location.getWorkhourHalf();
         String workplace = location.getWorkplace();
 
-        employee.setWorkhourOn(workhourOn);
-        employee.setWorkhourOff(workhourOff); 
-        employee.setWorkhourHalf(workhourHalf); 
-        employee.setWorkplace(workplace);
-        
+        locationInfo.put("workhourOn", workhourOn);
+        locationInfo.put("workhourOff", workhourOff); 
+        locationInfo.put("workhourHalf", workhourHalf); 
+        locationInfo.put("workplace", workplace);
+        return locationInfo;
     }
-    /**
-     * Retrieve the workplace and work hour details for an employee by their ID.
-     *
-     * This method fetches the basic location details for an employee.
-     *
-     * Edge cases:
-     * - Throws an exception if the employee is not found.
-     *
-     * @param employeeId The unique identifier of the employee.
-     * @return A map containing the workplace and workhourOn details.
-     
-    public Map<String, Object> getLocationAndWorkDetailsByEmployeeId(int employeeId) {
-        Employee employee = employeeRepository.findByEmployeeId(employeeId)
-            .orElseThrow(() -> new RuntimeException("Employee not found with Id"));
-        resolveLocationInfo(employee);
-        // Extract the required details
-        String workplace = employee.getWorkplace();
-        String workhourOn = employee.getWorkhourOn();
-        String workhourOff = employee.getWorkhourOff();
-        String workhourHalf = employee.getWorkhourHalf();
-        // Return both as a map or a custom object if preferred
-        Map<String, Object> response = new HashMap<>();
-        response.put("workplace", workplace);
-        response.put("workhourOn", workhourOn);
-        response.put("workhourOff", workhourOff);
-        response.put("workhourHalf", workhourHalf);
-        return response;
-    }
-    */
+
     public String findLocationIdById(String employeeOid){
         LocationIdProjection locationIdProjection = employeeRepository.findLocationIdById(employeeOid);
         return locationIdProjection != null ? locationIdProjection.getLocationId() : null; // Return groupId or null if not found
@@ -245,9 +251,11 @@ public class EmployeeService {
      * @return The workplace of the employee.
      */
     public String getWorkplaceByEmployeeId(int employeeId) {
-        return employeeRepository.findByEmployeeId(employeeId)
-                .map(Employee::getWorkplace)
-                .orElseThrow(() -> new RuntimeException("Employee not found with employeeId: " + employeeId));
+        Employee employee = employeeRepository.findByEmployeeId(employeeId)
+            .orElseThrow(() -> new RuntimeException("Employee not found with employeeId: " + employeeId));
+        Map<String,Object> locationInfo = resolveLocationInfo(employee); 
+        return (String)locationInfo.get("workplace");
+ 
     }
     /**
      * Retrieve minimal information for an employee by their employee ID.
@@ -261,28 +269,18 @@ public class EmployeeService {
      * @param employeeId The unique identifier of the employee.
      * @return A map containing minimal employee details.
      */
-    public Map<String, Object> getEmployeeMiniByEmployeeId(int employeeId) {
-        return employeeRepository.findByEmployeeId(employeeId)
-            .map(employee -> {
-                Map<String, Object> miniEmployee = new HashMap<>();
-                miniEmployee.put("employeeOid", employee.getId());
-                miniEmployee.put("name", employee.getName());
-                miniEmployee.put("department", employee.getDepartment());
-                return miniEmployee;
-            })
-            .orElseThrow(() -> new RuntimeException("Employee not found with employeeId: " + employeeId));
-    }
-    public Map<String, Object> getEmployeeMiniByEmployeeOid(String employeeOid) {
-        return employeeRepository.findById(employeeOid)
-            .map(employee -> {
-                Map<String, Object> miniEmployee = new HashMap<>();
-                miniEmployee.put("employeeId", employee.getEmployeeId());
-                miniEmployee.put("name", employee.getName());
-                miniEmployee.put("department", employee.getDepartment());
-                return miniEmployee;
-            })
-            .orElseThrow(() -> new RuntimeException("Employee not found with employeeOid: " + employeeOid));
-    }
+
+    // public Map<String, Object> getEmployeeMiniByEmployeeOid(String employeeOid) {
+    //     return employeeRepository.findById(employeeOid)
+    //         .map(employee -> {
+    //             Map<String, Object> miniEmployee = new HashMap<>();
+    //             miniEmployee.put("employeeId", employee.getEmployeeId());
+    //             miniEmployee.put("name", employee.getName());
+    //             miniEmployee.put("department", employee.getDepartment());
+    //             return miniEmployee;
+    //         })
+    //         .orElseThrow(() -> new RuntimeException("Employee not found with employeeOid: " + employeeOid));
+    // }
 /**
      * Retrieve the employee ID using their unique ObjectId.
      *
@@ -328,23 +326,7 @@ public class EmployeeService {
                       .map(IdProjection::getId)
                       .collect(Collectors.toList());
     }
-    public Map<String, Object> getEmployeeFullByEmployeeOid(String employeeOid) {
-        Employee employee = employeeRepository.findById(employeeOid)
-            .orElseThrow(() -> new RuntimeException("Employee not found with Id"));
-        resolveLocationInfo(employee);
-        // Extract the required details
-        String workplace = employee.getWorkplace();
-        String workhourOn = employee.getWorkhourOn();
-        String workhourOff = employee.getWorkhourOff();
-        String workhourHalf = employee.getWorkhourHalf();
-        // Return both as a map or a custom object if preferred
-        Map<String, Object> response = new HashMap<>();
-        response.put("workplace", workplace);
-        response.put("workhourOn", workhourOn);
-        response.put("workhourOff", workhourOff);
-        response.put("workhourHalf", workhourHalf);
-        return response;
-    }
+
 
 
 
@@ -357,7 +339,5 @@ public class EmployeeService {
     public Optional<NameProjection> findNameById(String employeeOid){
         return employeeRepository.findNameById(employeeOid);
     }
-    public List<Location> findAllLocations(){
-        return locationService.findAllLocations();
-    }
+
 }

@@ -2,16 +2,16 @@ package com.adcapsule.server52switch.backoffice.dtos;
 
 import java.util.List;
 
-import com.adcapsule.server52switch.core.models.Employee;
+import com.adcapsule.server52switch.core.dtos.EmployeeDTO;
 
 public class GroupMembersDTO {
     private String groupId;
     private String groupName;
     private String parentGroupId;
     private String groupSupervisorOid;
-    private List<Employee> members;
+    private List<EmployeeDTO> members;
 
-    public GroupMembersDTO(String groupId, String groupName, String parentGroupId, String groupSupervisorOid,List<Employee> members) {
+    public GroupMembersDTO(String groupId, String groupName, String parentGroupId, String groupSupervisorOid,List<EmployeeDTO> members) {
         this.groupId = groupId;
         this.groupName = groupName;
         this.parentGroupId = parentGroupId;
@@ -47,11 +47,11 @@ public class GroupMembersDTO {
         this.groupSupervisorOid = groupSupervisorOid;
     }
 
-    public List<Employee> getMembers() {
+    public List<EmployeeDTO> getMembers() {
         return members;
     }
 
-    public void setMembers(List<Employee> members) {
+    public void setMembers(List<EmployeeDTO> members) {
         this.members = members;
     }
 

@@ -65,7 +65,7 @@ public class LocationService {
         return locationRepository.findById(objectId)
             .orElseThrow(() -> new RuntimeException("Group not found with Id: " + objectId));
     }
-    public List<Location> findAllLocations(){
+    public List<Location> findAll(){
         return locationRepository.findAll();
     }
 }

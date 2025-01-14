@@ -24,7 +24,9 @@ public class GroupService {
             
         }
 
-   
+    public List<Group> findAll(){
+        return groupRepository.findAll();
+    }
     public Group findById(String objectId) {
         return groupRepository.findById(objectId)
         .orElse(null);  // or return a default object if needed;
@@ -100,32 +102,6 @@ public class GroupService {
     }
 
 
-/**
- * Recursively fetches subgroups and adds them to the result set.
- * 
- * @param subGroupIds A list of subgroup IDs to process.
- * @param result      A Set to store unique subgroups (avoids duplicates).
- * @param visited     A Set to track visited group IDs (prevents infinite loops in cyclic relationships).
- */
-    // private void findSubGroupsRecursive(List<String> subGroupIds, Set<Group> result, Set<String> visited) {
-    //     if (subGroupIds == null || subGroupIds.isEmpty()) {
-    //         return; // Base case: No subgroups to process
-    //     }
-    
-    //     for (String subGroupId : subGroupIds) {
-    //         if (visited.contains(subGroupId)) {
-    //             continue; // Skip already visited groups
-    //         }
-    //         visited.add(subGroupId); // Mark group ID as visited
-    
-    //         // Fetch the subgroup by ID
-    //         Group subGroup = groupRepository.findById(subGroupId).orElse(null);
-    //         if (subGroup != null) {
-    //             result.add(subGroup); // Add subgroup to the result
-    //             findSubGroupsRecursive(subGroup.getSubGroup(), result, visited); // Recursive call for its subgroups
-    //         }
-    //     }
-    // }
     /**
      * Retrieve a group document by its ObjectId.
      *
