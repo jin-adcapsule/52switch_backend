@@ -51,10 +51,18 @@ public class EmployeeService {
         
         try {
             // Find employee by OID
-            Optional<Employee> existingEmployee = employeeRepository.findById(employeeOid);
+            Employee existingEmployee = employeeRepository.findById(employeeOid).orElse(null);
+
+
+            if (existingEmployee==null){
+                return "No employee exists with Id ";
+            }
+            System.out.println("heeee");
+            System.out.println(existingEmployee.getPhone());
             List<String> errors = employeeValidator.validateExistingEmployee(employeeInput);
-            if (existingEmployee.isPresent() && errors.isEmpty()) {
-                Employee employee = existingEmployee.get();
+            System.out.println(errors);
+            if (errors.isEmpty()) {
+                Employee employee = existingEmployee;
                 // Update only the fields that are not null or empty
                 if (employeeInput.getEmployeeId() != null) {
                     
@@ -86,10 +94,10 @@ public class EmployeeService {
                 }
                 // Save the updated employee back to the repository
                 employeeRepository.save(employee);
-                return String.join(", ", errors);
+                return "success";
 
             }else{
-                return "No employee exists with Id ";}
+                return String.join(", ", errors);}
 
         } catch (Exception e) {
             // Handle exceptions (e.g., database errors)

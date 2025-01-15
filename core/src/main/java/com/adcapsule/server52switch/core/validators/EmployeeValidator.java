@@ -145,7 +145,7 @@ public class EmployeeValidator {
     }
 
     private boolean isEmployeeIdDuplicate(int employeeId) {
-        return employeeRepository.findByEmployeeId(employeeId) != null;
+        return employeeRepository.findByEmployeeId(employeeId).isPresent();
     }
 
     private boolean isValidEmail(String email) {
@@ -154,7 +154,7 @@ public class EmployeeValidator {
     }
 
     private boolean isEmailDuplicate(String email) {
-        return employeeRepository.findByEmail(email) != null;
+        return employeeRepository.findByEmail(email).isPresent();
     }
 
     private boolean isValidPhone(String phone) {
@@ -163,7 +163,7 @@ public class EmployeeValidator {
     }
 
     private boolean isPhoneDuplicate(String phone) {
-        return employeeRepository.findByPhone(phone) != null;
+        return employeeRepository.findByPhone(phone).isPresent();
     }
 
     private boolean isLocationExists(String locationId) {
