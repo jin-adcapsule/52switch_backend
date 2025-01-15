@@ -31,12 +31,21 @@ type Employee{
     position: String
     phone: String
     joindate: String
-    department: String
     groupId: ID 
     locationId: ID
     dayoffPerYear: Int
 }
-
+input EmployeeInput {
+    employeeId: Int
+    name: String
+    email: String
+    position: String
+    phone: String
+    joindate: String
+    groupId: ID
+    locationId: ID
+    dayoffPerYear: Int
+}
 type Group {
     _id: ID
     groupName: String
@@ -186,4 +195,6 @@ type Mutation {
     sendNotification(token: String!, title: String!, message:String!): String
     sendNotificationToSupervisor(employeeOid: String!, title: String!, message:String!, pageKey:String!): String
     sendNotificationToEmployeeOid(employeeOid: String!,  title: String!,  message: String!, pageKey:String!): String
+
+    updateEmployee(employeeOid: String!, employeeInput: EmployeeInput!): String
 }

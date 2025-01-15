@@ -16,6 +16,7 @@ import com.adcapsule.server52switch.core.repositories.projection.Projection.Loca
 import com.adcapsule.server52switch.core.repositories.projection.Projection.NameProjection;
 @Repository
 public interface EmployeeRepository extends MongoRepository<Employee, String> {
+    Optional<Employee> findByEmail(String email);
     Optional<Employee> findByEmployeeId(int employeeId);
     //Optional<Employee> findById(String _id);
     Optional<Employee> findByPhone(String phone);

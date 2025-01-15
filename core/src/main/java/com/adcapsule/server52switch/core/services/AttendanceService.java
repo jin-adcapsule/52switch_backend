@@ -84,31 +84,25 @@ public class AttendanceService {
     }
     
     
-    public AttendanceStatusDTO createOrUpdateAttendance(String objectId, Date parsedcheckTime, Boolean status) throws ParseException {
-        // Format the current date as 'yyyy-MM-dd'
-        //dateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
-        //String formattedDate = dateFormat.format(new Date());
-        Date parsedCheckTime =  parsedcheckTime;
+    public AttendanceStatusDTO createOrUpdateAttendance(String objectId, Boolean status) throws ParseException {
         
-        String currentDateInKST = Config.getCurrentDate_String();
-        //int employeeId = employeeService.getEmployeeIdById(objectId);
+        long parsedCheckTime = DateUtils.longDateNow();
+        String customDateStringNow = DateUtils.longToCustomDate(parsedCheckTime);// yyyy-mm-dd String with custom day starting hour
+        
         String employeeOid = objectId;
-        //String workhourOn = (String) employeeService.getLocationAndWorkDetailsByEmployeeId(employeeId).get("workhourOn");
         String locationId = employeeService.findLocationIdById(employeeOid);
-        // Parse workhourOn into a Date object for comparison
        
-        Optional<Attendance> existingAttendance = attendanceRepository.findByEmployeeOidAndDate(employeeOid, currentDateInKST);
+        Optional<Attendance> existingAttendance = attendanceRepository.findByEmployeeOidAndDate(employeeOid, customDateStringNow);
         Attendance attendance;
         if (existingAttendance.isPresent()) {
             // Update existing record
             attendance = existingAttendance.get();
-
             if (status) { // Check-in logic
-                if (attendance.getCheckInTime() == null || parsedCheckTime.before(attendance.getCheckInTime())) {//when checkintime will be initiated
+                if (attendance.getCheckInTime() == null || parsedCheckTime<attendance.getCheckInTime()) {//when checkintime will be initiated
                     attendance.setCheckInTime(parsedCheckTime);  
                 }
             } else { // Check-out logic
-                if (attendance.getCheckOutTime() == null || parsedCheckTime.after(attendance.getCheckOutTime())) {
+                if (attendance.getCheckOutTime() == null || parsedCheckTime>attendance.getCheckOutTime()) {
                     attendance.setCheckOutTime(parsedCheckTime);
 
                 }
@@ -117,8 +111,8 @@ public class AttendanceService {
             // Create new record
             attendance = new Attendance();
             attendance.setEmployeeOid(employeeOid);
-            attendance.setDate(currentDateInKST);
-            attendance.setLocationId(locationId);
+            attendance.setDate(customDateStringNow);
+            attendance.setLocationId(locationId); // later by bluetooth device
             if (status) {//when checkintime will be initiated (first toggle on today)
                 attendance.setCheckInTime(parsedCheckTime);     
             } else {

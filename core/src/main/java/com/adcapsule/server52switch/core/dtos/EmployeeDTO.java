@@ -1,8 +1,5 @@
 package com.adcapsule.server52switch.core.dtos;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class EmployeeDTO {
     private String employeeOid; // EmployeeOid
     private Integer employeeId;  
@@ -10,7 +7,7 @@ public class EmployeeDTO {
     private String email;
     private String position;
     private String phone;
-    private Date joindate;
+    private String joindate;
     private String groupId;
     private String locationId;
     private Integer dayoffPerYear;
@@ -35,7 +32,7 @@ public class EmployeeDTO {
         String email,
         String position,
         String phone,
-        Date joindate,
+        String joindate,
         String groupId,
         String locationId,
         Integer dayoffPerYear,
@@ -130,12 +127,8 @@ public class EmployeeDTO {
 
 
     public String getJoindate() {
-        if (joindate == null) {
-            return null;
-        }
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        
-        return formatter.format(joindate);
+
+        return joindate;
 
     }
 
@@ -167,9 +160,7 @@ public class EmployeeDTO {
         return dayoffPerYear;
     }
 
-    public void setDayoffPerYear(Integer dayoffPerYear) {
-        this.dayoffPerYear = dayoffPerYear;
-    }
+
 
 
 

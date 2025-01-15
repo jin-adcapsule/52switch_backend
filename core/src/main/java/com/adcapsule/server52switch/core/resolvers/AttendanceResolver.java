@@ -57,12 +57,8 @@ public class AttendanceResolver {
             throw new IllegalArgumentException("employeeOid cannot be null or empty");
         }
         try {
-             // Capture the current server time as an Instant
-            Instant serverReceivedTime = Instant.now();
-            // Convert Instant to Date for compatibility with existing methods
-            Date serverReceivedDate = Date.from(serverReceivedTime);
             // Call the service method and return the result
-            AttendanceStatusDTO attendanceStatusDTO = attendanceService.createOrUpdateAttendance(employeeOid, serverReceivedDate, status);
+            AttendanceStatusDTO attendanceStatusDTO = attendanceService.createOrUpdateAttendance(employeeOid, status);
             return attendanceStatusDTO;
         } catch (ParseException e) {
             throw new RuntimeException("error while markAttendance resolver");

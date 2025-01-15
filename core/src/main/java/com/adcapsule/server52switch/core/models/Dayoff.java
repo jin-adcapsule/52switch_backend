@@ -1,6 +1,8 @@
 package com.adcapsule.server52switch.core.models;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.adcapsule.server52switch.core.configs.DateUtils;
 @Document(collection = "dayoff")
 public class Dayoff {
     @Id
@@ -10,9 +12,9 @@ public class Dayoff {
     //private int employeeId;
     private String dayoffType;
     private String requestComment;
-    private String dayoffDate;
+    private String dayoffDate;//yyyy-mm-dd format String
     private String requestStatus;
-    private String requestDate;
+    private String requestDate;//yyyy-mm-dd format String
     private String requestKey;
     private String answerComment;
     //private int supervisorId;
@@ -49,7 +51,12 @@ public class Dayoff {
     }
 
     public void setDayoffDate(String dayoffDate) {
-        this.dayoffDate = dayoffDate;
+        if(DateUtils.isValidDateString(dayoffDate)){
+            this.dayoffDate = dayoffDate;
+        }else{
+            this.dayoffDate = null;
+        }
+
     }
     public String getRequestStatus() {
         return requestStatus;
@@ -63,7 +70,12 @@ public class Dayoff {
     }
 
     public void setRequestDate(String requestDate) {
-        this.requestDate = requestDate;
+        if(DateUtils.isValidDateString(requestDate)){
+            this.requestDate = requestDate;
+        }else{
+            this.requestDate = null;
+        }
+ 
     }
     public String getRequestKey() {
         return requestKey;

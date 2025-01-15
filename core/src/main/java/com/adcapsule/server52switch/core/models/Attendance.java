@@ -1,9 +1,9 @@
 package com.adcapsule.server52switch.core.models;
 
-import java.util.Date;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.adcapsule.server52switch.core.configs.DateUtils;
 
 
 
@@ -17,10 +17,10 @@ public class Attendance {
 
 
     //current date
-    private String date; // format 'yyyy-mm-dd'
-    private Date checkInTime; 
-    private Date checkOutTime;
-    private String locationId;
+    private String date; //yyyy-mm-dd format String considering custom daystarting hour
+    private Long checkInTime; 
+    private Long checkOutTime;
+    private String locationId;//locationId registered by bluetooth device 
 
     // Getter and Setter methods
 
@@ -41,7 +41,12 @@ public class Attendance {
     }
 
     public void setDate(String date) {
-        this.date = date;
+        if(DateUtils.isValidDateString(date)){
+            this.date = date;
+        }else{
+            this.date = null;
+        }
+ 
     }
 
     public Boolean getStatus() {
@@ -52,21 +57,21 @@ public class Attendance {
         this.status = status;
     }
 
-    public Date getCheckInTime() {
+    public Long getCheckInTime() {
         
         return checkInTime;
     }
 
-    public void setCheckInTime(Date checkInTime) {
+    public void setCheckInTime(Long checkInTime) {
         
         this.checkInTime = checkInTime;
     }
 
-    public Date getCheckOutTime() {
+    public Long getCheckOutTime() {
         return checkOutTime;
     }
 
-    public void setCheckOutTime(Date checkOutTime) {
+    public void setCheckOutTime(Long checkOutTime) {
         this.checkOutTime = checkOutTime;
     }
     public void setLocationId(String locationId) {

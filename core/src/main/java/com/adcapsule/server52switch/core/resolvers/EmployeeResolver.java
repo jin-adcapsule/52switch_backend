@@ -1,11 +1,14 @@
 package com.adcapsule.server52switch.core.resolvers;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
 import com.adcapsule.server52switch.core.dtos.EmployeeDTO;
+import com.adcapsule.server52switch.core.dtos.EmployeeInput;
 import com.adcapsule.server52switch.core.dtos.LocationInfoDTO;
 import com.adcapsule.server52switch.core.models.Employee;
 import com.adcapsule.server52switch.core.services.EmployeeService;
@@ -47,5 +50,9 @@ public class EmployeeResolver {
         return employeeService.getEmployeeIdById(_id);
     }
 
-
+    @MutationMapping
+    public String updateEmployee(@Argument String employeeOid, @Argument EmployeeInput employeeInput) {
+        // Call service to update the employee record
+        return employeeService.updateEmployee(employeeOid,employeeInput);
+    }
 }
