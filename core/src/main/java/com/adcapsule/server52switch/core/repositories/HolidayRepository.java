@@ -16,4 +16,6 @@ public interface HolidayRepository extends MongoRepository<Holiday, String> {
     @Query("{ 'holidayDate': { '$gte': ?0 } }")
     List<Holiday> findHolidaysAfterOrOn(String date);
 
+    
+
 }

@@ -1,6 +1,9 @@
 package com.adcapsule.server52switch.core.services;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,19 +21,7 @@ public class LocationService {
     public LocationService(LocationRepository locationRepository) {
         this.locationRepository = locationRepository;
     }
-    /**
-     * Retrieve location information for a specified workplace.
-     *
-     * This method fetches the location details associated with the given workplace.
-     * If no location is found, an empty Optional is returned.
-     *
-     * Edge cases:
-     * - If the workplace does not exist in the repository, the returned Optional will be empty.
-     * - Assumes workplace names are unique identifiers in the repository.
-     *
-     * @param workplace the name of the workplace to retrieve location information for.
-     * @return an Optional containing the Location if found, or an empty Optional otherwise.
-     */
+
 
     /**
      * Retrieve the working hours for a specified workplace.
@@ -68,4 +59,20 @@ public class LocationService {
     public List<Location> findAll(){
         return locationRepository.findAll();
     }
+
+    public List<Map<String, String>> findAllIndexes() {
+        List<Location> locations = locationRepository.findAllIndexes();
+        List<Map<String, String>> result = new ArrayList<>();
+        for (Location location : locations) {
+            Map<String, String> locationMap = new HashMap<>();
+            locationMap.put("collection", "Location");
+            locationMap.put("indexKey", "locationId");
+            locationMap.put("indexValue", location.getId()); // Use actual data from location
+            locationMap.put("indexShowKey", "workplace");
+            locationMap.put("indexShowValue", location.getWorkplace()); // Use actual data from location
+            result.add(locationMap);
+        }
+        return result;
+    }
+    
 }

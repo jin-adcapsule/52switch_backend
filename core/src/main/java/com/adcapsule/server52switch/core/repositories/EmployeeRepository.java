@@ -37,4 +37,8 @@ public interface EmployeeRepository extends MongoRepository<Employee, String> {
     Optional<NameProjection> findNameById(String employeeOid);
     @Query(value = "{ 'groupId': ?0 }", fields = "{'_id': 1 }")
     List<IdProjection> findEmployeeOidListbyGroupId(String groupId);
+
+    // Custom query to select specific fields for all documents
+    @Query(value = "{}",fields = "{'name': 1, '_id': 1}")
+    List<Employee> findAllIndexes();
 }

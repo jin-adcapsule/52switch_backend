@@ -8,6 +8,7 @@ import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
 import com.adcapsule.server52switch.backoffice.dtos.GroupMembersDTO;
+import com.adcapsule.server52switch.backoffice.dtos.IndexDTO;
 import com.adcapsule.server52switch.backoffice.services.BackOfficeService;
 import com.adcapsule.server52switch.core.models.Attendance;
 import com.adcapsule.server52switch.core.models.Dayoff;
@@ -52,5 +53,9 @@ public class BackOfficeResolver {
     @QueryMapping
     public List<Attendance> getAllAttendances() {
         return backOfficeService.getAllAttendances();
+    }
+    @QueryMapping
+    public List<IndexDTO> getAllIndexes() {
+        return backOfficeService.getAllIndexes();
     }
 }

@@ -420,5 +420,18 @@ public class EmployeeService {
     public Optional<NameProjection> findNameById(String employeeOid){
         return employeeRepository.findNameById(employeeOid);
     }
-
+    public List<Map<String, String>> findAllIndexes(){//assuming idx key: employeeOid and show key:name 
+        List<Employee> employees = employeeRepository.findAllIndexes();// Fetch Employee data from the repository
+        List<Map<String, String>> result = new ArrayList<>();// Transform Employee data into List<Map<String, String>>
+        for (Employee employee : employees) {
+            Map<String, String> employeeMap = new HashMap<>();
+            employeeMap.put("collection", "Employee");
+            employeeMap.put("indexKey", "employeeOid"); // Assuming employeeOid is the idxKey
+            employeeMap.put("indexValue", employee.getId()); // Assuming employeeOid is the idxKey
+            employeeMap.put("indexShowKey", "name");   // Assuming name is the idxShowKey
+            employeeMap.put("indexShowValue", employee.getName());   // Assuming name is the idxShowKey
+            result.add(employeeMap);
+        }
+        return result;
+    }
 }

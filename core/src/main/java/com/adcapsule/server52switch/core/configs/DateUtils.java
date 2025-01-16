@@ -51,7 +51,9 @@ public class DateUtils {
      * @param timestamp The long timestamp to be converted.
      * @return A formatted date string (yyyy-MM-dd) adjusted to the custom day start.
      */
-    public static String longToCustomDate(long timestamp) {
+    public static String longToCustomDate(Long timestamp) {
+        // Check if the timestamp is null
+        if (timestamp == null) {return null;}
         // Define the date format (yyyy-MM-dd)
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         sdf.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
@@ -81,7 +83,9 @@ public class DateUtils {
      * @param timestamp The long timestamp to be converted.
      * @return A formatted time string (hh:mm) adjusted to the custom day start.
      */
-    public static String longToCustomTime(long timestamp) {
+    public static String longToCustomTime(Long timestamp) {
+        // Check if the timestamp is null
+        if (timestamp == null) {return null;}
         // Create a Calendar instance and set the timestamp
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
         calendar.setTimeInMillis(timestamp);

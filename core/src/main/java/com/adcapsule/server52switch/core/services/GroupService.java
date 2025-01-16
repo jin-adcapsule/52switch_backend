@@ -1,7 +1,9 @@
 package com.adcapsule.server52switch.core.services;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -119,4 +121,18 @@ public class GroupService {
             .orElseThrow(() -> new RuntimeException("Group not found with Id: " + objectId));
     }
 
+    public List<Map<String, String>> findAllIndexes() {
+        List<Group> groups = groupRepository.findAllIndexes();
+        List<Map<String, String>> result = new ArrayList<>();
+        for (Group group : groups) {
+            Map<String, String> groupMap = new HashMap<>();
+            groupMap.put("collection", "Group");
+            groupMap.put("indexKey", "groupId");
+            groupMap.put("indexValue", group.getId()); // Use actual data from group
+            groupMap.put("indexShowKey", "groupName");
+            groupMap.put("indexShowValue", group.getGroupName()); // Use actual data from group
+            result.add(groupMap);
+        }
+        return result;
+    }
 }
