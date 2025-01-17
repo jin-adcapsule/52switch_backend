@@ -11,6 +11,7 @@ import com.adcapsule.server52switch.core.repositories.projection.Projection.Dayo
 import com.adcapsule.server52switch.core.repositories.projection.Projection.DayoffTypeProjection;
 @Repository
 public interface DayoffRepository extends MongoRepository<Dayoff, String> {
+    boolean existsByEmployeeOidAndDayoffDate(String employeeOid, String dayoffDate);
     List<Dayoff> findByEmployeeOid(String  employeeOid);
     Optional<Dayoff> findByEmployeeOidAndDayoffDate(String employeeOid, String dayoffDate);
     @Query(value = "{ '_id': ?0,'dayoffDate': ?1 }")

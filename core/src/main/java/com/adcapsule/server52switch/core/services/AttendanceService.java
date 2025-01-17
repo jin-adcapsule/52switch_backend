@@ -190,13 +190,11 @@ public class AttendanceService {
             );
         } catch (ClassCastException e) {
             // Log the error or handle it appropriately
-            System.out.println("Error casting values: " + e.getMessage());
+            System.err.println("Error casting values: " + e.getMessage());
         } catch (Exception e) {
             // Catch any other general exceptions
-            System.out.println("Error creating AttendanceHistory: " + e.getMessage());
+            System.err.println("Error creating AttendanceHistory: " + e.getMessage());
         }
-        System.out.println("Debugcheck:response");
-        System.out.println(response);
         // Check if workTypeListResponse intersects with workTypeQueryList
         List<String> intersection = new ArrayList<>(response.getWorkTypeValueList());
         intersection.retainAll(workTypeQueryList); // Retain only the common elements
@@ -214,8 +212,8 @@ public class AttendanceService {
         ) {
             try {  
                 String employeeOid = _id;
-                System.out.println("Debugcheck");
-                System.out.println(workTypeQueryList);
+                // System.out.println("Debugcheck");
+                // System.out.println(workTypeQueryList);
                 // Create objects with attended dates with  
                 List<AttendanceHistory> response = getEmployeeAttendance(
                     employeeOid, 
@@ -223,8 +221,8 @@ public class AttendanceService {
                     endDate, 
                     workTypeQueryList
                     );
-                System.out.println("Debugcheck");
-                System.out.println(_id);
+                // System.out.println("Debugcheck");
+                // System.out.println(_id);
                 // Convert the start and end dates to LocalDate
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 LocalDate start = LocalDate.parse(startDate, formatter);
@@ -334,7 +332,6 @@ public class AttendanceService {
 
         
     }
-
 
 
 

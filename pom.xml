@@ -90,7 +90,7 @@
 				<artifactId>spring-boot-starter-websocket</artifactId>
 			</dependency>
 			
-				<!-- GraphQL Spring Boot starter -->
+
 
 		</dependencies>
     </dependencyManagement>

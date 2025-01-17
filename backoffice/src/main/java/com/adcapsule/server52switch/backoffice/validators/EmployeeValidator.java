@@ -1,4 +1,4 @@
-package com.adcapsule.server52switch.core.validators;
+package com.adcapsule.server52switch.backoffice.validators;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -6,12 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.adacpsule.server52switch.shared.inputs.EmployeeInput;
 import com.adcapsule.server52switch.core.configs.DateUtils;
-import com.adcapsule.server52switch.core.dtos.EmployeeInput;
 import com.adcapsule.server52switch.core.models.Employee;
 import com.adcapsule.server52switch.core.repositories.EmployeeRepository;
 import com.adcapsule.server52switch.core.repositories.GroupRepository;
 import com.adcapsule.server52switch.core.repositories.LocationRepository;
+
 @Service
 public class EmployeeValidator {
 

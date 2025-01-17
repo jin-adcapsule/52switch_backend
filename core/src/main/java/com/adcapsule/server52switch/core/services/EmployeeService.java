@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.adcapsule.server52switch.core.dtos.EmployeeDTO;
-import com.adcapsule.server52switch.core.dtos.EmployeeInput;
 import com.adcapsule.server52switch.core.dtos.LocationInfoDTO;
 import com.adcapsule.server52switch.core.models.Employee;
 import com.adcapsule.server52switch.core.models.Group;
@@ -23,107 +22,27 @@ import com.adcapsule.server52switch.core.repositories.projection.Projection.Grou
 import com.adcapsule.server52switch.core.repositories.projection.Projection.IdProjection;
 import com.adcapsule.server52switch.core.repositories.projection.Projection.LocationIdProjection;
 import com.adcapsule.server52switch.core.repositories.projection.Projection.NameProjection;
-import com.adcapsule.server52switch.core.validators.EmployeeValidator;
 
 @Service
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
-    private final EmployeeValidator employeeValidator;
+
     private final GroupService groupService; 
     private final LocationService locationService; 
 
     @Autowired
-    public EmployeeService(EmployeeRepository employeeRepository,EmployeeValidator employeeValidator, GroupService groupService, LocationService locationService) {
+    public EmployeeService(EmployeeRepository employeeRepository, GroupService groupService, LocationService locationService) {
         this.employeeRepository = employeeRepository;
-        this.employeeValidator = employeeValidator;
+
         this.groupService = groupService;
         this.locationService = locationService;
         
     }
-
-    //Basic CRUD//////////////////
     public List<Employee> findAll(){
         return employeeRepository.findAll();
     }
-
-    public String updateEmployee(String employeeOid, EmployeeInput employeeInput) {
-        
-        try {
-            // Find employee by OID
-            Employee existingEmployee = employeeRepository.findById(employeeOid).orElse(null);
-
-
-            if (existingEmployee==null){
-                return "No employee exists with Id ";
-            }
-            System.out.println("heeee");
-            System.out.println(existingEmployee.getPhone());
-            List<String> errors = employeeValidator.validateExistingEmployee(employeeInput);
-            System.out.println(errors);
-            if (errors.isEmpty()) {
-                Employee employee = existingEmployee;
-                // Update only the fields that are not null or empty
-                if (employeeInput.getEmployeeId() != null) {
-                    
-                    employee.setEmployeeId(employeeInput.getEmployeeId());
-                }
-                if (employeeInput.getName() != null) {
-                    employee.setName(employeeInput.getName());
-                }
-                if (employeeInput.getEmail() != null) {
-                    employee.setEmail(employeeInput.getEmail());
-                }
-                if (employeeInput.getPosition() != null) {
-                    employee.setPosition(employeeInput.getPosition());
-                }
-                if (employeeInput.getPhone() != null) {
-                    employee.setPhone(employeeInput.getPhone());
-                }
-                if (employeeInput.getJoindate() != null) {
-                    employee.setJoindate(employeeInput.getJoindate());
-                }
-                if (employeeInput.getGroupId() != null) {
-                    employee.setGroupId(employeeInput.getGroupId());
-                }
-                if (employeeInput.getLocationId() != null) {
-                    employee.setLocationId(employeeInput.getLocationId());
-                }
-                if (employeeInput.getDayoffPerYear() != null) {
-                    employee.setDayoffPerYear(employeeInput.getDayoffPerYear());
-                }
-                // Save the updated employee back to the repository
-                employeeRepository.save(employee);
-                return "success";
-
-            }else{
-                return String.join(", ", errors);}
-
-        } catch (Exception e) {
-            // Handle exceptions (e.g., database errors)
-            return "Handle exceptions"; // Return false if an error occurs
-        }
-    }
-
-    /**
-     * Save or update employee data.
-     * 
-     * @param employee The Employee object to be saved or updated.
-     * @return a success message if valid, or validation error messages.
-     */
-    public String saveNewEmployee(Employee employee) {
-        // Validate the employee object
-        List<String> validationErrors = employeeValidator.validateNewEmployee(employee);
-
-        if (!validationErrors.isEmpty()) {
-            // If there are validation errors, return them as a string or you can throw an exception
-            return String.join(", ", validationErrors);
-        }
-
-        // If validation passes, save the employee to the database
-        employeeRepository.save(employee);
-        return "Employee saved successfully!";
-    }
+    
     ///////////////////////////////////////////////
     public List<Integer> findEmployeeIdListbyGroupId(String groupId){
         

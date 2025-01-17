@@ -86,7 +86,7 @@ public class BackOfficeService {
                 indexMap.get("indexShowKey"),
                 indexMap.get("indexShowValue")
             );
-            System.out.println(indexMap);
+            // System.out.println(indexMap);
             indexDTOList.add(indexDTO);
         }
         
@@ -100,7 +100,7 @@ public class BackOfficeService {
         List<Group> uniqueGroupsList = getMyAllGroups(employeeOid);
         List<GroupMembersDTO> response = new ArrayList<>();
         for (Group group : uniqueGroupsList) {
-            System.out.println(group.getGroupName());
+            // System.out.println(group.getGroupName());
             List<EmployeeDTO> groupMembers = new ArrayList<>();
             
             List<String> groupMemberOids = employeeService.findEmployeeOidListbyGroupId(group.getId());

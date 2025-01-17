@@ -1,29 +1,7 @@
 
-type EmployeeDTO {
-    employeeOid: String
-    
-    employeeId: Int
-    name: String
-    email: String
-    position: String
-    phone: String
-    joindate: String
-    department: String
-
-    groupId: ID 
-    supervisorName: String
-    supervisorOid: String
-    isSupervisor: Boolean
-
-    locationId: ID
-    workplace: String
-    workhour: String
-    workhourOn: String
-    workhourOff: String
-    workhourHalf: String
-
-    dayoffPerYear: Int
-}
+##############################################################################
+## DB Rawtypes
+##############################################################################
 type Employee{
     _id: ID
     employeeId: Int
@@ -35,25 +13,7 @@ type Employee{
     groupId: ID 
     locationId: ID
     dayoffPerYear: Int
-}
-input EmployeeInput {
-    employeeId: Int
-    name: String
-    email: String
-    position: String
-    phone: String
-    joindate: String
-    groupId: ID
-    locationId: ID
-    dayoffPerYear: Int
-}
-type Group {
-    _id: ID
-    groupName: String
-    groupSupervisorOid: String
-    parentGroupId: ID 
-}
-
+    }
 type Attendance {
     _id: ID
     date: String
@@ -62,15 +22,7 @@ type Attendance {
     locationId: String
     status: Boolean
     employeeOid: String
-}
-
-type Location {
-    _id: ID
-    workplace: String
-    workhourOn: String
-    workhourOff: String
-    workhourHalf: String
-}
+    }
 type Dayoff {
     _id: ID
     employeeOid:String
@@ -81,12 +33,51 @@ type Dayoff {
     requestDate: String
     supervisorOid: String
     requestKey: String
-}
+    }
+type Location {
+    _id: ID
+    workplace: String
+    workhourOn: String
+    workhourOff: String
+    workhourHalf: String
+    }
+type Group {
+    _id: ID
+    groupName: String
+    groupSupervisorOid: String
+    parentGroupId: ID 
+    }
 type Holiday {
     holidayName: String!     # Name of the holiday
     holidayDate: String!     # Date of the holiday in 'yyyy-MM-dd' format
-}
+    }
+##############################################################################
+## DTOs
+##############################################################################
+type EmployeeDTO {
+    employeeOid: String
 
+    employeeId: Int
+    name: String
+    email: String
+    position: String
+    phone: String
+    joindate: String
+    dayoffPerYear: Int
+
+    groupId: ID 
+    department: String
+    supervisorName: String
+    supervisorOid: String
+    isSupervisor: Boolean
+
+    locationId: ID
+    workplace: String
+    workhour: String
+    workhourOn: String
+    workhourOff: String
+    workhourHalf: String
+    }
 type AttendanceHistory {
     employeeOid: String
     date: String
@@ -98,7 +89,7 @@ type AttendanceHistory {
     checkOutStatus: String
     workTypeList: [String!]
     workduration: String
-}
+    }
 type DayoffHistory {
     dayoffType: String!
     requestComment: String!
@@ -107,25 +98,25 @@ type DayoffHistory {
     requestDate: String
     supervisorOid: String
     requestKey: String
-}
+    }
 type EmployeeValDTO {
     employeeOid: String!
     employeeName: String!
     isSupervisor: Boolean!
     currentlyMarked: Boolean
 
-}
+    }
 type AttendanceStatusAndDetailsDTO{
     status: Boolean
     workTypeList: [String!]
     startTime:String!
     endTime:String!
     locationName:String!
-}
+    }
 type AttendanceStatusDTO {
     status: Boolean!
 
-}
+    }
 type RequestDTO {
     employeeOid: String
     employeeName: String!
@@ -140,34 +131,79 @@ type RequestDTO {
     dayoffDateText: String
     dayoffType: String
     
-}
-
+    }
 type LocationInfoDTO {
     workplace: String!
     workhourOn: String!
     workhourOff: String!
     workhourHalf: String!
-}
+    }
 type DayoffInfoDTO {
     supervisorName: String!
     supervisorOid: String!
     dayoffRemaining: Int!
     holidayList: [Holiday!]!    # List of holidays
-}
+    }
 type GroupMembersDTO {
   groupName: String!
   groupId: String
   parentGroupId: String
   groupSupervisorOid: String
   members: [EmployeeDTO!]!
-}
+    }
 type IndexDTO {
   collection: String!
   indexKey: String
   indexValue: String
   indexShowKey: String
   indexShowValue: String
-}
+    }
+##############################################################################
+## Inputs
+##############################################################################
+input EmployeeInput {
+    employeeId: Int
+    name: String
+    email: String
+    position: String
+    phone: String
+    joindate: String
+    groupId: ID
+    locationId: ID
+    dayoffPerYear: Int
+    }
+input AttendanceInput {
+    date: String
+    checkInTime: String #nullable Long but graphQl not support
+    checkOutTime: String #nullable Long but graphQl not support
+    locationId: String
+    status: Boolean
+    employeeOid: String
+    }
+input DayoffInput {
+    employeeOid:String
+    dayoffType: String
+    requestComment: String
+    dayoffDate: String
+    requestStatus: String
+    requestDate: String
+    supervisorOid: String
+    requestKey: String
+    }
+input GroupInput {
+    groupName: String
+    groupSupervisorOid: String
+    parentGroupId: ID 
+    }
+input LocationInput {
+    workplace: String
+    workhourOn: String
+    workhourOff: String
+    workhourHalf: String
+    }
+##############################################################################
+## Querys & Mutations
+##############################################################################
 type Query {
     validateUidAndPhone(uid: String!, phone: String!): EmployeeValDTO
     #getObjectIdByPhone(phone: String!): Employee
@@ -194,7 +230,7 @@ type Query {
     getAllAttendances: [Attendance]
     getAllGroups: [Group]
     getAllIndexes:[IndexDTO]
-}
+    }
 type Mutation {
     markAttendance(employeeOid: String!, status: Boolean!): AttendanceStatusDTO
     requestDayoff(employeeOid: String!, dateList: [String!], dayoffType: String!, requestComment: String!,beforeDateRemaining:Int!):[String!]
@@ -205,6 +241,11 @@ type Mutation {
     sendNotificationToSupervisor(employeeOid: String!, title: String!, message:String!, pageKey:String!): String
     sendNotificationToEmployeeOid(employeeOid: String!,  title: String!,  message: String!, pageKey:String!): String
 
-    updateEmployee(employeeOid: String!, employeeInput: EmployeeInput!): String
+    updateEmployee(id: String!, input: EmployeeInput!): String
+    updateAttendance(id: String!, input: AttendanceInput!): String
+    updateDayoff(id: String!, input: DayoffInput!): String
+    updateGroup(id: String!, input: GroupInput!): String
+    updateLocation(id: String!, input: LocationInput!): String
 
-}
+
+    }

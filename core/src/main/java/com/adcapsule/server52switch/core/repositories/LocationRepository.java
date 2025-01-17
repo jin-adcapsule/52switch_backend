@@ -11,7 +11,7 @@ import com.adcapsule.server52switch.core.models.Location;
 @Repository
 public interface LocationRepository extends MongoRepository<Location, String> {
     Optional<Location> findByWorkplace(String workplace);
-
+    boolean existsByWorkplace(String workplace);
    // Custom query to select specific fields for all documents
     @Query(value = "{}",fields = "{'workplace': 1, '_id': 1}")
     List<Location> findAllIndexes();

@@ -11,6 +11,8 @@ import com.adcapsule.server52switch.core.repositories.projection.Projection.IdPr
 @Repository
 public interface GroupRepository extends MongoRepository<Group, String> {
     List<Group> findByGroupSupervisorOid(String supervisorOid);
+
+    boolean existsByGroupName(String groupName);
     // Check if an employee is a supervisor of any group
     boolean existsByGroupSupervisorOid(String employeeOid);
     @Query("{'groupSupervisorOid': ?0}")

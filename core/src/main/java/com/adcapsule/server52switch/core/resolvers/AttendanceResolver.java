@@ -1,8 +1,6 @@
 package com.adcapsule.server52switch.core.resolvers;
 
 import java.text.ParseException;
-import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -82,4 +80,5 @@ public class AttendanceResolver {
         AttendanceStatusAndDetailsDTO attendanceStatusAndDetailsDTO = attendanceService.getAttendanceStatusAndDetails(employeeOid);
         return attendanceStatusAndDetailsDTO;
     }
+
 }

@@ -3,7 +3,6 @@ package com.adcapsule.server52switch.core.models;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.adcapsule.server52switch.core.configs.DateUtils;
 
 
 
@@ -41,11 +40,12 @@ public class Attendance {
     }
 
     public void setDate(String date) {
-        if(DateUtils.isValidDateString(date)){
-            this.date = date;
-        }else{
-            this.date = null;
-        }
+        this.date= date;
+        // if(DateUtils.isValidDateString(date)){
+        //     this.date = date;
+        // }else{
+        //     this.date = null;
+        // }
  
     }
 

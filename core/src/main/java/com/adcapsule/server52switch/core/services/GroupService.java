@@ -69,8 +69,8 @@ public class GroupService {
 
         // Step 3: Recursively find all subgroups of root groups
         for (Group rootGroup : rootGroups) {
-            System.out.println("rootgroupdebug");
-            System.out.println(rootGroup.getGroupName());
+            // System.out.println("rootgroupdebug");
+            // System.out.println(rootGroup.getGroupName());
             allSubGroups.add(rootGroup); // Add the root group to the result
             findSubGroupsByParentGroupRecursive(rootGroup.getId(), allSubGroups, visited);
             //findSubGroupsRecursive(rootGroup.getSubGroup(), allSubGroups, visited);
