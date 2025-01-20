@@ -12,8 +12,16 @@ public class BackAttendanceResolver {
     @Autowired
     private BackAttendanceService backAttendanceService;
     @MutationMapping
-    public String updateAttendance(@Argument String id, @Argument AttendanceInput input) {
-        // Call service to update the employee record
-        return backAttendanceService.updateAttendance(id,input);
+    public String updateOrNewAttendance(@Argument String id, @Argument AttendanceInput input) {
+        if (id==null){
+            return backAttendanceService.genNewAttendance(input);
+        } else {
+            // Call service to update the employee record
+            return backAttendanceService.updateAttendance(id,input);
+        }
+    }
+    @MutationMapping
+    public Boolean deleteAttendanceById(@Argument String id) {
+        return backAttendanceService.deleteAttendanceById(id);
     }
 }

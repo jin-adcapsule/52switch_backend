@@ -60,7 +60,7 @@ public class GroupService {
      * @return A list of all subgroups (recursively fetched).
      *         The result excludes duplicate groups and prevents infinite loops in case of cycles.
      */
-    public List<Group> getAllSubGroupsBySupervisorOid(String supervisorOid) {
+    public List<Group> getAllSubGroupsBySupervisorOid(String supervisorOid) {//rootgroupincluded
         // Step 1: Fetch root groups supervised by the given ID
         List<Group> rootGroups = groupRepository.findByGroupSupervisorOid(supervisorOid);
         // Step 2: Initialize a Set to store all subgroups (avoids duplicates)
@@ -77,6 +77,12 @@ public class GroupService {
         }
 
         // Step 4: Convert the result to a list and return
+        return new ArrayList<>(allSubGroups);
+    }
+    public List<Group> getAllSubGroupsByGroupId(String groupId) {//rootgroupexcluded
+        Set<Group> allSubGroups = new HashSet<>();
+        Set<String> visited = new HashSet<>(); // Tracks already-visited group IDs to prevent infinite recursion
+        findSubGroupsByParentGroupRecursive(groupId, allSubGroups, visited);
         return new ArrayList<>(allSubGroups);
     }
     /**
@@ -134,5 +140,8 @@ public class GroupService {
             result.add(groupMap);
         }
         return result;
+    }
+    public void deleteById(String id){
+        groupRepository.deleteById(id);
     }
 }

@@ -2,6 +2,7 @@ package com.adcapsule.server52switch.backoffice.services;
 
 import java.util.List;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,45 +45,7 @@ public class BackEmployeeService {
             if (!errors.isEmpty()) {
                 return String.join(", ", errors);
             }
-            // // System.out.println(errors);
-            // if (errors.isEmpty()) {
-            //     Employee employee = existingEmployee;
-            //     // Update only the fields that are not null or empty
-            //     if (employeeInput.getEmployeeId() != null) {
-                    
-            //         employee.setEmployeeId(employeeInput.getEmployeeId());
-            //     }
-            //     if (employeeInput.getName() != null) {
-            //         employee.setName(employeeInput.getName());
-            //     }
-            //     if (employeeInput.getEmail() != null) {
-            //         employee.setEmail(employeeInput.getEmail());
-            //     }
-            //     if (employeeInput.getPosition() != null) {
-            //         employee.setPosition(employeeInput.getPosition());
-            //     }
-            //     if (employeeInput.getPhone() != null) {
-            //         employee.setPhone(employeeInput.getPhone());
-            //     }
-            //     if (employeeInput.getJoindate() != null) {
-            //         employee.setJoindate(employeeInput.getJoindate());
-            //     }
-            //     if (employeeInput.getGroupId() != null) {
-            //         employee.setGroupId(employeeInput.getGroupId());
-            //     }
-            //     if (employeeInput.getLocationId() != null) {
-            //         employee.setLocationId(employeeInput.getLocationId());
-            //     }
-            //     if (employeeInput.getDayoffPerYear() != null) {
-            //         employee.setDayoffPerYear(employeeInput.getDayoffPerYear());
-            //     }
-            //     // Save the updated employee back to the repository
-            //     employeeRepository.save(employee);
-            //     return "success";
-
-            // }else{
-            //     return String.join(", ", errors);}
-
+            
             // Update only non-null fields in the existing entity
             BeanUtilsHelper.updateEntityFields(existingEmployee, employeeInput);
             // Save the updated employee
@@ -94,25 +57,36 @@ public class BackEmployeeService {
         }
     }
 
-    /**
-     * Save or update employee data.
-     * 
-     * @param employee The Employee object to be saved or updated.
-     * @return a success message if valid, or validation error messages.
-     */
-    public String saveNewEmployee(Employee employee) {
-        // Validate the employee object
-        List<String> validationErrors = employeeValidator.validateNewEmployee(employee);
-
-        if (!validationErrors.isEmpty()) {
-            // If there are validation errors, return them as a string or you can throw an exception
-            return String.join(", ", validationErrors);
+    public String genNewEmployee(EmployeeInput input) {
+        
+        try {
+            Employee newEmployee = new Employee();
+            
+            // Copy properties from AttendanceInput to the newAttendance object
+            BeanUtilsHelper.updateEntityFields(newEmployee, input);
+            // Validate the input fields (only changed fields will be validated)
+            List<String> errors = employeeValidator.validateNewEmployee(newEmployee);
+            if (!errors.isEmpty()) {
+                return String.join(",", errors);
+            }
+            // Save the updated one
+            employeeRepository.save(newEmployee);
+            return "success";
+        } catch (BeansException e) {
+            // Handle exceptions (e.g., database errors) and return an error message
+            return "Error occurred while saving employee:"+ e.getMessage(); // Return false if an error occurs
         }
-
-        // If validation passes, save the employee to the database
-        employeeRepository.save(employee);
-        return "Employee saved successfully!";
     }
-
+    public Boolean deleteEmployeeById(String id) {
+        // Find the employee by ID to ensure it exists
+        Employee employee = employeeRepository.findById(id).orElse(null);
+        if (employee == null) {
+            return false;
+        }
+        // Perform the delete operation
+        employeeRepository.deleteById(id);
+        return true;
+        
+    }
     
 }

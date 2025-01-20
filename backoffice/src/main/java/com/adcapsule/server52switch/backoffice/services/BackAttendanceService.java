@@ -2,6 +2,7 @@ package com.adcapsule.server52switch.backoffice.services;
 
 import java.util.List;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -54,5 +55,35 @@ public String updateAttendance(String id, AttendanceInput input) {
             return "Handle exceptions"; // Return false if an error occurs
         }
     }
-    
+public String genNewAttendance(AttendanceInput input) {
+        
+        try {
+            Attendance newAttendance = new Attendance();
+            
+            // Copy properties from AttendanceInput to the newAttendance object
+            BeanUtilsHelper.updateEntityFields(newAttendance, input);
+            // Validate the input fields (only changed fields will be validated)
+            List<String> errors = attendanceValidator.validateNewAttendance(newAttendance);
+            if (!errors.isEmpty()) {
+                return String.join(",", errors);
+            }
+            // Save the updated one
+            attendanceRepository.save(newAttendance);
+            return "success";
+        } catch (BeansException e) {
+            // Handle exceptions (e.g., database errors) and return an error message
+            return "Error occurred while saving attendance:"+ e.getMessage(); // Return false if an error occurs
+        }
+    }
+    public Boolean deleteAttendanceById(String id) {
+        // Find the attendance by ID to ensure it exists
+        Attendance attendance = attendanceRepository.findById(id).orElse(null);
+        if (attendance == null) {
+            return false;
+        }
+        // Perform the delete operation
+        attendanceRepository.deleteById(id);
+        return true;
+        
+    }
 }

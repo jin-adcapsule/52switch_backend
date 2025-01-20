@@ -16,8 +16,16 @@ public class BackLocationResolver {
 
 
     @MutationMapping
-    public String updateLocation(@Argument String id, @Argument LocationInput input) {
-        // Call service to update the employee record
-        return backLocationService.updateLocation(id,input);
+    public String updateOrNewLocation(@Argument String id, @Argument LocationInput input) {
+        if (id==null){
+            return backLocationService.genNewLocation(input);
+        } else {
+            // Call service to update the employee record
+            return backLocationService.updateLocation(id,input);
+        }
+    }
+    @MutationMapping
+    public Boolean deleteLocationById(@Argument String id) {
+        return backLocationService.deleteLocationById(id);
     }
 }

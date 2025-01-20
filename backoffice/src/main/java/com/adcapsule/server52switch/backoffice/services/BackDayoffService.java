@@ -2,6 +2,7 @@ package com.adcapsule.server52switch.backoffice.services;
 
 import java.util.List;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -57,5 +58,36 @@ public class BackDayoffService {
             // Handle exceptions (e.g., database errors)
             return "Error updating Dayoff: " + e.getMessage();
         }
+    }
+    public String genNewDayoff(DayoffInput input) {
+        
+        try {
+            Dayoff newDayoff = new Dayoff();
+           
+            // Copy properties from AttendanceInput to the newAttendance object
+            BeanUtilsHelper.updateEntityFields(newDayoff, input);
+            // Validate the input fields (only changed fields will be validated)
+            List<String> errors = dayoffValidator.validateNewDayoff(newDayoff);
+            if (!errors.isEmpty()) {
+                return String.join(",", errors);
+            }
+            // Save the updated one
+            dayoffRepository.save(newDayoff);
+            return "success";
+        } catch (BeansException e) {
+            // Handle exceptions (e.g., database errors) and return an error message
+            return "Error occurred while saving dayoff:"+ e.getMessage(); // Return false if an error occurs
+        }
+    }
+    public Boolean deleteDayoffById(String id) {
+        // Find the dayoff by ID to ensure it exists
+        Dayoff dayoff = dayoffRepository.findById(id).orElse(null);
+        if (dayoff == null) {
+            return false;
+        }
+        // Perform the delete operation
+        dayoffRepository.deleteById(id);
+        return true;
+        
     }
 }

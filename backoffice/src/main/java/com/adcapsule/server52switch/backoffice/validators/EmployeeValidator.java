@@ -134,14 +134,18 @@ public class EmployeeValidator {
     }
 
     private void validateLocation(String locationId, List<String> errors) {
-        if (!isLocationExists(locationId)) {
-            errors.add("Invalid locationId");
+        if (locationId == null || locationId.isEmpty()) {
+            errors.add("locationId cannot be empty");
+        } else if (!locationRepository.existsById(locationId)) {
+            errors.add("locationId does not exist in the system");
         }
     }
 
     private void validateGroup(String groupId, List<String> errors) {
-        if (!isGroupExists(groupId)) {
-            errors.add("Invalid groupId");
+        if (groupId == null || groupId.isEmpty()) {
+            errors.add("groupId cannot be empty");
+        } else if (!groupRepository.existsById(groupId)) {
+            errors.add("groupId does not exist in the system");
         }
     }
 
@@ -167,11 +171,5 @@ public class EmployeeValidator {
         return employeeRepository.findByPhone(phone).isPresent();
     }
 
-    private boolean isLocationExists(String locationId) {
-        return locationRepository.findById(locationId).isPresent();
-    }
-
-    private boolean isGroupExists(String groupId) {
-        return groupRepository.findById(groupId).isPresent();
-    }
+    
 }

@@ -125,5 +125,23 @@ public class BackOfficeService {
         //System.err.println(groupMembers);
         return response;
     }
-    
+    public Boolean deleteGroupById(String id) {
+        // Find the group by ID to ensure it exists
+        Group group = groupService.findById(id);
+        if (group == null) {
+            return false;
+        }
+        List<String> groupmembers = employeeService.findEmployeeOidListbyGroupId( id);
+        // Check if the group has any subgroups (children)
+        List<Group> subgroups = groupService.getAllSubGroupsByGroupId(id);
+        if (groupmembers.isEmpty()&&subgroups.isEmpty()) {
+            // The group has no subgroups, so it can be safely deleted
+            groupService.deleteById(id);
+            return true;
+        } else {
+            // The group has subgroups, return false as it can't be deleted
+            return false;
+        }
+        
+    }
 }

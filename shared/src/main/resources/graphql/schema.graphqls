@@ -241,11 +241,17 @@ type Mutation {
     sendNotificationToSupervisor(employeeOid: String!, title: String!, message:String!, pageKey:String!): String
     sendNotificationToEmployeeOid(employeeOid: String!,  title: String!,  message: String!, pageKey:String!): String
 
-    updateEmployee(id: String!, input: EmployeeInput!): String
-    updateAttendance(id: String!, input: AttendanceInput!): String
-    updateDayoff(id: String!, input: DayoffInput!): String
-    updateGroup(id: String!, input: GroupInput!): String
-    updateLocation(id: String!, input: LocationInput!): String
+    updateOrNewEmployee(id: String, input: EmployeeInput!): String #if id null, make new 
+    updateOrNewAttendance(id: String, input: AttendanceInput!): String #if id null, make new 
+    updateOrNewDayoff(id: String, input: DayoffInput!): String #if id null, make new 
+    updateOrNewGroup(id: String, input: GroupInput!): String #if id null, make new 
+    updateOrNewLocation(id: String, input: LocationInput!): String #if id null, make new 
+
+    deleteEmployeeById(id: String):Boolean
+    deleteAttendanceById(id: String):Boolean
+    deleteDayoffById(id: String):Boolean
+    deleteGroupById(id: String):Boolean
+    deleteLocationById(id: String):Boolean
 
 
     }

@@ -13,9 +13,18 @@ public class BackEmployeeResolver {
     @Autowired
     private BackEmployeeService backEmployeeService;
     @MutationMapping
-    public String updateEmployee(@Argument String id, @Argument EmployeeInput input) {
-        // Call service to update the employee record
-        return backEmployeeService
-        .updateEmployee(id,input);
+    public String updateOrNewEmployee(@Argument String id, @Argument EmployeeInput input) {
+        if (id==null){
+            return backEmployeeService.genNewEmployee(input);
+        } else {
+            // Call service to update the employee record
+            return backEmployeeService
+            .updateEmployee(id,input);
+        }
+    }
+    @MutationMapping
+    public Boolean deleteEmployeeById(@Argument String id) {
+        return backEmployeeService.deleteEmployeeById(id);
+        
     }
 }

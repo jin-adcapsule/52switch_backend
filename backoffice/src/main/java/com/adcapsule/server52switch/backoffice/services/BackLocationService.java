@@ -2,6 +2,7 @@ package com.adcapsule.server52switch.backoffice.services;
 
 import java.util.List;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,5 +52,36 @@ public class BackLocationService {
             // Handle exceptions (e.g., database errors)
             return "Error updating Location: " + e.getMessage();
         }
+    }
+    public String genNewLocation(LocationInput input) {
+        
+        try {
+            Location newLocation = new Location();
+
+            // Copy properties from AttendanceInput to the newAttendance object
+            BeanUtilsHelper.updateEntityFields(newLocation, input);
+            // Validate the input fields (only changed fields will be validated)
+            List<String> errors = locationValidator.validateNewLocation(newLocation);
+            if (!errors.isEmpty()) {
+                return String.join(",", errors);
+            }
+            // Save the updated one
+            locationRepository.save(newLocation);
+            return "success";
+        } catch (BeansException e) {
+            // Handle exceptions (e.g., database errors) and return an error message
+            return "Error occurred while saving location:"+ e.getMessage(); // Return false if an error occurs
+        }
+    }
+    public Boolean deleteLocationById(String id) {
+        // Find the location by ID to ensure it exists
+        Location location = locationRepository.findById(id).orElse(null);
+        if (location == null) {
+            return false;
+        }
+        // Perform the delete operation
+        locationRepository.deleteById(id);
+        return true;
+        
     }
 }

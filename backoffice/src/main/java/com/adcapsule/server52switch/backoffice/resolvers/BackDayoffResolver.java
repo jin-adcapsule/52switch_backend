@@ -13,8 +13,16 @@ public class BackDayoffResolver {
     @Autowired
     private BackDayoffService backDayoffService;
     @MutationMapping
-    public String updateDayoff(@Argument String id, @Argument DayoffInput input) {
+    public String updateOrNewDayoff(@Argument String id, @Argument DayoffInput input) {
+        if (id==null){
+            return backDayoffService.genNewDayoff(input);
+        } else {
         // Call service to update the employee record
-        return backDayoffService.updateDayoff(id,input);
+            return backDayoffService.updateDayoff(id,input);
+        }
+    }
+    @MutationMapping
+    public Boolean deleteDayoffById(@Argument String id) {
+        return backDayoffService.deleteDayoffById(id);
     }
 }

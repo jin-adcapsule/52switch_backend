@@ -16,8 +16,13 @@ public class BackGroupResolver {
 
 
     @MutationMapping
-    public String updateGroup(@Argument String id, @Argument GroupInput input) {
-        // Call service to update the employee record
-        return backGroupService.updateGroup(id,input);
+    public String updateOrNewGroup(@Argument String id, @Argument GroupInput input) {
+        if (id==null){
+            return backGroupService.genNewGroup(input);
+        } else {
+            // Call service to update the employee record
+            return backGroupService.updateGroup(id,input);
+        }
     }
+
 }

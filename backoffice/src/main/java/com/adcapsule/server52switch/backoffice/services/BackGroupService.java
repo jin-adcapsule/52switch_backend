@@ -2,6 +2,7 @@ package com.adcapsule.server52switch.backoffice.services;
 
 import java.util.List;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,15 +11,18 @@ import com.adcapsule.server52switch.backoffice.configs.BeanUtilsHelper;
 import com.adcapsule.server52switch.backoffice.validators.GroupValidator;
 import com.adcapsule.server52switch.core.models.Group;
 import com.adcapsule.server52switch.core.repositories.GroupRepository;
+import com.adcapsule.server52switch.core.services.GroupService;
 
 @Service
 public class BackGroupService {
     private final GroupRepository groupRepository;
+    private final GroupService groupService;
     private final GroupValidator groupValidator;
 
     @Autowired
-    public BackGroupService(GroupRepository groupRepository, GroupValidator groupValidator) {
+    public BackGroupService(GroupRepository groupRepository,GroupService groupService, GroupValidator groupValidator) {
         this.groupRepository = groupRepository;
+        this.groupService = groupService;
         this.groupValidator = groupValidator;
     }
 
@@ -52,4 +56,25 @@ public class BackGroupService {
             return "Error updating Group: " + e.getMessage();
         }
     }
+     public String genNewGroup(GroupInput input) {
+        
+        try {
+            Group newGroup = new Group();
+           
+            // Copy properties from AttendanceInput to the newAttendance object
+            BeanUtilsHelper.updateEntityFields(newGroup, input);
+            // Validate the input fields (only changed fields will be validated)
+            List<String> errors = groupValidator.validateNewGroup(newGroup);
+            if (!errors.isEmpty()) {
+                return String.join(",", errors);
+            }
+            // Save the updated one
+            groupRepository.save(newGroup);
+            return "success";
+        } catch (BeansException e) {
+            // Handle exceptions (e.g., database errors) and return an error message
+            return "Error occurred while saving group:"+ e.getMessage(); // Return false if an error occurs
+        }
+    }
+    
 }

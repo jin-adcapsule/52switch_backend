@@ -90,5 +90,19 @@ public class Employee {
     public void setDayoffPerYear(Integer dayoffPerYear) {
         this.dayoffPerYear = dayoffPerYear;
     }
-
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "_id='" + _id + '\'' +
+                ", employeeId=" + employeeId +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", position='" + position + '\'' +
+                ", phone='" + phone + '\'' +
+                ", joindate='" + joindate + '\'' +
+                ", groupId='" + groupId + '\'' +
+                ", locationId='" + locationId + '\'' +
+                ", dayoffPerYear=" + dayoffPerYear +
+                '}';
+    }
 }
