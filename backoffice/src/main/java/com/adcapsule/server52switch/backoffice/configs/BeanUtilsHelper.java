@@ -33,7 +33,7 @@ public class BeanUtilsHelper {
                     // Field does not exist in updatedFields, so we skip it
                     continue;
                 }
-                // System.out.println("Found field in updatedFields: "+ updatedField);
+                // System.out.println("Found field in updatedFields: "+ updatedField)
                 updatedField.setAccessible(true);
                 Object updatedValue = updatedField.get(updatedFields);
 
