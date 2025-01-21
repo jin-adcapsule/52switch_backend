@@ -195,7 +195,7 @@ public class DayoffService {
         List<Dayoff> results = dayoffRepository.findByRequestStatusAndDateBetweenInclusive(
             employeeOid, requestStatus, startDate, endDate
         );
-        System.out.println(results);
+
     
         return results;
         //return dayoffRepository.findByRequestStatusAndDateBetweenInclusive(employeeOid,requestStatus,startDate, endDate);

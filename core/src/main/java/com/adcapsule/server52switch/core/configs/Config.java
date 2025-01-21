@@ -34,9 +34,10 @@ public class Config {
         {
 
             put("정상근무", "workFull");
+
+            put("정기휴가", "dayoffFull");
             put("오전반차", "dayoffFirstHalf");
             put("오후반차", "dayoffSecondHalf");
-            put("정기휴가", "dayoffFull");
             put("경조휴가", "dayoffExtra");
             put("휴직", "dayoffLOA");
             put("예비군", "dayoffMilitary");
@@ -60,6 +61,7 @@ public class Config {
         "dayoffSecondHalf", Map.of("workhourStart", "workhourHalf", "workhourEnd", "workhourOff"),
         "dayoffFull", Map.of("workhourStart", "null", "workhourEnd", "null"),
         "dayoffExtra", Map.of("workhourStart", "null", "workhourEnd", "null"),
+        "dayoffMilitary", Map.of("workhourStart", "null", "workhourEnd", "null"),
         "dayoffLOA", Map.of("workhourStart", "null", "workhourEnd", "null")
     );
 
