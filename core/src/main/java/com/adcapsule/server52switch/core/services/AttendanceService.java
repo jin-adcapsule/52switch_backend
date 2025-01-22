@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -19,7 +18,6 @@ import com.adcapsule.server52switch.core.configs.DateUtils;
 import com.adcapsule.server52switch.core.dtos.AttendanceHistory;
 import com.adcapsule.server52switch.core.dtos.AttendanceStatusAndDetailsDTO;
 import com.adcapsule.server52switch.core.dtos.AttendanceStatusDTO;
-import com.adcapsule.server52switch.core.dtos.LocationInfoDTO;
 import com.adcapsule.server52switch.core.models.Attendance;
 import com.adcapsule.server52switch.core.models.Dayoff;
 import com.adcapsule.server52switch.core.models.Holiday;
@@ -65,7 +63,7 @@ public class AttendanceService {
             // Get approved day-off/workhour requests for today
             List<Map<String,String>> requestWorkhourKeyMapList= requestService.getRequestByTodayAndApprovedStatus(employeeOid);
             // Process each request and determine the earliest startTime and latest endTime
-            Map<String,Object> expectedTimesAndWorkTypeListMap=getExpectedTimesAndWorkTypeList(employeeOid,requestWorkhourKeyMapList);
+            Map<String,Object> expectedTimesAndWorkTypeListMap=employeeService.getExpectedTimesAndWorkTypeList(employeeOid,requestWorkhourKeyMapList);
             //check whether today is fulldayoff day
             List<String> workTypeListResponse = (List<String>)expectedTimesAndWorkTypeListMap.get("workTypeListResponse");
             List<String> fulldayOffList=Config.fullDayoffList;
@@ -124,48 +122,7 @@ public class AttendanceService {
         attendanceRepository.save(attendance);
         return new AttendanceStatusDTO(status);
     }
-    public Map<String,Object> getExpectedTimesAndWorkTypeList(String employeeOid,List<Map<String,String>> requestWorkhourKeyMapList){
-        //if full dayoff then e.g. [{workhourStart=null, key=dayoffFull, workhourEnd=null}]
-        List<String> workTypeListResponse= new ArrayList<>();      
-        String startTime = null;
-        String endTime = null;  
-        // Get location details for this employee
-        LocationInfoDTO locationDetail = employeeService.getLocationAndWorkDetailsByEmployeeOid(employeeOid);
-        // Flag to check if we should prioritize null
-        boolean prioritizeNull = false;
-        // Process each request and determine the earliest startTime and latest endTime 
-        for (Map<String,String> requestWorkhourKeyMap : requestWorkhourKeyMapList) {
-            // Add the work type to the response list
-            workTypeListResponse.add(requestWorkhourKeyMap.get("key"));
-            // Check if "null" should be prioritized
-            String workhourStartKey = requestWorkhourKeyMap.get("workhourStart");
-            String workhourEndKey = requestWorkhourKeyMap.get("workhourEnd");
-            if ("null".equals(workhourStartKey) || "null".equals(workhourEndKey)) {
-                prioritizeNull = true;
-            }
-
-            // If "null" is not prioritized, map workhour keys to actual times
-            if (!prioritizeNull) {
-                String requestStartTime = locationDetail.getTimebyKey(workhourStartKey);
-                String requestEndTime = locationDetail.getTimebyKey(workhourEndKey);
-
-                // Update the overall startTime and endTime using comparison
-                startTime = Config.getEarliestStringTime(startTime, requestStartTime);
-                endTime = Config.getLatestStringTime(endTime, requestEndTime);
-            }
-        }  
-        // If "null" was prioritized, reset startTime and endTime to null
-        if (prioritizeNull) {
-            startTime = "";
-            endTime = "";
-        }
-        Map<String,Object> response = new HashMap<>();
-        response.put("locationName",locationDetail.getWorkplace());
-        response.put("startTime",startTime);
-        response.put("endTime",endTime);
-        response.put("workTypeListResponse",workTypeListResponse);
-        return response;
-    }
+    
     public AttendanceHistory resolveAttendanceHistoryDTO(Attendance attendance,List<String> workTypeQueryList){
         // search request whether there is approved request for today. if exists, apply to starthour or to endhour 
         String dateString = attendance.getDate();
@@ -174,7 +131,7 @@ public class AttendanceService {
         List<Map<String,String>> requestWorkhourKeyMapList=requestService.getRequestByWorkTypeInAndApprovedStatusAndDate(employeeOid,workTypeQueryList,dateString);
 
         // Process each request and determine the earliest startTime and latest endTime
-        Map<String,Object> expectedTimesAndWorkTypeListMap=getExpectedTimesAndWorkTypeList(employeeOid,requestWorkhourKeyMapList);
+        Map<String,Object> expectedTimesAndWorkTypeListMap=employeeService.getExpectedTimesAndWorkTypeList(employeeOid,requestWorkhourKeyMapList);
 
         List<String> workTypeListResponse = (List<String>) expectedTimesAndWorkTypeListMap.get("workTypeListResponse");
         if (workTypeListResponse == null) {
