@@ -13,7 +13,7 @@ public class AuthentificationResolver {
     @Autowired
     private AuthentificationService authentificationService;
    
-    @QueryMapping
+    @QueryMapping//
     public EmployeeValDTO  validateUidAndPhone(@Argument String uid, @Argument String phone) {
         return authentificationService.validateUidAndPhone(uid, phone);
     }
