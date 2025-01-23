@@ -345,7 +345,7 @@ public class EmployeeService {
             // Check if "null" should be prioritized
             String workhourStartKey = requestWorkhourKeyMap.get("workhourStart");
             String workhourEndKey = requestWorkhourKeyMap.get("workhourEnd");
-            if ("null".equals(workhourStartKey) || "null".equals(workhourEndKey)) {
+            if ("null".equals(workhourStartKey) || "null".equals(workhourEndKey)) {//*****************************handling string null */
                 prioritizeNull = true;
             }
 
@@ -359,7 +359,7 @@ public class EmployeeService {
                 endTime = Config.getLatestStringTime(endTime, requestEndTime);
             }
         }  
-        // If "null" was prioritized, reset startTime and endTime to null
+        // If "null" was prioritized, reset startTime and endTime to null//*****************************handling string null as emptystring*/
         if (prioritizeNull) {
             startTime = "";
             endTime = "";
@@ -394,5 +394,8 @@ public class EmployeeService {
             result.add(employeeMap);
         }
         return result;
+    }
+    public List<Location> getAllLocations(){
+        return locationService.findAll();
     }
 }

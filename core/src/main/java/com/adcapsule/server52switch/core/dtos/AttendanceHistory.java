@@ -38,7 +38,7 @@ public class AttendanceHistory {
         this.employeeOid = employeeOid;
         this.date = formatDate(date);
         this.locationId = (locationId != null) ? locationId: null;
-        this.checkInTime =DateUtils.longToCustomTime(checkInTime);
+        this.checkInTime =DateUtils.parseLongToCustomTime(checkInTime);
         this.checkOutTime = revisedCheckOutTime(checkOutTime,expectedCheckOutTime,date,status) ;
         this.status = status;
         this.workduration = calculateWorkduration(checkInTime,checkOutTime);
@@ -80,13 +80,13 @@ public class AttendanceHistory {
     private String resolveCheckInStatus(Long checkInTime,String expectedCheckInTime){
         String checkInTimeString = null;
         if (checkInTime != null) {
-            checkInTimeString = DateUtils.longToCustomTime(checkInTime);
+            checkInTimeString = DateUtils.parseLongToCustomTime(checkInTime);
         } else {
             throw new IllegalArgumentException("Parsed check time cannot be null");
         }
         try{    
-            Integer checkInTimeMinutes = DateUtils.timeStringToMinutes(checkInTimeString);
-            Integer expectedCheckInTimeMinutes = DateUtils.timeStringToMinutes(expectedCheckInTime);
+            Integer checkInTimeMinutes = DateUtils.parsehhmmStringToMinutes(checkInTimeString);
+            Integer expectedCheckInTimeMinutes = DateUtils.parsehhmmStringToMinutes(expectedCheckInTime);
             if (expectedCheckInTime == null||checkInTimeMinutes<=expectedCheckInTimeMinutes) {//not supposed to check in or early came
                 return "onTimeArrival";//"onTimeArrival";
             } else {//expected to check in but came late
@@ -102,7 +102,7 @@ public class AttendanceHistory {
     private String resolveCheckOutStatus( Long checkOutTime,String expectedCheckOutTime, String date, boolean status){
         String checkOutTimeString;
         if (checkOutTime != null) {
-            checkOutTimeString = DateUtils.longToCustomTime(checkOutTime);
+            checkOutTimeString = DateUtils.parseLongToCustomTime(checkOutTime);
         } else {
             throw new IllegalArgumentException("Parsed check time cannot be null");
         }
@@ -116,8 +116,8 @@ public class AttendanceHistory {
             if (!isToday(date)&&(checkOutStatus == null || status)) {
                 return "onTimeLeft"; // Return if not toggled out or the status is '근무중'
             }else{
-                Integer checkOutTimeMinutes = DateUtils.timeStringToMinutes(checkOutTimeString);
-                Integer expectedCheckOutTimeMinutes = DateUtils.timeStringToMinutes(expectedCheckOutTime);
+                Integer checkOutTimeMinutes = DateUtils.parsehhmmStringToMinutes(checkOutTimeString);
+                Integer expectedCheckOutTimeMinutes = DateUtils.parsehhmmStringToMinutes(expectedCheckOutTime);
                 if (expectedCheckOutTime == null||checkOutTimeMinutes >=expectedCheckOutTimeMinutes) {//not supposed to check in or early came
                     return "onTimeLeft";//"onTimeArrival";
                 } else {//expected to check in but came late
@@ -141,13 +141,13 @@ public class AttendanceHistory {
             if (!isToday(date)&&(checkOutStatus == null || "working".equals(checkOutStatus))) {
                 return expectedCheckOutTime;
             }else{
-                return DateUtils.longToCustomTime(checkOutTime);
+                return DateUtils.parseLongToCustomTime(checkOutTime);
             }
             
 
         }catch (Exception e) {
 
-            return DateUtils.longToCustomTime(checkOutTime); // Return if parsing fails
+            return DateUtils.parseLongToCustomTime(checkOutTime); // Return if parsing fails
         }
     }
     // Calculate Work Duration

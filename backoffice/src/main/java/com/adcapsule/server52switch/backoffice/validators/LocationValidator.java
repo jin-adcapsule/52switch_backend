@@ -61,15 +61,15 @@ public class LocationValidator {
      * Validates time fields for correctness (hh:mm format).
      */
     private void validateWorkTimeFields(String workhourOn, String workhourOff, String workhourHalf, List<String> errors) {
-        if (!DateUtils.isValidTimeString(workhourOn)) {
+        if (workhourOn!=null && !DateUtils.isValidhhmmString(workhourOn)) {
             errors.add("Invalid workhourOn format. Please use hh:mm format.");
         }
 
-        if (!DateUtils.isValidTimeString(workhourOff)) {
+        if (workhourOff!=null && !DateUtils.isValidhhmmString(workhourOff)) {
             errors.add("Invalid workhourOff format. Please use hh:mm format.");
         }
 
-        if (!DateUtils.isValidTimeString(workhourHalf)) {
+        if (workhourHalf!=null && !DateUtils.isValidhhmmString(workhourHalf)) {
             errors.add("Invalid workhourHalf format. Please use hh:mm format.");
         }
     }

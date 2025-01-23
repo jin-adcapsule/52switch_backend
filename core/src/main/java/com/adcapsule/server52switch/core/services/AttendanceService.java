@@ -45,7 +45,7 @@ public class AttendanceService {
     }
     public AttendanceStatusDTO getAttendanceStatus(String employeeOid) {
         try {
-            String dateToday = Config.getCurrentDate_String();
+            String dateToday = DateUtils.getyyyymmddStringNow();
             AttendanceStatusDTO AttendanceStatusDTO = attendanceRepository.findStatusByobjectOidAndDate(employeeOid, dateToday);
             if (AttendanceStatusDTO == null) {
 
@@ -60,17 +60,18 @@ public class AttendanceService {
         try {
             boolean todayStatus= getAttendanceStatus(employeeOid).getStatus();
             boolean isTodayWeekend = DateUtils.isTodayWeekend();
+            boolean isTodayHoliday = holidayService.findByHolidayDate(DateUtils.getyyyymmddStringNow()).orElse(null) !=null;
             // Get approved day-off/workhour requests for today
-            List<Map<String,String>> requestWorkhourKeyMapList= requestService.getRequestByTodayAndApprovedStatus(employeeOid);
+            List<Map<String,String>> requestWorkhourKeyMapList = requestService.getRequestByTodayAndApprovedStatus(employeeOid);
             // Process each request and determine the earliest startTime and latest endTime
-            Map<String,Object> expectedTimesAndWorkTypeListMap=employeeService.getExpectedTimesAndWorkTypeList(employeeOid,requestWorkhourKeyMapList);
+            Map<String,Object> expectedTimesAndWorkTypeListMap = employeeService.getExpectedTimesAndWorkTypeList(employeeOid,requestWorkhourKeyMapList);
             //check whether today is fulldayoff day
             List<String> workTypeListResponse = (List<String>)expectedTimesAndWorkTypeListMap.get("workTypeListResponse");
             List<String> fulldayOffList=Config.fullDayoffList;
             boolean isTodayFullDayoff=workTypeListResponse.stream().anyMatch(fulldayOffList::contains);
             
             return new AttendanceStatusAndDetailsDTO(
-                (isTodayWeekend || isTodayFullDayoff) ? null : todayStatus,
+                (isTodayWeekend || isTodayFullDayoff ||isTodayHoliday) ? null : todayStatus,
                 workTypeListResponse,
                 (String)expectedTimesAndWorkTypeListMap.get("startTime"),
                 (String)expectedTimesAndWorkTypeListMap.get("endTime"),
@@ -84,8 +85,8 @@ public class AttendanceService {
     
     public AttendanceStatusDTO createOrUpdateAttendance(String objectId, Boolean status) throws ParseException {
         
-        long parsedCheckTime = DateUtils.longDateNow();
-        String customDateStringNow = DateUtils.longToCustomDate(parsedCheckTime);// yyyy-mm-dd String with custom day starting hour
+        long parsedCheckTime = DateUtils.getLongDateNow();
+        String customDateStringNow = DateUtils.parseLongToCustomDate(parsedCheckTime);// yyyy-mm-dd String with custom day starting hour
         
         String employeeOid = objectId;
         String locationId = employeeService.findLocationIdById(employeeOid);

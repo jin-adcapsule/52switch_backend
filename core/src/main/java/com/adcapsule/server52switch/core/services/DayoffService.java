@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.adcapsule.server52switch.core.configs.Config;
+import com.adcapsule.server52switch.core.configs.DateUtils;
 import com.adcapsule.server52switch.core.dtos.DayoffHistory;
 import com.adcapsule.server52switch.core.dtos.DayoffInfoDTO;
 import com.adcapsule.server52switch.core.models.Dayoff;
@@ -50,7 +50,7 @@ public class DayoffService {
     }
     public Dayoff createOrUpdateDayoff(String objectId, String requestKey, String dayoffdate,String dayoffType, String requestComment,int beforeDateRemaining, Date currentdate) throws ParseException {
         String employeeOid = objectId;
-        String currentDateInKST = Config.getCurrentDate_String();
+        String currentDateInKST = DateUtils.getyyyymmddStringNow();
         // Check if a record already exists for this employeeId and dayoffdate
         Dayoff dayoff;
         // Create a new Dayoff record

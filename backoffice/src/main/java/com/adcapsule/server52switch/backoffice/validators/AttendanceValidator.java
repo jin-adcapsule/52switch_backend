@@ -97,7 +97,7 @@ public class AttendanceValidator {
     private void validateDate(String date, List<String> errors) {
         if (date == null || date.isEmpty()) {
             errors.add("Date cannot be empty");
-        } else if (!DateUtils.isValidDateString(date)) {
+        } else if (!DateUtils.isValidyyyymmddString(date)) {
             errors.add("Invalid date format. The date must be in yyyy-MM-dd format.");
         }
     }
