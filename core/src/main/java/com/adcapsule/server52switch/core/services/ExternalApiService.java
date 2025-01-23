@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.adcapsule.server52switch.core.configs.Config;
 import com.adcapsule.server52switch.core.configs.DateUtils;
 import com.adcapsule.server52switch.core.configs.DotenvConfig;
 import com.adcapsule.server52switch.core.models.Holiday;
@@ -146,7 +147,7 @@ public class ExternalApiService {
     /**
      * Scheduled task to fetch and store holiday data for this year and next year.
      */
-    @Scheduled(cron = "0 0 0 * * ?") // Runs daily at midnight
+    @Scheduled(cron = Config.tickTime) // Runs daily at certain time
     public void scheduleHolidayFetch() {
         int currentYear = java.time.Year.now().getValue();
         fetchAndStoreHolidayData(currentYear - 1);
