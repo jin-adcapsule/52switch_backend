@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main  # Run pipeline when code is pushed to main
+      - wip
+      - dev
 
 jobs:
   build-and-push:
