@@ -22,7 +22,7 @@ jobs:
           java-version: '17'
 
       - name: Build Spring Boot JARs
-        run: ./mvnw clean package -DskipTests -f runner/pom.xml
+        run: mvn clean package -DskipTests
 
       - name: Debug JAR Generation
         run: |
