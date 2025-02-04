@@ -13,13 +13,13 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 
-import io.github.cdimascio.dotenv.Dotenv;
+//import io.github.cdimascio.dotenv.Dotenv;
 
 @Configuration
 public class FirebaseConfig {
 
     // Load environment variables using Dotenv
-    private final Dotenv dotenv = Dotenv.load();
+    //private final Dotenv dotenv = Dotenv.load();
 
     @Bean
     public FirebaseApp initializeFirebase() {

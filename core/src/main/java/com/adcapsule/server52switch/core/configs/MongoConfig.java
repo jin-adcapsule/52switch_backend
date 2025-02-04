@@ -7,13 +7,13 @@ import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 
-import io.github.cdimascio.dotenv.Dotenv;
+//import io.github.cdimascio.dotenv.Dotenv;
 
 @Configuration
 public class MongoConfig extends AbstractMongoClientConfiguration {
 
     // Load the environment variables from the .env file
-    private final Dotenv dotenv = Dotenv.load();
+    //private final Dotenv dotenv = Dotenv.load();
 
     @Override
     protected String getDatabaseName() {
