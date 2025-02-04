@@ -58,11 +58,6 @@ jobs:
           echo "MONGODB_DATABASE=${{ secrets.MONGODB_DATABASE }}" >> $GITHUB_ENV
           echo "HOLIDAY_API_KEY=${{ secrets.HOLIDAY_API_KEY }}" >> $GITHUB_ENV
 
-      - name: Debug SSH Connectivity
-        run: |
-          echo "Testing SSH connection..."
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/key.pem ubuntu@${{ secrets.EC2_HOST }} "echo 'SSH connection successful'"
-
       - name: Debug AWS ECR Access on EC2
         uses: appleboy/ssh-action@v0.1.4
         with:
