@@ -89,13 +89,20 @@ jobs:
             docker rm switch52-container || true
 
             echo "Running the new container..."
+            echo "Running the new container..."
             docker run -d -p 8080:8080 --name switch52-container \
-              -e MONGODB_URI=${{ secrets.MONGODB_URI }} \
-              -e MONGODB_DATABASE=${{ secrets.MONGODB_DATABASE }} \
-              -e HOLIDAY_API_KEY=${{ secrets.HOLIDAY_API_KEY }} \
+              -e MONGODB_URI="${MONGODB_URI}" \
+              -e MONGODB_DATABASE="${MONGODB_DATABASE}" \
+              -e HOLIDAY_API_KEY="${HOLIDAY_API_KEY}" \
               -e FIREBASE_AUTH_EMULATOR_HOST="127.0.0.1:9099" \
               -e GOOGLE_APPLICATION_CREDENTIALS="classpath:firebase/52switch_firebase_key.json" \
-              ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/switch52:latest
+              "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/switch52:latest"
+          env:
+            MONGODB_URI: ${{ secrets.MONGODB_URI }}
+            MONGODB_DATABASE: ${{ secrets.MONGODB_DATABASE }}
+            HOLIDAY_API_KEY: ${{ secrets.HOLIDAY_API_KEY }}
+            AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+            AWS_REGION: ${{ secrets.AWS_REGION }}
 
       - name: Debug Running Containers
         uses: appleboy/ssh-action@v1.2.0
