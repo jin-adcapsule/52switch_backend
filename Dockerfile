@@ -1,7 +1,8 @@
 # Use official OpenJDK base image
 FROM openjdk:17
 # Install CA Certificates (needed for MongoDB Atlas SSL)
-RUN apk --no-cache add ca-certificates
+RUN apt-get update && apt-get install -y ca-certificates && update-ca-certificates
+
 
 # Set working directory
 WORKDIR /app
