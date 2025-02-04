@@ -1,7 +1,7 @@
 # Use official OpenJDK base image
 FROM openjdk:17
 # Install CA Certificates (needed for MongoDB Atlas SSL)
-RUN apt-get update && apt-get install -y ca-certificates && update-ca-certificates
+RUN dnf install -y ca-certificates && update-ca-trust
 
 
 # Set working directory
@@ -17,5 +17,5 @@ COPY shared/target/*.jar shared.jar
 EXPOSE 8080
 
 # Run the main application (adjust as needed)!
-CMD ["java", "-jar", "runner.jar"]
+CMD ["java", "-Dhttps.protocols=TLSv1.2", "-jar", "runner.jar"]
 
