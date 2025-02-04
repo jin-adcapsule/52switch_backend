@@ -13,6 +13,6 @@ COPY shared/target/*.jar shared.jar
 # Expose the application port
 EXPOSE 8080
 
-# Run the main application (adjust as needed)
+# Run the main application (adjust as needed)!
 CMD ["java", "-jar", "runner.jar"]
 
