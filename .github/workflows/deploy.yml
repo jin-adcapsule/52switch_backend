@@ -60,7 +60,7 @@ jobs:
 
 
       - name: Debug AWS ECR Access on EC2
-        uses: appleboy/ssh-action@1.2.0
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
@@ -75,7 +75,7 @@ jobs:
             aws ecr list-images --repository-name switch52 --region ${{ secrets.AWS_REGION }}
 
       - name: Deploy to EC2
-        uses: appleboy/ssh-action@1.2.0
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
@@ -109,7 +109,7 @@ jobs:
             docker ps -a
 
       - name: Debug Container Logs
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
