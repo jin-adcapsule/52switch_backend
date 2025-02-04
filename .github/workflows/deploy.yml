@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set Environment Variables
+      - name: Set Environment Variables.
         run: |
           echo "FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099" >> $GITHUB_ENV
           echo "GOOGLE_APPLICATION_CREDENTIALS=classpath:firebase/52switch_firebase_key.json" >> $GITHUB_ENV
