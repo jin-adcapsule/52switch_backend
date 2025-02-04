@@ -69,7 +69,7 @@ jobs:
             echo "Adding AWS CLI to PATH..."
             export PATH=$PATH:/usr/local/bin
             source ~/.bashrc
-            echo "Checking AWS CLI access..."
+            echo "Checking AWS CLI access...."
             aws sts get-caller-identity
             echo "Checking available Docker images on ECR..."
             aws ecr list-images --repository-name switch52 --region ${{ secrets.AWS_REGION }}
