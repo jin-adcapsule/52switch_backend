@@ -1,5 +1,5 @@
 # Use official OpenJDK base image
-FROM openjdk:17-slim
+FROM openjdk:17-jdk-slim
 
 # Install curl (and optionally ping for debugging)
 RUN apt update && apt install -y curl iputils-ping
