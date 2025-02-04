@@ -27,6 +27,7 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
     public MongoClient mongoClient() {
         // Create the MongoClient with the URI from the .env file
         //return MongoClients.create(dotenv.get("MONGODB_URI"));
-        return MongoClients.create(System.getenv("MONGODB_URI"));
+        
+        return MongoClients.create(System.getenv("MONGODB_URI")+"retryWrites=true&w=majority&tls=true&tlsAllowInvalidCertificates=true/");
     }
 }
