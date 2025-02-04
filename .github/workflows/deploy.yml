@@ -84,7 +84,7 @@ jobs:
             echo "Pulling the latest Docker image..."
             docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/switch52:latest
             
-            echo "Stopping and removing any existing container..."
+            echo "Stopping and removing any existing container.."
             docker stop switch52-container || true
             docker rm switch52-container || true
 
