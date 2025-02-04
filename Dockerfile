@@ -1,5 +1,8 @@
 # Use official OpenJDK base image
 FROM openjdk:17-slim
+
+# Install curl (and optionally ping for debugging)
+RUN apt update && apt install -y curl iputils-ping
 # Install CA Certificates (needed for MongoDB Atlas SSL)
 RUN apt-get update && apt-get install -y ca-certificates && update-ca-certificates
 
