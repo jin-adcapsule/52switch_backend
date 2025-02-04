@@ -27,7 +27,29 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
     public MongoClient mongoClient() {
         // Create the MongoClient with the URI from the .env file
         //return MongoClients.create(dotenv.get("MONGODB_URI"));
+        String mongoUri = System.getenv("MONGODB_URI");
+        String databaseName = getDatabaseName();
         
-        return MongoClients.create(System.getenv("MONGODB_URI"));
+        if (mongoUri == null || mongoUri.isEmpty()) {
+            throw new IllegalStateException("MONGODB_URI environment variable is not set.");
+        }
+        if (databaseName == null || databaseName.isEmpty()) {
+            throw new IllegalStateException("MONGODB_DATABASE environment variable is not set.");
+        }
+
+        // Ensure the MongoDB URI includes the database name
+        if (!mongoUri.endsWith("/")) {
+            mongoUri += "/";
+        }
+        mongoUri += databaseName;
+
+        // Ensure TLS and retry options are set
+        if (!mongoUri.contains("?")) {
+            mongoUri += "?retryWrites=true&w=majority&tls=true";
+        } else {
+            mongoUri += "&retryWrites=true&w=majority&tls=true";
+        }
+
+        return MongoClients.create(mongoUri);
     }
 }
