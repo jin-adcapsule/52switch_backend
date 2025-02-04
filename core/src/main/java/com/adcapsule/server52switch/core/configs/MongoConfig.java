@@ -18,13 +18,15 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
     @Override
     protected String getDatabaseName() {
         // Retrieve the database name from the .env file
-        return dotenv.get("MONGODB_DATABASE");
+        return System.getenv("MONGODB_DATABASE");
+        //return dotenv.get("MONGODB_DATABASE");
     }
 
     @Override
     @Bean
     public MongoClient mongoClient() {
         // Create the MongoClient with the URI from the .env file
-        return MongoClients.create(dotenv.get("MONGODB_URI"));
+        //return MongoClients.create(dotenv.get("MONGODB_URI"));
+        return MongoClients.create(System.getenv("MONGODB_URI"));
     }
 }

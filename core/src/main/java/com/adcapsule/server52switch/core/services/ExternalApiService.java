@@ -48,7 +48,8 @@ public class ExternalApiService {
      */
     public void fetchAndStoreHolidayData(int year) {
         try { // Load encoding key from DotenvConfig
-            String rawencodingKey=DotenvConfig.get("HOLIDAY_API_KEY").trim();
+            //String rawencodingKey=DotenvConfig.get("HOLIDAY_API_KEY").trim();
+            String rawencodingKey=System.getenv("HOLIDAY_API_KEY").trim();
             String encodedKey = encode(rawencodingKey);
                     // Build URL with query parameters, ensuring the serviceKey is URL-encoded
             URI uri = UriComponentsBuilder.fromHttpUrl(apiUrl)
