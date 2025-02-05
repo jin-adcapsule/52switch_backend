@@ -50,14 +50,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set Environment Variables.
+      - name: Save Firebase Service Account Key
         run: |
-          echo "FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099" >> $GITHUB_ENV
-          echo "GOOGLE_APPLICATION_CREDENTIALS=classpath:firebase/52switch_firebase_key.json" >> $GITHUB_ENV
-          echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> $GITHUB_ENV
-          echo "MONGODB_DATABASE=${{ secrets.MONGODB_DATABASE }}" >> $GITHUB_ENV
-          echo "HOLIDAY_API_KEY=${{ secrets.HOLIDAY_API_KEY }}" >> $GITHUB_ENV
-
+          echo "$FIREBASE_SERVICE_ACCOUNT_JSON" > /app/firebase/52switch_firebase_key.json
+        shell: bash
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
 
       - name: Debug AWS ECR Access on EC2
         uses: appleboy/ssh-action@v1.2.0
@@ -88,13 +86,19 @@ jobs:
             docker stop switch52-container || true
             docker rm switch52-container || true
 
+            echo "Ensuring firebase key exists..."
+            mkdir -p /app/firebase
+            echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}" > /app/firebase/52switch_firebase_key.json
+            chmod 600 /app/firebase/52switch_firebase_key.json
+
             echo "Running the new container..e"
             docker run -d -p 8080:8080 --name switch52-container \
               -e MONGODB_URI=${{ secrets.MONGODB_URI }} \
               -e MONGODB_DATABASE=${{ secrets.MONGODB_DATABASE }} \
               -e HOLIDAY_API_KEY=${{ secrets.HOLIDAY_API_KEY }} \
               -e FIREBASE_AUTH_EMULATOR_HOST="127.0.0.1:9099" \
-              -e GOOGLE_APPLICATION_CREDENTIALS="classpath:firebase/52switch_firebase_key.json" \
+              -e GOOGLE_APPLICATION_CREDENTIALS="/app/firebase/52switch_firebase_key.json" \
+              -v /app/firebase:/app/firebase:ro \
               ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/switch52:latest
 
       - name: Debug Running Containers
