@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     netcat \
     && update-ca-certificates \
     && rm -rf /var/lib/apt/lists/*
-# Set working directory
+# Set working directorye
 WORKDIR /app
 
 # Copy JAR files from the build
