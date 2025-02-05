@@ -52,9 +52,9 @@ jobs:
     steps:
       - name: Save Firebase Service Account Key
         run: |
-          mkdir -p /app/firebase # Ensure the directory exists
-          echo "$FIREBASE_SERVICE_ACCOUNT_JSON" > /app/firebase/52switch_firebase_key.json
-          chmod 600 /app/firebase/52switch_firebase_key.json  # Set proper permissions
+          mkdir -p $HOME/firebase # Ensure the directory exists
+          echo "$FIREBASE_SERVICE_ACCOUNT_JSON" > $HOME/firebase/52switch_firebase_key.json
+          chmod 600 $HOME/firebase/52switch_firebase_key.json  # Set proper permissions
         shell: bash
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
@@ -89,9 +89,9 @@ jobs:
             docker rm switch52-container || true
 
             echo "Ensuring firebase key exists..."
-            mkdir -p /app/firebase
-            echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}" > /app/firebase/52switch_firebase_key.json
-            chmod 600 /app/firebase/52switch_firebase_key.json
+            mkdir -p $HOME/firebase
+            echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}" > $HOME/firebase/52switch_firebase_key.json
+            chmod 600 $HOME/firebase/52switch_firebase_key.json
 
             echo "Running the new container..e"
             docker run -d -p 8080:8080 --name switch52-container \
@@ -99,7 +99,7 @@ jobs:
               -e MONGODB_DATABASE=${{ secrets.MONGODB_DATABASE }} \
               -e HOLIDAY_API_KEY=${{ secrets.HOLIDAY_API_KEY }} \
               -e FIREBASE_AUTH_EMULATOR_HOST="127.0.0.1:9099" \
-              -e GOOGLE_APPLICATION_CREDENTIALS="/app/firebase/52switch_firebase_key.json" \
+              -e GOOGLE_APPLICATION_CREDENTIALS="$HOME/firebase/52switch_firebase_key.json" \
               -v /app/firebase:/app/firebase:ro \
               ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/switch52:latest
 
