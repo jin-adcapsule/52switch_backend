@@ -100,7 +100,7 @@ jobs:
               -e HOLIDAY_API_KEY=${{ secrets.HOLIDAY_API_KEY }} \
               -e FIREBASE_AUTH_EMULATOR_HOST="127.0.0.1:9099" \
               -e GOOGLE_APPLICATION_CREDENTIALS="$HOME/firebase/52switch_firebase_key.json" \
-              -v /app/firebase:/app/firebase:ro \
+              -v $HOME/firebase:$HOME/firebase:ro \
               ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/switch52:latest
 
       - name: Debug Running Containers
