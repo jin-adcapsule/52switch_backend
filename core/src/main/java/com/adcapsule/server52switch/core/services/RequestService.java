@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.adcapsule.server52switch.core.configs.Config;
+import com.adcapsule.server52switch.core.configs.DateUtils;
 import com.adcapsule.server52switch.core.models.Dayoff;
 
 
@@ -26,13 +27,13 @@ public class RequestService {
     //hard coded
     public List<Map<String,String>> getRequestByTodayAndApprovedStatus(String employeeOid){
 
-        String currentDateInKST = Config.getCurrentDate_String();
+        String currentDateInKST = DateUtils.getyyyymmddStringNow();
         String statusApproved="approved";//String statusApproved = Config.requestStatusToTextMap.get("approved");
         // Fetch dayoff records based on filters
 
         List<String> dayoffTypes = dayoffService.findDayoffTypeByEmployeeOidAndRequestStatusAndDate(employeeOid, statusApproved, currentDateInKST);    
 
-        List<Map<String,String>> dayoffKeyMapList = Config.getWorkTypeAndWorkTimeToday(dayoffTypes);//workhourStart,workhourEnd,key as dayoffTypeValue
+        List<Map<String,String>> dayoffKeyMapList = Config.getWorkTypeAndWorkTimeToday(dayoffTypes);//workhourStart,workhourEnd,key as dayoffTypeValue and start or end can be string null
         return dayoffKeyMapList ;
     }
 

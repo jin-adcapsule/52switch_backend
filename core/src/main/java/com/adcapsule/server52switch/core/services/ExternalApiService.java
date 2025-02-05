@@ -19,8 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.adcapsule.server52switch.core.configs.Config;
 import com.adcapsule.server52switch.core.configs.DateUtils;
-import com.adcapsule.server52switch.core.configs.DotenvConfig;
+//import com.adcapsule.server52switch.core.configs.DotenvConfig;
 import com.adcapsule.server52switch.core.models.Holiday;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,7 +48,8 @@ public class ExternalApiService {
      */
     public void fetchAndStoreHolidayData(int year) {
         try { // Load encoding key from DotenvConfig
-            String rawencodingKey=DotenvConfig.get("HOLIDAY_API_KEY").trim();
+            //String rawencodingKey=DotenvConfig.get("HOLIDAY_API_KEY").trim();
+            String rawencodingKey=System.getenv("HOLIDAY_API_KEY").trim();
             String encodedKey = encode(rawencodingKey);
                     // Build URL with query parameters, ensuring the serviceKey is URL-encoded
             URI uri = UriComponentsBuilder.fromHttpUrl(apiUrl)
@@ -146,7 +148,7 @@ public class ExternalApiService {
     /**
      * Scheduled task to fetch and store holiday data for this year and next year.
      */
-    @Scheduled(cron = "0 0 0 * * ?") // Runs daily at midnight
+    @Scheduled(cron = Config.tickTime) // Runs daily at certain time
     public void scheduleHolidayFetch() {
         int currentYear = java.time.Year.now().getValue();
         fetchAndStoreHolidayData(currentYear - 1);

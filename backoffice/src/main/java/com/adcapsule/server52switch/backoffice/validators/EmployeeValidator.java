@@ -122,7 +122,7 @@ public class EmployeeValidator {
     }
 
     private void validateJoindate(String joindate, List<String> errors) {
-        if (!DateUtils.isValidDateString(joindate)) {
+        if (!DateUtils.isValidyyyymmddString(joindate)) {
             errors.add("Joindate cannot be parsed");
         }
     }

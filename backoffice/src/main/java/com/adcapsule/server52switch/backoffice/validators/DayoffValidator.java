@@ -102,7 +102,7 @@ public class DayoffValidator {
     private void validateDayoffDate(String dayoffDate, List<String> errors) {
         if (dayoffDate == null || dayoffDate.isEmpty()) {
             errors.add("Day-off date cannot be empty");
-        } else if (!DateUtils.isValidDateString(dayoffDate)) {
+        } else if (!DateUtils.isValidyyyymmddString(dayoffDate)) {
             errors.add("Invalid date format. The date must be in yyyy-MM-dd format.");
         }
     }

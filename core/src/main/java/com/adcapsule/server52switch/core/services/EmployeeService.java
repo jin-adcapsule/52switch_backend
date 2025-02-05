@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.adcapsule.server52switch.core.configs.Config;
 import com.adcapsule.server52switch.core.dtos.EmployeeDTO;
 import com.adcapsule.server52switch.core.dtos.LocationInfoDTO;
 import com.adcapsule.server52switch.core.models.Employee;
@@ -328,7 +329,48 @@ public class EmployeeService {
     }
 
 
+    public Map<String,Object> getExpectedTimesAndWorkTypeList(String employeeOid,List<Map<String,String>> requestWorkhourKeyMapList){
+        //if full dayoff then e.g. [{workhourStart=null, key=dayoffFull, workhourEnd=null}]
+        List<String> workTypeListResponse= new ArrayList<>();      
+        String startTime = null;
+        String endTime = null;  
+        // Get location details for this employee
+        LocationInfoDTO locationDetail = getLocationAndWorkDetailsByEmployeeOid(employeeOid);
+        // Flag to check if we should prioritize null
+        boolean prioritizeNull = false;
+        // Process each request and determine the earliest startTime and latest endTime 
+        for (Map<String,String> requestWorkhourKeyMap : requestWorkhourKeyMapList) {
+            // Add the work type to the response list
+            workTypeListResponse.add(requestWorkhourKeyMap.get("key"));
+            // Check if "null" should be prioritized
+            String workhourStartKey = requestWorkhourKeyMap.get("workhourStart");
+            String workhourEndKey = requestWorkhourKeyMap.get("workhourEnd");
+            if ("null".equals(workhourStartKey) || "null".equals(workhourEndKey)) {//*****************************handling string null */
+                prioritizeNull = true;
+            }
 
+            // If "null" is not prioritized, map workhour keys to actual times
+            if (!prioritizeNull) {
+                String requestStartTime = locationDetail.getTimebyKey(workhourStartKey);
+                String requestEndTime = locationDetail.getTimebyKey(workhourEndKey);
+
+                // Update the overall startTime and endTime using comparison
+                startTime = Config.getEarliestStringTime(startTime, requestStartTime);
+                endTime = Config.getLatestStringTime(endTime, requestEndTime);
+            }
+        }  
+        // If "null" was prioritized, reset startTime and endTime to null//*****************************handling string null as emptystring*/
+        if (prioritizeNull) {
+            startTime = "";
+            endTime = "";
+        }
+        Map<String,Object> response = new HashMap<>();
+        response.put("locationName",locationDetail.getWorkplace());
+        response.put("startTime",startTime);
+        response.put("endTime",endTime);
+        response.put("workTypeListResponse",workTypeListResponse);
+        return response;
+    }
 
     public Optional<DayoffInfoProjection> findDayoffInfoById(String employeeOid){
         return employeeRepository.findDayoffInfoById(employeeOid);
@@ -352,5 +394,8 @@ public class EmployeeService {
             result.add(employeeMap);
         }
         return result;
+    }
+    public List<Location> getAllLocations(){
+        return locationService.findAll();
     }
 }

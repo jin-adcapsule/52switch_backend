@@ -18,7 +18,9 @@ import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 public class Config {
-
+  public static final int alertNotiMinutes = -5;
+  public static final int lateNotiMinutes = 15;
+  public static final String tickTime = "0 0 3 * * ?"; // 3:00 AM every day
   public static final Map<String,String> requestStatusTextToValueMap= new HashMap<String, String>()
     {
         {
@@ -94,14 +96,7 @@ public class Config {
     }
     
   }
-  // Method to get the current date formatted in a specific time zone (KST)
-  public static String getCurrentDate_String() {
-      SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); // Format for date comparison
-      dateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Seoul")); // Set to KST time zone
 
-      // Format the current date and return as a string
-      return dateFormat.format(new Date());
-  }
 
 // Method to format a given Date to KST with a specific format
   public static Date getCheckTime_Date_Date(Date checkTime) {
@@ -182,17 +177,16 @@ public class Config {
   //MappingMethod for dayofftype to StartTime and EndTime
   public static List<Map<String,String>> getWorkTypeAndWorkTimeToday(List<String> dayoffTypeValues){
       List<String> workTypeValuesToday = new ArrayList<>(dayoffTypeValues); // Create a copy of the provided dayoffTypesValue
-      if(workTypeValuesToday.isEmpty()){workTypeValuesToday.add("workFull");}//if no dayoff then
+      if(workTypeValuesToday.isEmpty()){workTypeValuesToday.add("workFull");}//if no dayoff then this is workFull day
       List<Map<String, String>> WorkhourKeyMapLists= new ArrayList<>();
       for (String workTypeValue : workTypeValuesToday) {
-          //String workTypeValue=workTypeTextToValueMap.get(workType);
           Map<String,String> locationKeysetforWorkType = workTypeToLocationKeyMap.get(workTypeValue);
           // Create a new map to avoid modifying the original map
           Map<String, String> newMap = new HashMap<>(locationKeysetforWorkType);
           // Add the key-value pair
           newMap.put("key", workTypeValue);
       
-          WorkhourKeyMapLists.add(newMap);
+          WorkhourKeyMapLists.add(newMap); // e.g. Map{'key':'workFull', 'workhourStart':'workhourOn','workhourEnd':'null' }
       }
     return WorkhourKeyMapLists;
   }

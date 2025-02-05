@@ -13,13 +13,13 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 
-import io.github.cdimascio.dotenv.Dotenv;
+//import io.github.cdimascio.dotenv.Dotenv;
 
 @Configuration
 public class FirebaseConfig {
 
     // Load environment variables using Dotenv
-    private final Dotenv dotenv = Dotenv.load();
+    //private final Dotenv dotenv = Dotenv.load();
 
     @Bean
     public FirebaseApp initializeFirebase() {
@@ -35,7 +35,8 @@ public class FirebaseConfig {
             // Load the service account JSON file
             FileInputStream serviceAccount = new FileInputStream(firebaseCredentialsPath);
             */
-            String credentialsPath = dotenv.get("GOOGLE_APPLICATION_CREDENTIALS");
+            // String credentialsPath = dotenv.get("GOOGLE_APPLICATION_CREDENTIALS");
+            String credentialsPath =System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
             System.out.println("GOOGLE_APPLICATION_CREDENTIALS: " + credentialsPath);
             System.out.println("Working Directory: " + new File(".").getAbsolutePath());
             InputStream serviceAccount = null;
