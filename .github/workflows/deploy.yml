@@ -51,6 +51,11 @@ jobs:
       cancel-in-progress: true  # Cancels any running deployment if a new one starts for the same branch
 
     steps:
+      - name: Configure AWS Credentials
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set region ${{ secrets.AWS_REGION }}
       - name: Start EC2 Instance
         run: |
           echo "Starting EC2 instance..."
