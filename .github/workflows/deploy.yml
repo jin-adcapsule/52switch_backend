@@ -60,7 +60,7 @@ jobs:
       - name: Start EC2 Instance
         run: |
           echo "Starting EC2 instance..."
-          aws ec2 start-instances --instance-ids ${{ secrets.EC2_INSTANCE_ID }} --allocation-id ${{ secrets.EC2_ALLOCATION_ID }} --region ${{ secrets.AWS_REGION }}
+          aws ec2 start-instances --instance-ids ${{ secrets.EC2_INSTANCE_ID }}  --region ${{ secrets.AWS_REGION }}
           
           echo "Waiting for EC2 to reach 'running' state..."
           aws ec2 wait instance-running --instance-ids ${{ secrets.EC2_INSTANCE_ID }} --region ${{ secrets.AWS_REGION }}
