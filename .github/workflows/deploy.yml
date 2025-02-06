@@ -96,8 +96,9 @@ jobs:
               ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/switch52:latest
 
       - name: Sleep for 30 minutes before stopping EC2
-        run: sleep 100  # 1800 seconds = 30 minutes
+        run: sleep 20  # 1800 seconds = 30 minutes
 
-      - name: Stop EC2 instance
+      - name: Ensure AWS Credentials Before Stopping EC2
         run: |
+          aws sts get-caller-identity || echo "AWS Credentials Missing!"
           aws ec2 stop-instances --instance-ids ${{ secrets.EC2_INSTANCE_ID }} --region ${{ secrets.AWS_REGION }}
