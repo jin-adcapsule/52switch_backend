@@ -3,9 +3,7 @@ name: CI/CD for Dockerized Spring Boot App
 on:
   push:
     branches:
-      - main  # Run pipeline when code is pushed to main
       - wip
-      - dev
 
 jobs:
   build-and-push:
@@ -48,6 +46,9 @@ jobs:
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
+    concurrency:
+      group: "deploy-${{ github.ref }}"  # Ensures no concurrent deployment for this branch
+      cancel-in-progress: true  # Cancels any running deployment if a new one starts for the same branch
 
     steps:
       - name: Debug AWS ECR Access on EC2
@@ -94,22 +95,9 @@ jobs:
               -v $HOME/firebase:$HOME/firebase:ro \
               ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/switch52:latest
 
-      - name: Debug Running Containers
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            echo "Listing running containers..."
-            docker ps -a
+      - name: Sleep for 30 minutes before stopping EC2
+        run: sleep 100  # 1800 seconds = 30 minutes
 
-      - name: Debug Container Logs
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            echo "Checking logs of switch52-container..."
-            docker logs switch52-container
+      - name: Stop EC2 instance
+        run: |
+          aws ec2 stop-instances --instance-ids ${{ secrets.EC2_INSTANCE_ID }} --region ${{ secrets.AWS_REGION }}
