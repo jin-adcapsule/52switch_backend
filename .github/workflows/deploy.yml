@@ -67,6 +67,15 @@ jobs:
 
           echo "EC2 instance is now running."
 
+      - name: Wait for SSH to be available on EC2
+        run: |
+          echo "Waiting for SSH to be available..."
+          while ! nc -zv ${{ secrets.EC2_HOST }} 22; do
+            echo "Waiting for SSH to be available..."
+            sleep 5
+          done
+          echo "SSH is now available!"
+          
       - name: Debug AWS ECR Access on EC2
         uses: appleboy/ssh-action@v1.2.0
         with:
