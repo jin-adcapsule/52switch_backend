@@ -1,9 +1,12 @@
-# 52Switch: Attendance and Day-Off Management Application
----
+***
+
+### 52Switch Attendance and Day-Off Management System
+
+***
+
 **52Switch** is a comprehensive attendance and day-off management application designed to streamline employee attendance tracking and day-off requests/approvals.<br>The project is built using **Flutter** for the client application, **Spring Boot** with **GraphQL** for the server, and **MongoDB Atlas** as the database.
 
-[52SWITCH Project Documentation](https://gilded-brush-9bc.notion.site/Mid-Review-52SWITCH-App-Clone-151fbe5a819680a38f17c3785889ef3b?pvs=4)  
-[52SWITCH Project Documentation KR](https://gilded-brush-9bc.notion.site/52SWITCH-151fbe5a819680628769e0db7e4aace6?pvs=4)
+[52SWITCH Project Documentation KR](https://gilded-brush-9bc.notion.site/52SWITCH-2025-01-09-151fbe5a819680628769e0db7e4aace6?pvs=4)
 
 ## Basic Features
 - **Day-Off Requests:** Employees can request day-off directly from the app.
@@ -15,8 +18,12 @@
 - **Holiday:** Calendar now disables holidays.
 - **Background Notification:** Notification now activated also in background both for IOS and Android.
 - **Work Start Toggle Nofification:** each employee's work start time is computed by location / day off (half) / holiday. Toggle Notification is sent to each employee.    
----
 
+***
+
+### 52Switch Server
+
+***
 ## Prerequisites
 - **Backend**: Spring-boot(JDK17, Maven), GraphQL 
 - **Database**:MongoDB Atlas Driver
