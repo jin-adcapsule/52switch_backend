@@ -51,6 +51,31 @@ jobs:
       cancel-in-progress: true  # Cancels any running deployment if a new one starts for the same branch
 
     steps:
+      - name: Configure AWS Credentials
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set region ${{ secrets.AWS_REGION }}
+
+      - name: Start EC2 Instance
+        run: |
+          echo "Starting EC2 instance...."
+          aws ec2 start-instances --instance-ids ${{ secrets.EC2_INSTANCE_ID }}  --region ${{ secrets.AWS_REGION }}
+          
+          echo "Waiting for EC2 to reach 'running' state..."
+          aws ec2 wait instance-running --instance-ids ${{ secrets.EC2_INSTANCE_ID }} --region ${{ secrets.AWS_REGION }}
+
+          echo "EC2 instance is now running."
+
+      - name: Wait for SSH to be available on EC2
+        run: |
+          echo "Waiting for SSH to be available..."
+          while ! nc -zv ${{ secrets.EC2_HOST }} 22; do
+            echo "Waiting for SSH to be available...."
+            sleep 5
+          done
+          echo "SSH is now available!"
+
       - name: Debug AWS ECR Access on EC2
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -58,7 +83,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            echo "Checking AWS CLI access..."
+            echo "Checking AWS CLI access...."
             aws sts get-caller-identity
             echo "Checking available Docker images on ECR..."
             aws ecr list-images --repository-name switch52 --region ${{ secrets.AWS_REGION }}
@@ -90,14 +115,14 @@ jobs:
               -e MONGODB_URI=${{ secrets.MONGODB_URI }} \
               -e MONGODB_DATABASE=${{ secrets.MONGODB_DATABASE }} \
               -e HOLIDAY_API_KEY=${{ secrets.HOLIDAY_API_KEY }} \
-              -e FIREBASE_AUTH_EMULATOR_HOST="127.0.0.1:9099" \
-              -e GOOGLE_APPLICATION_CREDENTIALS="$HOME/firebase/52switch_firebase_key.json" \
-              -v $HOME/firebase:$HOME/firebase:ro \
+              -e GOOGLE_APPLICATION_CREDENTIALS="/firebase/52switch_firebase_key.json" \
+              -v $HOME/firebase:/firebase:ro \
               ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/switch52:latest
 
       - name: Sleep for 30 minutes before stopping EC2
-        run: sleep 100  # 1800 seconds = 30 minutes
+        run: sleep 1800  # 1800 seconds = 30 minutes
 
-      - name: Stop EC2 instance
+      - name: Ensure AWS Credentials Before Stopping EC2
         run: |
+          aws sts get-caller-identity || echo "AWS Credentials Missing!"
           aws ec2 stop-instances --instance-ids ${{ secrets.EC2_INSTANCE_ID }} --region ${{ secrets.AWS_REGION }}
