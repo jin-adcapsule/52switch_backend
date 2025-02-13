@@ -27,7 +27,7 @@
 #     # Replace 'switch-cf287' with your actual Firebase project ID
 #     flutterfire configure --project=switch-cf287
 # } else {
-#     Write-Host "Firebase key already exists at $env:GOOGLE_APPLICATION_CREDENTIALS // "
+#     Write-Host "Firebase key already exists at $env:GOOGLE_APPLICATION_CREDENTIALS / "
 # }
 
 # Set environment variables
