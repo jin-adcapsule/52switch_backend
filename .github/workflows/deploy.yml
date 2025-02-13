@@ -120,7 +120,7 @@ jobs:
               ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/switch52:latest
 
       - name: Sleep for 30 minutes before stopping EC2
-        run: sleep 1800  # 1800 seconds = 30 minutes
+        run: sleep 6400  # 1800 seconds = 30 minutes
 
       - name: Ensure AWS Credentials Before Stopping EC2
         run: |
